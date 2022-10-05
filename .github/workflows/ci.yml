@@ -37,7 +37,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
     container: node:16-buster
-    needs: lint
     if: contains( github.ref, 'develop') || contains( github.ref, 'main')
     steps:
       - uses: actions/checkout@v2
@@ -59,7 +58,7 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    needs: test
+    needs: [lint, test]
     if: contains( github.ref, 'develop') || contains( github.ref, 'main')
     steps:
       - name: Checkout
