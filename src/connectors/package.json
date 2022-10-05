@@ -1,0 +1,12 @@
+{
+  "name": "connectors",
+  "version": "0.1.0",
+  "description": "connectors package for ripio sdk",
+  "main": "dist/cjs/connectors/index.js",
+  "types": "dist/types/connectors/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
