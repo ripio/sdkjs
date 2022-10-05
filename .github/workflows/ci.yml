@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  push:
+    branches: ['develop', 'main']
+  pull_request_review:
+    types: [submitted]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+   
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    container: node:16-buster
+    if: contains( github.ref, 'develop') || contains( github.ref, 'main')
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache npm
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/cache
+            !~/cache/exclude
+            **/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+      # Install deps
+      - name: Install deps
+        run: npm ci
+      # Run linter
+      - name: Run linter
+        run: npm run lint:check
+      # Run Prettier
+      - name: Run prettier
+        run: npm run format:check
+
+  test:
+    runs-on: ubuntu-latest
+    container: node:16-buster
+    if: contains( github.ref, 'develop') || contains( github.ref, 'main')
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache npm
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/cache
+            !~/cache/exclude
+            **/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+      # Install deps
+      - name: Install deps
+        run: npm ci
+      # run tests
+      - name: Run tests
+        run: npm run test-cov
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    if: contains( github.ref, 'develop') || contains( github.ref, 'main')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16.14.0'
+      - name: Install dependencies
+        run: npm ci
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npx semantic-release
