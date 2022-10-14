@@ -38,6 +38,7 @@ export default class BrowserWeb3Connector extends AbstractWeb3Connector {
     }
     this.subscribeToEvents(window.ethereum)
     this._isActive = true
+    await this.detectLegacyChain()
 
     return {
       provider: <ethers.providers.Web3Provider>this._provider,
@@ -90,9 +91,10 @@ export default class BrowserWeb3Connector extends AbstractWeb3Connector {
     this._provider.emit(ProviderEvents.ACCOUNT_CHANGED, this._account)
   }
 
-  protected handleChainChanged = (chainId: string) => {
+  protected handleChainChanged = async (chainId: string) => {
     const chainNumber = hexToNumber(chainId)
     this._chainId = chainNumber
+    await this.detectLegacyChain()
     this._provider?.emit(ProviderEvents.CHAIN_CHANGED, chainNumber)
   }
 

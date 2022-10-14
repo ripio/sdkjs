@@ -25,6 +25,7 @@ export default class JsonRPCWeb3Connector extends AbstractWeb3Connector {
     const { chainId } = await this._provider.getNetwork()
     this._chainId = chainId
     this._isActive = true
+    await this.detectLegacyChain()
 
     return {
       provider: this._provider,

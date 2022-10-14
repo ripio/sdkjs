@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import { ethers, Wallet } from 'ethers'
+import { BigNumber, ethers, Wallet } from 'ethers'
 import errors from '../../types/errors'
 import BrowserWeb3Connector from '../../connectors/BrowserWeb3Connector'
 import { ProviderEvents } from '../../connectors/events'
@@ -25,6 +25,13 @@ describe('BrowserWeb3Connector', () => {
     jest
       .spyOn(ethers.providers.Web3Provider.prototype, 'getNetwork')
       .mockImplementation(async () => ({ name: '', chainId: 1 }))
+    jest
+      .spyOn(ethers.providers.Web3Provider.prototype, 'getFeeData')
+      .mockResolvedValueOnce({
+        maxFeePerGas: null,
+        maxPriorityFeePerGas: null,
+        gasPrice: BigNumber.from('1')
+      })
     const spySubs = jest.spyOn(
       BrowserWeb3Connector.prototype,
       'subscribeToEvents'
@@ -36,6 +43,7 @@ describe('BrowserWeb3Connector', () => {
     const browserProvider = new BrowserWeb3Connector()
     await browserProvider.activate()
     expect(browserProvider.chainId).toBe(1)
+    expect(browserProvider.isLegacy).toBe(true)
     expect(browserProvider.provider).toBeInstanceOf(
       ethers.providers.Web3Provider
     )
@@ -47,6 +55,13 @@ describe('BrowserWeb3Connector', () => {
     jest
       .spyOn(ethers.providers.Web3Provider.prototype, 'getNetwork')
       .mockImplementation(async () => ({ name: '', chainId: 1 }))
+    jest
+      .spyOn(ethers.providers.Web3Provider.prototype, 'getFeeData')
+      .mockResolvedValueOnce({
+        maxFeePerGas: null,
+        maxPriorityFeePerGas: null,
+        gasPrice: BigNumber.from('1')
+      })
     const spySubs = jest.spyOn(
       BrowserWeb3Connector.prototype,
       'subscribeToEvents'
@@ -59,6 +74,7 @@ describe('BrowserWeb3Connector', () => {
     const browserProvider = new BrowserWeb3Connector(false)
     await browserProvider.activate()
     expect(browserProvider.chainId).toBe(1)
+    expect(browserProvider.isLegacy).toBe(true)
     expect(browserProvider.account).toBeUndefined()
     expect(browserProvider.provider).toBeInstanceOf(
       ethers.providers.Web3Provider
@@ -213,9 +229,16 @@ describe('BrowserWeb3Connector', () => {
     expect(mockEmitEvent).not.toHaveBeenCalled()
   })
 
-  it('should update chainId and emit an event when calling handleChainChanged', async () => {
+  it('should update chainId, isLegacy and emit an event when calling handleChainChanged', async () => {
     const chainId = '1'
     const browserProvider = new BrowserWeb3Connector()
+    jest
+      .spyOn(ethers.providers.Web3Provider.prototype, 'getFeeData')
+      .mockResolvedValueOnce({
+        maxFeePerGas: null,
+        maxPriorityFeePerGas: null,
+        gasPrice: BigNumber.from('1')
+      })
     browserProvider['_isActive'] = true
     browserProvider['_chainId'] = 123
     browserProvider['_provider'] = Object.create(
@@ -223,9 +246,11 @@ describe('BrowserWeb3Connector', () => {
     ) as ethers.providers.Web3Provider
     const mockEmitEvent = jest.fn()
     browserProvider['_provider']['emit'] = mockEmitEvent
-    browserProvider['handleChainChanged'](chainId)
+    browserProvider['_isLegacy'] = false
+    await browserProvider['handleChainChanged'](chainId)
     expect(mockEmitEvent).toHaveBeenCalledWith(ProviderEvents.CHAIN_CHANGED, 1)
     expect(browserProvider.chainId).toEqual(1)
+    expect(browserProvider.isLegacy).toBe(true)
   })
 
   it('should emit an event when calling handleConnect', async () => {
