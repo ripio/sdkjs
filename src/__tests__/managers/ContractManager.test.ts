@@ -9,6 +9,7 @@ import BrowserWeb3Connector from '../../connectors/BrowserWeb3Connector'
 
 import { ContractManager } from '../../managers'
 import errors from '../../types/errors'
+import warnings from '../../types/warnings'
 import { ConnectInfo, ProviderRpcError } from '../../types/interfaces'
 import * as connectors from '../../utils/connectors'
 import { BaseProvider } from '@ethersproject/providers'
@@ -998,7 +999,7 @@ describe('ContractManager execute function', () => {
     ).rejects.toThrow(errors.INVALID_PARAMETER('gasPrice'))
   })
 
-  it('Should delete gasPrice on overrides values when we use maxPriorityFeePerGas', async () => {
+  it('Should fire a warning when we use maxPriorityFeePerGas', async () => {
     const sdk = new ContractManager()
     const method = 'test'
     const param1 = 'param1'
@@ -1011,6 +1012,7 @@ describe('ContractManager execute function', () => {
       format: () => method
     })
     jest.spyOn(conversions, 'extendTransactionResponse')
+    const mockWarn = jest.spyOn(global.console, 'warn').mockImplementationOnce(() => {})
     sdk.safeMode = false
     sdk['_abi'] = {
       getFunction: mockGetFunction
@@ -1027,10 +1029,11 @@ describe('ContractManager execute function', () => {
       params: [param1],
       overrides: { gasPrice: 100, maxPriorityFeePerGas: 100 }
     })
-    expect(mockMethod).toBeCalledWith(param1, { maxPriorityFeePerGas: 100 })
+    expect(mockMethod).toBeCalledWith(param1, { gasPrice: 100, maxPriorityFeePerGas: 100 })
+    expect(mockWarn).toHaveBeenCalledWith(warnings.GAS_PRICE_NOT_NECESSARY)
   })
 
-  it('Should delete gasPrice on overrides values when we use maxFeePerGas', async () => {
+  it('Should fire a warning when we use maxFeePerGas', async () => {
     const sdk = new ContractManager()
     const method = 'test'
     const param1 = 'param1'
@@ -1043,6 +1046,7 @@ describe('ContractManager execute function', () => {
       format: () => method
     })
     jest.spyOn(conversions, 'extendTransactionResponse')
+    const mockWarn = jest.spyOn(global.console, 'warn').mockImplementationOnce(() => {})
     sdk.safeMode = false
     sdk['_abi'] = {
       getFunction: mockGetFunction
@@ -1059,7 +1063,8 @@ describe('ContractManager execute function', () => {
       params: [param1],
       overrides: { gasPrice: 100, maxFeePerGas: 100 }
     })
-    expect(mockMethod).toBeCalledWith(param1, { maxFeePerGas: 100 })
+    expect(mockMethod).toBeCalledWith(param1, { gasPrice: 100, maxFeePerGas: 100 })
+    expect(mockWarn).toHaveBeenCalledWith(warnings.GAS_PRICE_NOT_NECESSARY)
   })
 })
 

@@ -25,6 +25,7 @@ import { getExecuteResponse, toWei } from '../utils/conversions'
 import { getConnector } from '../utils/connectors'
 import { BrowserWeb3Connector, JsonRPCWeb3Connector } from '../connectors'
 import { Event } from '@ethersproject/contracts'
+import warnings from '../types/warnings'
 
 export class ContractManager {
   protected ContractManagerEmitter = new EventEmitter()
@@ -324,19 +325,19 @@ export class ContractManager {
       throw errorTypes.INVALID_PARAMETER('gasPrice')
 
     if (overrides?.maxPriorityFeePerGas) {
-      if (!isBigNumber(overrides?.maxPriorityFeePerGas))
-        throw errorTypes.INVALID_PARAMETER('maxPriorityFeePerGas')
       if (isLegacyChain)
         throw errorTypes.PARAMETER_NOT_SUPPORTED_ON_LEGACY_CHAIN(
           'maxPriorityFeePerGas'
         )
+      if (!isBigNumber(overrides?.maxPriorityFeePerGas))
+        throw errorTypes.INVALID_PARAMETER('maxPriorityFeePerGas')
     }
 
     if (overrides?.maxFeePerGas) {
-      if (!isBigNumber(overrides?.maxFeePerGas))
-        throw errorTypes.INVALID_PARAMETER('maxFeePerGas')
       if (isLegacyChain)
         throw errorTypes.PARAMETER_NOT_SUPPORTED_ON_LEGACY_CHAIN('maxFeePerGas')
+      if (!isBigNumber(overrides?.maxFeePerGas))
+        throw errorTypes.INVALID_PARAMETER('maxFeePerGas')
     }
 
     if (iFunction.inputs.length !== params.length)
@@ -345,13 +346,12 @@ export class ContractManager {
         params.length
       )
 
-    // Remove gas price
     if (
       overrides?.gasPrice &&
       !isLegacyChain &&
       (overrides?.maxPriorityFeePerGas || overrides?.maxFeePerGas)
     )
-      delete overrides.gasPrice
+      console.warn(warnings.GAS_PRICE_NOT_NECESSARY)
 
     const errors: Array<Error> = []
     iFunction.inputs.forEach((abiParam: ParamType, index) => {

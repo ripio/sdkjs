@@ -40,7 +40,7 @@ export default abstract class AbstractWeb3Connector {
     this._chainId = undefined
     this._provider = undefined
     this._isActive = false
-    this._isLegacy = false
+    this._isLegacy = undefined
   }
 
   /**
