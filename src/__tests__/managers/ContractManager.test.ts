@@ -801,7 +801,9 @@ describe('ContractManager execute function', () => {
         params: [],
         overrides: { maxPriorityFeePerGas: 100 }
       })
-    ).rejects.toThrow(errors.PARAMETER_NOT_SUPPORTED_ON_LEGACY_CHAIN('maxPriorityFeePerGas'))
+    ).rejects.toThrow(
+      errors.PARAMETER_NOT_SUPPORTED_ON_LEGACY_CHAIN('maxPriorityFeePerGas')
+    )
   })
 
   it('Should override the default maxPriorityFeePerGas', async () => {
@@ -897,7 +899,9 @@ describe('ContractManager execute function', () => {
         params: [],
         overrides: { maxFeePerGas: 100 }
       })
-    ).rejects.toThrow(errors.PARAMETER_NOT_SUPPORTED_ON_LEGACY_CHAIN('maxFeePerGas'))
+    ).rejects.toThrow(
+      errors.PARAMETER_NOT_SUPPORTED_ON_LEGACY_CHAIN('maxFeePerGas')
+    )
   })
 
   it('Should override the default maxFeePerGas', async () => {

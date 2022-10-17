@@ -327,7 +327,9 @@ export class ContractManager {
       if (!isBigNumber(overrides?.maxPriorityFeePerGas))
         throw errorTypes.INVALID_PARAMETER('maxPriorityFeePerGas')
       if (isLegacyChain)
-        throw errorTypes.PARAMETER_NOT_SUPPORTED_ON_LEGACY_CHAIN('maxPriorityFeePerGas')
+        throw errorTypes.PARAMETER_NOT_SUPPORTED_ON_LEGACY_CHAIN(
+          'maxPriorityFeePerGas'
+        )
     }
 
     if (overrides?.maxFeePerGas) {
@@ -343,8 +345,12 @@ export class ContractManager {
         params.length
       )
 
-    // Remove gas price 
-    if (overrides?.gasPrice && !isLegacyChain && (overrides?.maxPriorityFeePerGas || overrides?.maxFeePerGas))
+    // Remove gas price
+    if (
+      overrides?.gasPrice &&
+      !isLegacyChain &&
+      (overrides?.maxPriorityFeePerGas || overrides?.maxFeePerGas)
+    )
       delete overrides.gasPrice
 
     const errors: Array<Error> = []
