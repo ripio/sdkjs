@@ -284,6 +284,7 @@ export class ContractManager {
       [this._connector?.provider, this._contract, this._abi],
       errorTypes.SDK_NOT_INITIALIZED
     )
+    const isLegacyChain = this.connector?.isLegacy
     let iFunction
     try {
       // attempts to get function from abi
@@ -322,11 +323,29 @@ export class ContractManager {
     if (overrides?.gasPrice && !isBigNumber(overrides?.gasPrice))
       throw errorTypes.INVALID_PARAMETER('gasPrice')
 
+    if (overrides?.maxPriorityFeePerGas) {
+      if (!isBigNumber(overrides?.maxPriorityFeePerGas))
+        throw errorTypes.INVALID_PARAMETER('maxPriorityFeePerGas')
+      if (isLegacyChain)
+        throw errorTypes.PARAMETER_NOT_SUPPORTED_ON_LEGACY_CHAIN('maxPriorityFeePerGas')
+    }
+
+    if (overrides?.maxFeePerGas) {
+      if (!isBigNumber(overrides?.maxFeePerGas))
+        throw errorTypes.INVALID_PARAMETER('maxFeePerGas')
+      if (isLegacyChain)
+        throw errorTypes.PARAMETER_NOT_SUPPORTED_ON_LEGACY_CHAIN('maxFeePerGas')
+    }
+
     if (iFunction.inputs.length !== params.length)
       throw errorTypes.INVALID_PARAMETER_COUNT(
         iFunction.inputs.length,
         params.length
       )
+
+    // Remove gas price 
+    if (overrides?.gasPrice && !isLegacyChain && (overrides?.maxPriorityFeePerGas || overrides?.maxFeePerGas))
+      delete overrides.gasPrice
 
     const errors: Array<Error> = []
     iFunction.inputs.forEach((abiParam: ParamType, index) => {

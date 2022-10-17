@@ -25,8 +25,12 @@ export interface ProviderRpcError extends Error {
 export interface OverrideExecuteOptions {
   /* the amount of gas to allow a node to use during the execution of the code */
   gasLimit?: BigNumberish
-  /* the price to pay per gas */
+  /* the price to pay per gas (before EIP-1559) */
   gasPrice?: BigNumberish
+  /* tip to the miner (after EIP-1559) */
+  maxPriorityFeePerGas?: BigNumberish
+  /* base fee plus tip (after EIP-1559) */
+  maxFeePerGas?: BigNumberish
 }
 
 /* Defining the interface for the options object that is passed to the execute function. */

@@ -83,6 +83,10 @@ const errors = {
   READ_ONLY: (funcName: string) =>
     new Error(
       `Connector is in read only mode, unable to execute function ${funcName}`
+    ),
+  PARAMETER_NOT_SUPPORTED_ON_LEGACY_CHAIN: (param: string) =>
+    new Error(
+      `Invalid parameter ${param} in legacy chain (before EIP-1559)`
     )
 }
 
