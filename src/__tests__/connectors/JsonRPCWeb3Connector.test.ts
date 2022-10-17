@@ -44,41 +44,36 @@ describe('JsonRPCWeb3Connector constructor', () => {
     jest
       .spyOn(ethers.providers.JsonRpcProvider.prototype, 'getNetwork')
       .mockResolvedValueOnce({ name: '', chainId: 1 })
-    jest
-      .spyOn(ethers.providers.JsonRpcProvider.prototype, 'getFeeData')
-      .mockResolvedValueOnce({
-        maxFeePerGas: null,
-        maxPriorityFeePerGas: null,
-        gasPrice: BigNumber.from('1')
-      })
     const instance = new JsonRPCWeb3Connector('http://fake')
+    const spyDetectLegacyChain = jest
+      .spyOn(instance, 'detectLegacyChain')
+      .mockImplementationOnce(async () => {})
     await instance.activate()
     expect(instance).toBeInstanceOf(JsonRPCWeb3Connector)
     expect(instance.provider).not.toBeUndefined()
     expect(instance.chainId).toBe(1)
     expect(instance.account).toBeUndefined()
+    expect(spyDetectLegacyChain).toHaveBeenCalled()
   })
 
   it('Should create a new instance with an account', async () => {
     jest
       .spyOn(ethers.providers.JsonRpcProvider.prototype, 'getNetwork')
       .mockResolvedValueOnce({ name: '', chainId: 1 })
-    jest
-      .spyOn(ethers.providers.JsonRpcProvider.prototype, 'getFeeData')
-      .mockResolvedValueOnce({
-        maxFeePerGas: null,
-        maxPriorityFeePerGas: null,
-        gasPrice: BigNumber.from('1')
-      })
     const instance = new JsonRPCWeb3Connector(
       'http://fake',
       '651e3c36052bdb537d46ca6036542e422f32ca5a30d8348a281707ffbe37ee91'
     )
+
+    const spyDetectLegacyChain = jest
+      .spyOn(instance, 'detectLegacyChain')
+      .mockImplementationOnce(async () => {})
     await instance.activate()
     expect(instance).toBeInstanceOf(JsonRPCWeb3Connector)
     expect(instance.provider).not.toBeUndefined()
     expect(instance.chainId).toBe(1)
     expect(instance.account).not.toBeUndefined()
+    expect(spyDetectLegacyChain).toHaveBeenCalled()
   })
 })
 
@@ -87,20 +82,17 @@ describe('JsonRPCWeb3Connector activate method', () => {
     jest
       .spyOn(ethers.providers.JsonRpcProvider.prototype, 'getNetwork')
       .mockResolvedValueOnce({ name: '', chainId: 1 })
-    jest
-      .spyOn(ethers.providers.JsonRpcProvider.prototype, 'getFeeData')
-      .mockResolvedValueOnce({
-        maxFeePerGas: null,
-        maxPriorityFeePerGas: null,
-        gasPrice: BigNumber.from('1')
-      })
     const instance = new JsonRPCWeb3Connector('http://fake')
+    const spyDetectLegacyChain = jest
+      .spyOn(instance, 'detectLegacyChain')
+      .mockImplementationOnce(async () => {})
     const result = await instance.activate()
     expect(result).toStrictEqual({
       provider: instance.provider,
       chainId: instance.chainId,
       account: undefined
     })
+    expect(spyDetectLegacyChain).toHaveBeenCalled()
   })
 
   it('Should activate the provider with an account', async () => {
@@ -118,12 +110,16 @@ describe('JsonRPCWeb3Connector activate method', () => {
       'http://fake',
       '651e3c36052bdb537d46ca6036542e422f32ca5a30d8348a281707ffbe37ee91'
     )
+    const spyDetectLegacyChain = jest
+      .spyOn(instance, 'detectLegacyChain')
+      .mockImplementationOnce(async () => {})
     const result = await instance.activate()
     expect(result).toStrictEqual({
       provider: instance.provider,
       chainId: instance.chainId,
       account: instance.account
     })
+    expect(spyDetectLegacyChain).toHaveBeenCalled()
   })
 
   it('Should throw an error if activating without provider or chainId', async () => {
