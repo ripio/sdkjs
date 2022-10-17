@@ -1012,7 +1012,9 @@ describe('ContractManager execute function', () => {
       format: () => method
     })
     jest.spyOn(conversions, 'extendTransactionResponse')
-    const mockWarn = jest.spyOn(global.console, 'warn').mockImplementationOnce(() => {})
+    const mockWarn = jest
+      .spyOn(global.console, 'warn')
+      .mockImplementationOnce(() => {})
     sdk.safeMode = false
     sdk['_abi'] = {
       getFunction: mockGetFunction
@@ -1029,7 +1031,10 @@ describe('ContractManager execute function', () => {
       params: [param1],
       overrides: { gasPrice: 100, maxPriorityFeePerGas: 100 }
     })
-    expect(mockMethod).toBeCalledWith(param1, { gasPrice: 100, maxPriorityFeePerGas: 100 })
+    expect(mockMethod).toBeCalledWith(param1, {
+      gasPrice: 100,
+      maxPriorityFeePerGas: 100
+    })
     expect(mockWarn).toHaveBeenCalledWith(warnings.GAS_PRICE_NOT_NECESSARY)
   })
 
@@ -1046,7 +1051,9 @@ describe('ContractManager execute function', () => {
       format: () => method
     })
     jest.spyOn(conversions, 'extendTransactionResponse')
-    const mockWarn = jest.spyOn(global.console, 'warn').mockImplementationOnce(() => {})
+    const mockWarn = jest
+      .spyOn(global.console, 'warn')
+      .mockImplementationOnce(() => {})
     sdk.safeMode = false
     sdk['_abi'] = {
       getFunction: mockGetFunction
@@ -1063,7 +1070,10 @@ describe('ContractManager execute function', () => {
       params: [param1],
       overrides: { gasPrice: 100, maxFeePerGas: 100 }
     })
-    expect(mockMethod).toBeCalledWith(param1, { gasPrice: 100, maxFeePerGas: 100 })
+    expect(mockMethod).toBeCalledWith(param1, {
+      gasPrice: 100,
+      maxFeePerGas: 100
+    })
     expect(mockWarn).toHaveBeenCalledWith(warnings.GAS_PRICE_NOT_NECESSARY)
   })
 })
