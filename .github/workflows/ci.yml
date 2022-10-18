@@ -13,7 +13,6 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     container: node:16-buster
-    if: contains( github.ref, 'develop') || contains( github.ref, 'main')
     steps:
       - uses: actions/checkout@v2
       - name: Cache npm
@@ -37,7 +36,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
     container: node:16-buster
-    if: contains( github.ref, 'develop') || contains( github.ref, 'main')
     steps:
       - uses: actions/checkout@v2
       - name: Cache npm

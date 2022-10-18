@@ -740,7 +740,70 @@ describe('ContractManager execute function', () => {
     ).rejects.toThrow(errors.INVALID_PARAMETER('gasLimit'))
   })
 
-  it('Should override the default gasPrice', async () => {
+  it('Should throw an error if maxPriorityFeePerGas is not BigNumberish', async () => {
+    const sdk = new ContractManager()
+    const method = 'test'
+    const mockMethod = jest.fn().mockImplementationOnce(() => {
+      return 'result'
+    })
+    const mockGetFunction = jest.fn().mockReturnValueOnce({
+      payable: false,
+      inputs: [],
+      format: () => method
+    })
+    sdk['_abi'] = {
+      getFunction: mockGetFunction
+    } as unknown as ethers.utils.Interface
+    sdk['_connector'] = {
+      account: {} as Wallet,
+      provider: {} as ethers.providers.JsonRpcProvider
+    } as unknown as JsonRPCWeb3Connector
+    sdk['_contract'] = {
+      [method]: mockMethod
+    } as unknown as Contract
+    await expect(
+      sdk.execute({
+        method,
+        params: [],
+        overrides: { maxPriorityFeePerGas: '42.42' }
+      })
+    ).rejects.toThrow(errors.INVALID_PARAMETER('maxPriorityFeePerGas'))
+  })
+
+  it('Should throw an error if it is legacyChain when we use maxPriorityFeePerGas', async () => {
+    const sdk = new ContractManager()
+    const method = 'test'
+    const mockMethod = jest.fn().mockImplementationOnce(() => {
+      return 'result'
+    })
+    const mockGetFunction = jest.fn().mockReturnValueOnce({
+      payable: false,
+      inputs: [],
+      format: () => method
+    })
+    sdk['_abi'] = {
+      getFunction: mockGetFunction
+    } as unknown as ethers.utils.Interface
+    sdk['_connector'] = {
+      account: {} as Wallet,
+      provider: {} as ethers.providers.JsonRpcProvider,
+      isLegacy: true
+    } as unknown as JsonRPCWeb3Connector
+    sdk['_contract'] = {
+      [method]: mockMethod
+    } as unknown as Contract
+    await expect(
+      sdk.execute({
+        method,
+        params: [],
+        overrides: { maxPriorityFeePerGas: 100 }
+      })
+    ).rejects.toThrow(
+      errors.PARAMETER_NOT_SUPPORTED_ON_LEGACY_CHAIN('maxPriorityFeePerGas')
+    )
+  })
+
+  it('Should override the default maxPriorityFeePerGas', async () => {
     const sdk = new ContractManager()
     const method = 'test'
     const param1 = 'param1'
@@ -767,9 +830,170 @@ describe('ContractManager execute function', () => {
     await sdk.execute({
       method,
       params: [param1],
+      overrides: { maxPriorityFeePerGas: 100 }
+    })
+    expect(mockMethod).toBeCalledWith(param1, { maxPriorityFeePerGas: 100 })
+  })
+
+  it('Should throw an error if maxFeePerGas is not BigNumberish', async () => {
+    const sdk = new ContractManager()
+    const method = 'test'
+    const mockMethod = jest.fn().mockImplementationOnce(() => {
+      return 'result'
+    })
+    const mockGetFunction = jest.fn().mockReturnValueOnce({
+      payable: false,
+      inputs: [],
+      format: () => method
+    })
+    sdk['_abi'] = {
+      getFunction: mockGetFunction
+    } as unknown as ethers.utils.Interface
+    sdk['_connector'] = {
+      account: {} as Wallet,
+      provider: {} as ethers.providers.JsonRpcProvider
+    } as unknown as JsonRPCWeb3Connector
+    sdk['_contract'] = {
+      [method]: mockMethod
+    } as unknown as Contract
+    await expect(
+      sdk.execute({
+        method,
+        params: [],
+        overrides: { maxFeePerGas: '42.42' }
+      })
+    ).rejects.toThrow(errors.INVALID_PARAMETER('maxFeePerGas'))
+  })
+
+  it('Should throw an error if it is legacyChain when we use maxFeePerGas', async () => {
+    const sdk = new ContractManager()
+    const method = 'test'
+    const mockMethod = jest.fn().mockImplementationOnce(() => {
+      return 'result'
+    })
+    const mockGetFunction = jest.fn().mockReturnValueOnce({
+      payable: false,
+      inputs: [],
+      format: () => method
+    })
+    sdk['_abi'] = {
+      getFunction: mockGetFunction
+    } as unknown as ethers.utils.Interface
+    sdk['_connector'] = {
+      account: {} as Wallet,
+      provider: {} as ethers.providers.JsonRpcProvider,
+      isLegacy: true
+    } as unknown as JsonRPCWeb3Connector
+    sdk['_contract'] = {
+      [method]: mockMethod
+    } as unknown as Contract
+    await expect(
+      sdk.execute({
+        method,
+        params: [],
+        overrides: { maxFeePerGas: 100 }
+      })
+    ).rejects.toThrow(
+      errors.PARAMETER_NOT_SUPPORTED_ON_LEGACY_CHAIN('maxFeePerGas')
+    )
+  })
+
+  it('Should override the default maxFeePerGas', async () => {
+    const sdk = new ContractManager()
+    const method = 'test'
+    const param1 = 'param1'
+    const mockMethod = jest.fn().mockImplementationOnce(() => {
+      return 'result'
+    })
+    const mockGetFunction = jest.fn().mockReturnValueOnce({
+      payable: false,
+      inputs: [{ name: param1, type: 'address' }],
+      format: () => method
+    })
+    jest.spyOn(conversions, 'extendTransactionResponse')
+    sdk.safeMode = false
+    sdk['_abi'] = {
+      getFunction: mockGetFunction
+    } as unknown as ethers.utils.Interface
+    sdk['_connector'] = {
+      account: {} as Wallet,
+      provider: {} as ethers.providers.JsonRpcProvider
+    } as unknown as JsonRPCWeb3Connector
+    sdk['_contract'] = {
+      [method]: mockMethod
+    } as unknown as Contract
+    await sdk.execute({
+      method,
+      params: [param1],
+      overrides: { maxFeePerGas: 100 }
+    })
+    expect(mockMethod).toBeCalledWith(param1, { maxFeePerGas: 100 })
+  })
+
+  it('Should override the default gasPrice', async () => {
+    const sdk = new ContractManager()
+    const method = 'test'
+    const param1 = 'param1'
+    const mockMethod = jest.fn().mockImplementationOnce(() => {
+      return 'result'
+    })
+    const mockGetFunction = jest.fn().mockReturnValueOnce({
+      payable: false,
+      inputs: [{ name: param1, type: 'address' }],
+      format: () => method
+    })
+    jest.spyOn(conversions, 'extendTransactionResponse')
+    sdk.safeMode = false
+    sdk['_abi'] = {
+      getFunction: mockGetFunction
+    } as unknown as ethers.utils.Interface
+    sdk['_connector'] = {
+      account: {} as Wallet,
+      provider: {} as ethers.providers.JsonRpcProvider,
+      isLegacy: true
+    } as unknown as JsonRPCWeb3Connector
+    sdk['_contract'] = {
+      [method]: mockMethod
+    } as unknown as Contract
+    await sdk.execute({
+      method,
+      params: [param1],
       overrides: { gasPrice: 100 }
     })
     expect(mockMethod).toBeCalledWith(param1, { gasPrice: 100 })
+  })
+
+  it('Should throw an error if it is not legacyChain when we use gasPrice', async () => {
+    const sdk = new ContractManager()
+    const method = 'test'
+    const mockMethod = jest.fn().mockImplementationOnce(() => {
+      return 'result'
+    })
+    const mockGetFunction = jest.fn().mockReturnValueOnce({
+      payable: false,
+      inputs: [],
+      format: () => method
+    })
+    sdk['_abi'] = {
+      getFunction: mockGetFunction
+    } as unknown as ethers.utils.Interface
+    sdk['_connector'] = {
+      account: {} as Wallet,
+      provider: {} as ethers.providers.JsonRpcProvider,
+      isLegacy: false
+    } as unknown as JsonRPCWeb3Connector
+    sdk['_contract'] = {
+      [method]: mockMethod
+    } as unknown as Contract
+    await expect(
+      sdk.execute({
+        method,
+        params: [],
+        overrides: { gasPrice: 100 }
+      })
+    ).rejects.toThrow(
+      errors.PARAMETER_NOT_SUPPORTED_ON_NON_LEGACY_CHAIN('gasPrice')
+    )
   })
 
   it('Should throw an error if gasPrice is not BigNumberish', async () => {
@@ -788,7 +1012,8 @@ describe('ContractManager execute function', () => {
     } as unknown as ethers.utils.Interface
     sdk['_connector'] = {
       account: {} as Wallet,
-      provider: {} as ethers.providers.JsonRpcProvider
+      provider: {} as ethers.providers.JsonRpcProvider,
+      isLegacy: true
     } as unknown as JsonRPCWeb3Connector
     sdk['_contract'] = {
       [method]: mockMethod

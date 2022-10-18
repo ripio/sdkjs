@@ -34,6 +34,9 @@ describe('BrowserWeb3Connector', () => {
       .mockImplementationOnce(async () => {})
 
     const browserProvider = new BrowserWeb3Connector()
+    const spyDetectLegacyChain = jest
+      .spyOn(browserProvider, 'detectLegacyChain')
+      .mockImplementationOnce(async () => {})
     await browserProvider.activate()
     expect(browserProvider.chainId).toBe(1)
     expect(browserProvider.provider).toBeInstanceOf(
@@ -41,6 +44,7 @@ describe('BrowserWeb3Connector', () => {
     )
     expect(spySubs).toHaveBeenCalled()
     expect(spyRequestAccount).toHaveBeenCalled()
+    expect(spyDetectLegacyChain).toHaveBeenCalled()
   })
 
   it('should activate BrowserWeb3Connector without an account', async () => {
@@ -55,8 +59,10 @@ describe('BrowserWeb3Connector', () => {
       BrowserWeb3Connector.prototype,
       'requestAccount'
     )
-
     const browserProvider = new BrowserWeb3Connector(false)
+    const spyDetectLegacyChain = jest
+      .spyOn(browserProvider, 'detectLegacyChain')
+      .mockImplementationOnce(async () => {})
     await browserProvider.activate()
     expect(browserProvider.chainId).toBe(1)
     expect(browserProvider.account).toBeUndefined()
@@ -65,6 +71,7 @@ describe('BrowserWeb3Connector', () => {
     )
     expect(spySubs).toHaveBeenCalled()
     expect(spyRequestAccount).not.toHaveBeenCalled()
+    expect(spyDetectLegacyChain).toHaveBeenCalled()
   })
 
   it('should throw an error when requestAccount to BrowserWeb3Connector without provider', async () => {
@@ -213,7 +220,7 @@ describe('BrowserWeb3Connector', () => {
     expect(mockEmitEvent).not.toHaveBeenCalled()
   })
 
-  it('should update chainId and emit an event when calling handleChainChanged', async () => {
+  it('should update chainId, isLegacy and emit an event when calling handleChainChanged', async () => {
     const chainId = '1'
     const browserProvider = new BrowserWeb3Connector()
     browserProvider['_isActive'] = true
@@ -223,9 +230,14 @@ describe('BrowserWeb3Connector', () => {
     ) as ethers.providers.Web3Provider
     const mockEmitEvent = jest.fn()
     browserProvider['_provider']['emit'] = mockEmitEvent
-    browserProvider['handleChainChanged'](chainId)
+    browserProvider['_isLegacy'] = false
+    const spyDetectLegacyChain = jest
+      .spyOn(browserProvider, 'detectLegacyChain')
+      .mockImplementationOnce(async () => {})
+    await browserProvider['handleChainChanged'](chainId)
     expect(mockEmitEvent).toHaveBeenCalledWith(ProviderEvents.CHAIN_CHANGED, 1)
     expect(browserProvider.chainId).toEqual(1)
+    expect(spyDetectLegacyChain).toHaveBeenCalled()
   })
 
   it('should emit an event when calling handleConnect', async () => {

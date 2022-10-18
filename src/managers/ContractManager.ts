@@ -284,6 +284,7 @@ export class ContractManager {
       [this._connector?.provider, this._contract, this._abi],
       errorTypes.SDK_NOT_INITIALIZED
     )
+    const isLegacyChain = this.connector?.isLegacy
     let iFunction
     try {
       // attempts to get function from abi
@@ -319,8 +320,28 @@ export class ContractManager {
     if (overrides?.gasLimit && !isBigNumber(overrides?.gasLimit))
       throw errorTypes.INVALID_PARAMETER('gasLimit')
 
-    if (overrides?.gasPrice && !isBigNumber(overrides?.gasPrice))
-      throw errorTypes.INVALID_PARAMETER('gasPrice')
+    if (overrides?.gasPrice) {
+      if (!isLegacyChain)
+        throw errorTypes.PARAMETER_NOT_SUPPORTED_ON_NON_LEGACY_CHAIN('gasPrice')
+      if (!isBigNumber(overrides?.gasPrice))
+        throw errorTypes.INVALID_PARAMETER('gasPrice')
+    }
+
+    if (overrides?.maxPriorityFeePerGas) {
+      if (isLegacyChain)
+        throw errorTypes.PARAMETER_NOT_SUPPORTED_ON_LEGACY_CHAIN(
+          'maxPriorityFeePerGas'
+        )
+      if (!isBigNumber(overrides?.maxPriorityFeePerGas))
+        throw errorTypes.INVALID_PARAMETER('maxPriorityFeePerGas')
+    }
+
+    if (overrides?.maxFeePerGas) {
+      if (isLegacyChain)
+        throw errorTypes.PARAMETER_NOT_SUPPORTED_ON_LEGACY_CHAIN('maxFeePerGas')
+      if (!isBigNumber(overrides?.maxFeePerGas))
+        throw errorTypes.INVALID_PARAMETER('maxFeePerGas')
+    }
 
     if (iFunction.inputs.length !== params.length)
       throw errorTypes.INVALID_PARAMETER_COUNT(

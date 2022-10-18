@@ -27,6 +27,7 @@ export default abstract class AbstractWeb3Connector {
   protected _chainId: number | undefined
   protected _isActive = false
   protected _speedUpPercentage = 10 // default to 10%
+  protected _isLegacy: boolean | undefined // EIP-1559
 
   abstract activate(): Promise<{
     provider: ethers.providers.Web3Provider | ethers.providers.JsonRpcProvider
@@ -39,6 +40,7 @@ export default abstract class AbstractWeb3Connector {
     this._chainId = undefined
     this._provider = undefined
     this._isActive = false
+    this._isLegacy = undefined
   }
 
   /**
@@ -87,6 +89,10 @@ export default abstract class AbstractWeb3Connector {
 
   set speedUpPercentage(value: number) {
     this._speedUpPercentage = value
+  }
+
+  get isLegacy(): boolean | undefined {
+    return this._isLegacy
   }
 
   /**
@@ -306,5 +312,19 @@ export default abstract class AbstractWeb3Connector {
     if (!this._isActive) throw errorTypes.MUST_ACTIVATE
     if (this.isReadOnly) throw errorTypes.READ_ONLY('signTypedData')
     return await instance.sign(this._account!)
+  }
+
+  /**
+   * Sets the value of _isLegacy depending on the values of ethers.getFeeData
+   * @returns A void promise
+   */
+  detectLegacyChain = async (): Promise<void> => {
+    if (!this._isActive) {
+      throw errorTypes.MUST_ACTIVATE
+    }
+
+    // check the value of maxFeePerGas to see if it supports EIP-1559
+    const { maxFeePerGas } = await this._provider!.getFeeData()
+    this._isLegacy = maxFeePerGas === null
   }
 }
