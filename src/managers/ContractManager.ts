@@ -322,9 +322,7 @@ export class ContractManager {
 
     if (overrides?.gasPrice) {
       if (!isLegacyChain)
-        throw errorTypes.PARAMETER_NOT_SUPPORTED_ON_NON_LEGACY_CHAIN(
-          'gasPrice'
-        )
+        throw errorTypes.PARAMETER_NOT_SUPPORTED_ON_NON_LEGACY_CHAIN('gasPrice')
       if (!isBigNumber(overrides?.gasPrice))
         throw errorTypes.INVALID_PARAMETER('gasPrice')
     }

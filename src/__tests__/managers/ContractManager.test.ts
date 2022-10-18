@@ -991,7 +991,9 @@ describe('ContractManager execute function', () => {
         params: [],
         overrides: { gasPrice: 100 }
       })
-    ).rejects.toThrow(errors.PARAMETER_NOT_SUPPORTED_ON_NON_LEGACY_CHAIN('gasPrice'))
+    ).rejects.toThrow(
+      errors.PARAMETER_NOT_SUPPORTED_ON_NON_LEGACY_CHAIN('gasPrice')
+    )
   })
 
   it('Should throw an error if gasPrice is not BigNumberish', async () => {
