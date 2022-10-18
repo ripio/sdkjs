@@ -25,7 +25,6 @@ import { getExecuteResponse, toWei } from '../utils/conversions'
 import { getConnector } from '../utils/connectors'
 import { BrowserWeb3Connector, JsonRPCWeb3Connector } from '../connectors'
 import { Event } from '@ethersproject/contracts'
-import warnings from '../types/warnings'
 
 export class ContractManager {
   protected ContractManagerEmitter = new EventEmitter()
@@ -321,8 +320,14 @@ export class ContractManager {
     if (overrides?.gasLimit && !isBigNumber(overrides?.gasLimit))
       throw errorTypes.INVALID_PARAMETER('gasLimit')
 
-    if (overrides?.gasPrice && !isBigNumber(overrides?.gasPrice))
-      throw errorTypes.INVALID_PARAMETER('gasPrice')
+    if (overrides?.gasPrice) {
+      if (!isLegacyChain)
+        throw errorTypes.PARAMETER_NOT_SUPPORTED_ON_NON_LEGACY_CHAIN(
+          'gasPrice'
+        )
+      if (!isBigNumber(overrides?.gasPrice))
+        throw errorTypes.INVALID_PARAMETER('gasPrice')
+    }
 
     if (overrides?.maxPriorityFeePerGas) {
       if (isLegacyChain)
@@ -345,13 +350,6 @@ export class ContractManager {
         iFunction.inputs.length,
         params.length
       )
-
-    if (
-      overrides?.gasPrice &&
-      !isLegacyChain &&
-      (overrides?.maxPriorityFeePerGas || overrides?.maxFeePerGas)
-    )
-      console.warn(warnings.GAS_PRICE_NOT_NECESSARY)
 
     const errors: Array<Error> = []
     iFunction.inputs.forEach((abiParam: ParamType, index) => {

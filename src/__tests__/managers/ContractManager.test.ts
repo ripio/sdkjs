@@ -9,7 +9,6 @@ import BrowserWeb3Connector from '../../connectors/BrowserWeb3Connector'
 
 import { ContractManager } from '../../managers'
 import errors from '../../types/errors'
-import warnings from '../../types/warnings'
 import { ConnectInfo, ProviderRpcError } from '../../types/interfaces'
 import * as connectors from '../../utils/connectors'
 import { BaseProvider } from '@ethersproject/providers'
@@ -782,16 +781,13 @@ describe('ContractManager execute function', () => {
       inputs: [],
       format: () => method
     })
-    const mockIsLegacy = jest.fn().mockImplementationOnce(() => {
-      return true
-    })
     sdk['_abi'] = {
       getFunction: mockGetFunction
     } as unknown as ethers.utils.Interface
     sdk['_connector'] = {
       account: {} as Wallet,
       provider: {} as ethers.providers.JsonRpcProvider,
-      isLegacy: mockIsLegacy
+      isLegacy: true
     } as unknown as JsonRPCWeb3Connector
     sdk['_contract'] = {
       [method]: mockMethod
@@ -880,16 +876,13 @@ describe('ContractManager execute function', () => {
       inputs: [],
       format: () => method
     })
-    const mockIsLegacy = jest.fn().mockImplementationOnce(() => {
-      return true
-    })
     sdk['_abi'] = {
       getFunction: mockGetFunction
     } as unknown as ethers.utils.Interface
     sdk['_connector'] = {
       account: {} as Wallet,
       provider: {} as ethers.providers.JsonRpcProvider,
-      isLegacy: mockIsLegacy
+      isLegacy: true
     } as unknown as JsonRPCWeb3Connector
     sdk['_contract'] = {
       [method]: mockMethod
@@ -956,7 +949,8 @@ describe('ContractManager execute function', () => {
     } as unknown as ethers.utils.Interface
     sdk['_connector'] = {
       account: {} as Wallet,
-      provider: {} as ethers.providers.JsonRpcProvider
+      provider: {} as ethers.providers.JsonRpcProvider,
+      isLegacy: true
     } as unknown as JsonRPCWeb3Connector
     sdk['_contract'] = {
       [method]: mockMethod
@@ -967,6 +961,37 @@ describe('ContractManager execute function', () => {
       overrides: { gasPrice: 100 }
     })
     expect(mockMethod).toBeCalledWith(param1, { gasPrice: 100 })
+  })
+
+  it('Should throw an error if it is not legacyChain when we use gasPrice', async () => {
+    const sdk = new ContractManager()
+    const method = 'test'
+    const mockMethod = jest.fn().mockImplementationOnce(() => {
+      return 'result'
+    })
+    const mockGetFunction = jest.fn().mockReturnValueOnce({
+      payable: false,
+      inputs: [],
+      format: () => method
+    })
+    sdk['_abi'] = {
+      getFunction: mockGetFunction
+    } as unknown as ethers.utils.Interface
+    sdk['_connector'] = {
+      account: {} as Wallet,
+      provider: {} as ethers.providers.JsonRpcProvider,
+      isLegacy: false
+    } as unknown as JsonRPCWeb3Connector
+    sdk['_contract'] = {
+      [method]: mockMethod
+    } as unknown as Contract
+    await expect(
+      sdk.execute({
+        method,
+        params: [],
+        overrides: { gasPrice: 100 }
+      })
+    ).rejects.toThrow(errors.PARAMETER_NOT_SUPPORTED_ON_NON_LEGACY_CHAIN('gasPrice'))
   })
 
   it('Should throw an error if gasPrice is not BigNumberish', async () => {
@@ -985,7 +1010,8 @@ describe('ContractManager execute function', () => {
     } as unknown as ethers.utils.Interface
     sdk['_connector'] = {
       account: {} as Wallet,
-      provider: {} as ethers.providers.JsonRpcProvider
+      provider: {} as ethers.providers.JsonRpcProvider,
+      isLegacy: true
     } as unknown as JsonRPCWeb3Connector
     sdk['_contract'] = {
       [method]: mockMethod
@@ -997,84 +1023,6 @@ describe('ContractManager execute function', () => {
         overrides: { gasPrice: '42.42' }
       })
     ).rejects.toThrow(errors.INVALID_PARAMETER('gasPrice'))
-  })
-
-  it('Should fire a warning when we use maxPriorityFeePerGas', async () => {
-    const sdk = new ContractManager()
-    const method = 'test'
-    const param1 = 'param1'
-    const mockMethod = jest.fn().mockImplementationOnce(() => {
-      return 'result'
-    })
-    const mockGetFunction = jest.fn().mockReturnValueOnce({
-      payable: false,
-      inputs: [{ name: param1, type: 'address' }],
-      format: () => method
-    })
-    jest.spyOn(conversions, 'extendTransactionResponse')
-    const mockWarn = jest
-      .spyOn(global.console, 'warn')
-      .mockImplementationOnce(() => {})
-    sdk.safeMode = false
-    sdk['_abi'] = {
-      getFunction: mockGetFunction
-    } as unknown as ethers.utils.Interface
-    sdk['_connector'] = {
-      account: {} as Wallet,
-      provider: {} as ethers.providers.JsonRpcProvider
-    } as unknown as JsonRPCWeb3Connector
-    sdk['_contract'] = {
-      [method]: mockMethod
-    } as unknown as Contract
-    await sdk.execute({
-      method,
-      params: [param1],
-      overrides: { gasPrice: 100, maxPriorityFeePerGas: 100 }
-    })
-    expect(mockMethod).toBeCalledWith(param1, {
-      gasPrice: 100,
-      maxPriorityFeePerGas: 100
-    })
-    expect(mockWarn).toHaveBeenCalledWith(warnings.GAS_PRICE_NOT_NECESSARY)
-  })
-
-  it('Should fire a warning when we use maxFeePerGas', async () => {
-    const sdk = new ContractManager()
-    const method = 'test'
-    const param1 = 'param1'
-    const mockMethod = jest.fn().mockImplementationOnce(() => {
-      return 'result'
-    })
-    const mockGetFunction = jest.fn().mockReturnValueOnce({
-      payable: false,
-      inputs: [{ name: param1, type: 'address' }],
-      format: () => method
-    })
-    jest.spyOn(conversions, 'extendTransactionResponse')
-    const mockWarn = jest
-      .spyOn(global.console, 'warn')
-      .mockImplementationOnce(() => {})
-    sdk.safeMode = false
-    sdk['_abi'] = {
-      getFunction: mockGetFunction
-    } as unknown as ethers.utils.Interface
-    sdk['_connector'] = {
-      account: {} as Wallet,
-      provider: {} as ethers.providers.JsonRpcProvider
-    } as unknown as JsonRPCWeb3Connector
-    sdk['_contract'] = {
-      [method]: mockMethod
-    } as unknown as Contract
-    await sdk.execute({
-      method,
-      params: [param1],
-      overrides: { gasPrice: 100, maxFeePerGas: 100 }
-    })
-    expect(mockMethod).toBeCalledWith(param1, {
-      gasPrice: 100,
-      maxFeePerGas: 100
-    })
-    expect(mockWarn).toHaveBeenCalledWith(warnings.GAS_PRICE_NOT_NECESSARY)
   })
 })
 
