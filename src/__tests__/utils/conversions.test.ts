@@ -8,10 +8,11 @@ import {
   getExecuteResponse
 } from '../../utils/conversions'
 import { UnitTypes } from '../../types/enums'
-import { BigNumber, ethers } from 'ethers'
+import { BigNumber } from 'ethers'
 import AbstractWeb3Connector from '../../connectors/AbstractWeb3Connector'
 import { TransactionResponse } from '../../types/interfaces'
 import { validations } from '../../utils'
+import { ContractManager } from '../../managers'
 
 describe('Test convert functions', () => {
   beforeEach(() => {
@@ -69,7 +70,8 @@ describe('Test convert functions', () => {
       isActive: true,
       getMinConfirmations: jest.fn(() => 1)
     } as unknown as AbstractWeb3Connector
-    const extended = extendTransactionResponse(tx, connector)
+    const manager = {} as unknown as ContractManager
+    const extended = extendTransactionResponse(tx, connector, manager)
     expect(extended).toHaveProperty('cancel')
     expect(extended).toHaveProperty('speedUp')
   })
@@ -81,7 +83,8 @@ describe('Test convert functions', () => {
       isActive: true,
       cancelTransaction: jest.fn()
     } as unknown as AbstractWeb3Connector
-    const extended = extendTransactionResponse(tx, connector)
+    const manager = {} as unknown as ContractManager
+    const extended = extendTransactionResponse(tx, connector, manager)
     extended.cancel()
     extended.cancel(gasSpeed)
     expect(connector.cancelTransaction).toHaveBeenCalledTimes(2)
@@ -100,7 +103,8 @@ describe('Test convert functions', () => {
       isActive: true,
       speedUpTransaction: jest.fn()
     } as unknown as AbstractWeb3Connector
-    const extended = extendTransactionResponse(tx, connector)
+    const manager = {} as unknown as ContractManager
+    const extended = extendTransactionResponse(tx, connector, manager)
     extended.speedUp()
     extended.speedUp(gasSpeed)
     expect(connector.speedUpTransaction).toHaveBeenCalledTimes(2)
@@ -116,7 +120,7 @@ describe('Test convert functions', () => {
     )
   })
 
-  it('Should not have change the transaction response when contract interface was not provided', () => {
+  it('Should not have change the transaction response when manager was not provided', () => {
     const tx = { wait: jest.fn() } as unknown as TransactionResponse
     const connector = {
       isActive: true
@@ -130,43 +134,28 @@ describe('Test convert functions', () => {
   it('Should call changeTransaction when executing the change method of TransactionResponseExtended', () => {
     const tx = { change: jest.fn() } as unknown as TransactionResponse
     const connector = {
-      isActive: true,
-      changeTransaction: jest.fn()
+      isActive: true
     } as unknown as AbstractWeb3Connector
-    const extended = extendTransactionResponse(
-      tx,
-      connector,
-      {} as ethers.utils.Interface
-    )
-    expect(extended).toHaveProperty('change')
+    const manager = {
+      changeTransaction: jest.fn()
+    } as unknown as ContractManager
+    const extended = extendTransactionResponse(tx, connector, manager)
     extended.change!({})
-    expect(connector.changeTransaction).toBeCalledWith(
-      tx,
-      {},
-      {} as ethers.utils.Interface,
-      undefined
-    )
+    expect(manager.changeTransaction).toBeCalledWith(tx, {}, undefined)
   })
 
   it('Should call changeTransaction when executing the change method of TransactionResponseExtended', () => {
     const tx = { change: jest.fn() } as unknown as TransactionResponse
     const connector = {
-      isActive: true,
-      changeTransaction: jest.fn()
+      isActive: true
     } as unknown as AbstractWeb3Connector
-    const extended = extendTransactionResponse(
-      tx,
-      connector,
-      {} as ethers.utils.Interface
-    )
+    const manager = {
+      changeTransaction: jest.fn()
+    } as unknown as ContractManager
+    const extended = extendTransactionResponse(tx, connector, manager)
     expect(extended).toHaveProperty('change')
     extended.change!({})
-    expect(connector.changeTransaction).toBeCalledWith(
-      tx,
-      {} as ethers.utils.Interface,
-      {},
-      undefined
-    )
+    expect(manager.changeTransaction).toBeCalledWith(tx, {}, undefined)
   })
 
   it('Should call changeTransaction when executing the change method with params of TransactionResponseExtended', () => {
@@ -175,16 +164,14 @@ describe('Test convert functions', () => {
       isActive: true,
       changeTransaction: jest.fn()
     } as unknown as AbstractWeb3Connector
-    const extended = extendTransactionResponse(
-      tx,
-      connector,
-      {} as ethers.utils.Interface
-    )
+    const manager = {
+      changeTransaction: jest.fn()
+    } as unknown as ContractManager
+    const extended = extendTransactionResponse(tx, connector, manager)
     expect(extended).toHaveProperty('change')
     extended.change!({}, BigNumber.from('10'))
-    expect(connector.changeTransaction).toBeCalledWith(
+    expect(manager.changeTransaction).toBeCalledWith(
       tx,
-      {} as ethers.utils.Interface,
       {},
       BigNumber.from('10')
     )
@@ -196,10 +183,32 @@ describe('Test convert functions', () => {
       isActive: false,
       getMinConfirmations: jest.fn(() => 1)
     } as unknown as AbstractWeb3Connector
-    expect(() => extendTransactionResponse(tx, connector)).toThrow()
+    const manager = {} as unknown as ContractManager
+    expect(() => extendTransactionResponse(tx, connector, manager)).toThrow()
   })
 
   it('Should return an ExecuteResponse with a transactionResponse', () => {
+    const tx = { wait: () => jest.fn() } as unknown as TransactionResponse
+    const connector = {
+      isActive: true,
+      getMinConfirmations: jest.fn(() => 1)
+    } as unknown as AbstractWeb3Connector
+    const manager = {} as unknown as ContractManager
+    const mockIsTR = jest
+      .spyOn(validations, 'isTransactionResponse')
+      .mockReturnValueOnce(true)
+    const executeResponse = getExecuteResponse(tx, connector, manager)
+    expect(executeResponse).toHaveProperty('transactionResponse')
+    expect(executeResponse).not.toHaveProperty('value')
+    expect(executeResponse.transactionResponse?.cancel).toBeDefined()
+    expect(executeResponse.transactionResponse?.change).toBeDefined()
+    expect(executeResponse.transactionResponse?.speedUp).toBeDefined()
+    expect(executeResponse.transactionResponse?.wait).toBeDefined()
+    expect(executeResponse.isTransaction).toBe(true)
+    expect(mockIsTR).toBeCalledWith(tx)
+  })
+
+  it('Should return an ExecuteResponse with a transactionResponse without manager', () => {
     const tx = { wait: () => jest.fn() } as unknown as TransactionResponse
     const connector = {
       isActive: true,
@@ -225,10 +234,11 @@ describe('Test convert functions', () => {
       isActive: true,
       getMinConfirmations: jest.fn(() => 1)
     } as unknown as AbstractWeb3Connector
+    const manager = {} as unknown as ContractManager
     const mockIsTR = jest
       .spyOn(validations, 'isTransactionResponse')
       .mockReturnValueOnce(false)
-    const executeResponse = getExecuteResponse(tx, connector)
+    const executeResponse = getExecuteResponse(tx, connector, manager)
     expect(mockIsTR).toBeCalledWith(tx)
     expect(executeResponse).not.toHaveProperty('transactionResponse')
     expect(executeResponse).toHaveProperty('value')
