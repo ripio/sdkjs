@@ -9,6 +9,12 @@ import {
 import AbstractWeb3Connector from '../connectors/AbstractWeb3Connector'
 import errors from '../types/errors'
 import { isTransactionResponse } from './validations'
+import {
+  ContractManager,
+  MultiToken1155Manager,
+  NFT721Manager,
+  Token20Manager
+} from '../managers'
 
 /**
  * It takes a value and a unit and returns a string
@@ -56,14 +62,17 @@ export function hexToNumber(hex: string): number {
  * It takes a transaction response and returns a transaction response with additional methods
  * @param {TransactionResponse} tx - The transaction response object.
  * @param {AbstractWeb3Connector} connector - AbstractWeb3Connector
- * @param {ethers.utils.Interface} iface - The contract's interface. If provided, a change function is returned in
- * the transaction response.
+ * @param {ContractManager | MultiToken1155Manager | NFT721Manager | Token20Manager} manager - The contract's class.
  * @returns A transaction response extended object.
  */
 export function extendTransactionResponse(
   tx: TransactionResponse,
   connector: AbstractWeb3Connector,
-  iface?: ethers.utils.Interface
+  manager?:
+    | ContractManager
+    | MultiToken1155Manager
+    | NFT721Manager
+    | Token20Manager
 ): TransactionResponseExtended {
   if (!connector.isActive) throw errors.MUST_ACTIVATE
   return {
@@ -71,12 +80,12 @@ export function extendTransactionResponse(
     cancel: (gasSpeed?: BigNumber) => connector.cancelTransaction(tx, gasSpeed),
     speedUp: (gasSpeed?: BigNumber) =>
       connector.speedUpTransaction(tx, gasSpeed),
-    change: iface
+    change: manager
       ? (
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           newParams: Record<string, any>,
           gasSpeed?: BigNumber
-        ) => connector.changeTransaction(tx, iface, newParams, gasSpeed)
+        ) => manager.changeTransaction(tx, newParams, gasSpeed)
       : undefined
   }
 }
@@ -85,19 +94,22 @@ export function extendTransactionResponse(
  * It takes a transaction response or a value and returns an ExecuteResponse
  * @param {any} tx - The transaction response object or value.
  * @param {AbstractWeb3Connector} connector - AbstractWeb3Connector
- * @param {ethers.utils.Interface} iface - The contract's interface. If provided, a change function is returned in
- * the transaction response.
+ * @param {ContractManager | MultiToken1155Manager | NFT721Manager | Token20Manager} manager - The contract's class.
  * @returns An ExecuteResponse object.
  */
 export function getExecuteResponse(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tx: any,
   connector: AbstractWeb3Connector,
-  iface?: ethers.utils.Interface
+  manager?:
+    | ContractManager
+    | MultiToken1155Manager
+    | NFT721Manager
+    | Token20Manager
 ): ExecuteResponse {
   if (isTransactionResponse(tx)) {
     return {
-      transactionResponse: extendTransactionResponse(tx, connector, iface),
+      transactionResponse: extendTransactionResponse(tx, connector, manager),
       isTransaction: true
     }
   } else {

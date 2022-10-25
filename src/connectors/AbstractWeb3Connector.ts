@@ -258,6 +258,9 @@ export default abstract class AbstractWeb3Connector {
     newParams: Record<string, any> = isRequired('newParams'),
     gasSpeed?: BigNumber
   ): Promise<TransactionResponse> => {
+    console.warn(
+      'Deprecation notice: this method is being moved to ContractManager class.'
+    )
     if (!this._isActive) {
       throw errorTypes.MUST_ACTIVATE
     }
