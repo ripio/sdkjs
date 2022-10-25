@@ -62,17 +62,13 @@ export function hexToNumber(hex: string): number {
  * It takes a transaction response and returns a transaction response with additional methods
  * @param {TransactionResponse} tx - The transaction response object.
  * @param {AbstractWeb3Connector} connector - AbstractWeb3Connector
- * @param {ContractManager | MultiToken1155Manager | NFT721Manager | Token20Manager} manager - The contract's class.
+ * @param {ContractManager} manager - The contract's class.
  * @returns A transaction response extended object.
  */
 export function extendTransactionResponse(
   tx: TransactionResponse,
   connector: AbstractWeb3Connector,
-  manager?:
-    | ContractManager
-    | MultiToken1155Manager
-    | NFT721Manager
-    | Token20Manager
+  manager?: ContractManager
 ): TransactionResponseExtended {
   if (!connector.isActive) throw errors.MUST_ACTIVATE
   return {
@@ -94,18 +90,14 @@ export function extendTransactionResponse(
  * It takes a transaction response or a value and returns an ExecuteResponse
  * @param {any} tx - The transaction response object or value.
  * @param {AbstractWeb3Connector} connector - AbstractWeb3Connector
- * @param {ContractManager | MultiToken1155Manager | NFT721Manager | Token20Manager} manager - The contract's class.
+ * @param {ContractManager} manager - The contract's class.
  * @returns An ExecuteResponse object.
  */
 export function getExecuteResponse(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tx: any,
   connector: AbstractWeb3Connector,
-  manager?:
-    | ContractManager
-    | MultiToken1155Manager
-    | NFT721Manager
-    | Token20Manager
+  manager?: ContractManager
 ): ExecuteResponse {
   if (isTransactionResponse(tx)) {
     return {
