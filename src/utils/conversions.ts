@@ -9,12 +9,7 @@ import {
 import AbstractWeb3Connector from '../connectors/AbstractWeb3Connector'
 import errors from '../types/errors'
 import { isTransactionResponse } from './validations'
-import {
-  ContractManager,
-  MultiToken1155Manager,
-  NFT721Manager,
-  Token20Manager
-} from '../managers'
+import { ContractManager } from '../managers'
 
 /**
  * It takes a value and a unit and returns a string
