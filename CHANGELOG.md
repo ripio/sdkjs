@@ -1,3 +1,10 @@
+# [1.1.0-dev.2](https://github.com/ripio/sdkjs/compare/v1.1.0-dev.1...v1.1.0-dev.2) (2022-10-25)
+
+
+### Features
+
+* Moving changeTransaction logic to ContractManager class. ([6510453](https://github.com/ripio/sdkjs/commit/65104532548c8e9267af7c89eed01787943fec5e))
+
 # [1.1.0-dev.1](https://github.com/ripio/sdkjs/compare/v1.0.1...v1.1.0-dev.1) (2022-10-18)
 
 
