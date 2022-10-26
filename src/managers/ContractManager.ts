@@ -182,13 +182,8 @@ export class ContractManager {
    * @param {string} paramsTypes - the types of the params of the function
    * @return {boolean} returns true if the function is implemented, false otherwise
    */
-  implements(functionName: string, paramsTypes: string[] | undefined): boolean {
-    try {
-      implementsFunction(functionName, paramsTypes, this._abi!)
-    } catch (error) {
-      return false
-    }
-    return true
+  implements(functionName: string, paramsTypes?: string[]): boolean {
+    return implementsFunction(this._abi!, functionName, paramsTypes)
   }
 
   /**

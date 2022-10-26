@@ -333,15 +333,15 @@ export const validateOutputs = (
 
 /**
  * It validates that an ABI have a specific function
+ * @param {Interface} abi - Interface - the abi to validate
  * @param {string} functionName - the name of the function
  * @param {string} paramsTypes - the types of the params of the function
- * @param {Interface} abi - Interface - the abi to validate
  */
 export const implementsFunction = (
+  abi: Interface,
   functionName: string,
-  paramsTypes: string[] | null | undefined,
-  abi: Interface
-): void => {
+  paramsTypes?: string[]
+): boolean => {
   // Build the signature if it has the name of the function and parameters
   // otherwise use only the name of the function
   const signature = `${functionName}${
@@ -351,6 +351,7 @@ export const implementsFunction = (
     // attempts to get function from abi
     abi.getFunction(signature)
   } catch (error) {
-    throw errors.ABI_ITEM_NOT_FOUND(signature, AbiItemTypes.FUNCTION)
+    return false
   }
+  return true
 }
