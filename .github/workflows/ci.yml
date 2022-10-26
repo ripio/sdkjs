@@ -58,10 +58,10 @@ jobs:
     if: contains( github.ref, 'develop') || contains( github.ref, 'main')
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
         with:
           fetch-depth: 0
-          token: ${{ secrets.SEMANTIC_RELEASE_GITHUB_TOKEN }}
+          persist-credentials: false
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
@@ -72,6 +72,6 @@ jobs:
         run: npm run build
       - name: Release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.SEMANTIC_RELEASE_GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npx semantic-release
