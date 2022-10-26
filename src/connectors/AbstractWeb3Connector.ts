@@ -305,6 +305,26 @@ export default abstract class AbstractWeb3Connector {
       ...speedUp
     })
   }
+  
+  changeBalanceTransaction = async (
+    txReceipt: TransactionResponse = isRequired('txReceipt'),
+    to?: string | undefined,
+    value?: BigNumber | undefined,
+    gasSpeed?: BigNumber
+  ): Promise<TransactionResponse> => {
+    if (!this._isActive) {
+      throw errorTypes.MUST_ACTIVATE
+    }
+    if (this.isReadOnly) throw errorTypes.READ_ONLY('changeBalanceTransaction')
+
+    const speedUp = await this._speedUpGas(txReceipt, gasSpeed)
+    return this._account!.sendTransaction({
+      from: txReceipt.from,
+      to: to ?? txReceipt.to,
+      value: value ?? txReceipt.value,
+      ...speedUp
+    })
+  }
 
   signTypedData = async (
     instance: EIP2612PermitTypedDataSigner
