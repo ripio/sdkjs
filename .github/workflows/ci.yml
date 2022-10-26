@@ -7,16 +7,16 @@ on:
     types: [submitted]
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-   
 
 jobs:
   lint:
+    if: contains( github.ref, 'develop') || contains( github.ref, 'main') || github.event.review.state == 'approved'
     runs-on: ubuntu-latest
     container: node:16-buster
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Cache npm
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/cache
@@ -34,12 +34,13 @@ jobs:
         run: npm run format:check
 
   test:
+    if: contains( github.ref, 'develop') || contains( github.ref, 'main') || github.event.review.state == 'approved'
     runs-on: ubuntu-latest
     container: node:16-buster
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Cache npm
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/cache
@@ -60,11 +61,12 @@ jobs:
     if: contains( github.ref, 'develop') || contains( github.ref, 'main')
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
+          persist-credentials: false
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: '16.14.0'
       - name: Install dependencies
@@ -73,6 +75,6 @@ jobs:
         run: npm run build
       - name: Release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.SEMANTIC_RELEASE_GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npx semantic-release
