@@ -9,7 +9,8 @@ import {
   isBigNumber,
   isFloatNumber,
   FilterEvent,
-  isRequired
+  isRequired,
+  implementsFunction
 } from '../utils/validations'
 import errorTypes from '../types/errors'
 import { ProviderEvents } from '../connectors/events'
@@ -174,6 +175,21 @@ export class ContractManager {
    */
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   validateStandard(): void {}
+
+  /**
+   * It validates that the ContractManager ABI have a specific function
+   * @param {string} functionName - the name of the function
+   * @param {string} paramsTypes - the types of the params of the function
+   * @return {boolean} returns true if the function is implemented, false otherwise
+   */
+  implements(functionName: string, paramsTypes: string[] | undefined): boolean {
+    try {
+      implementsFunction(functionName, paramsTypes, this._abi!)
+    } catch (error) {
+      return false
+    }
+    return true
+  }
 
   /**
    * async activator for ContractManager
