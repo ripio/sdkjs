@@ -1902,7 +1902,6 @@ describe('Utils of ContractManager', () => {
   it('Should return true if ContractManager abi implements the function', () => {
     const functionName = 'allowance'
     const params = ['address', 'address']
-    const signature = `${functionName}(${params.join(',')})`
     const sdk = new ContractManager()
     const abi = new ethers.utils.Interface([
       {
@@ -1923,9 +1922,9 @@ describe('Utils of ContractManager', () => {
       }
     ])
     sdk['_abi'] = abi
-    const spyGetFuntion = jest.spyOn(abi, 'getFunction')
+    const spyImplementsFunction = jest.spyOn(validations, 'implementsFunction').mockReturnValueOnce(true)
     expect(sdk.implements(functionName, params)).toBe(true)
-    expect(spyGetFuntion).toHaveBeenCalledWith(signature)
+    expect(spyImplementsFunction).toHaveBeenCalledWith(abi, functionName, params)
   })
 
   it('Should return false if ContractManager abi not implements the function', () => {
@@ -1934,6 +1933,7 @@ describe('Utils of ContractManager', () => {
     const sdk = new ContractManager()
     const abi = {} as ethers.utils.Interface
     sdk['_abi'] = abi
+    jest.spyOn(validations, 'implementsFunction').mockReturnValueOnce(false)
     expect(sdk.implements(functionName, params)).toBe(false)
   })
 })
