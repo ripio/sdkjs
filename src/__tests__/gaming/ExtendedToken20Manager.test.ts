@@ -13,6 +13,16 @@ const fakeTransactionExecuteResponse: ExecuteResponse = {
   transactionResponse: {} as unknown as TransactionResponseExtended
 }
 
+describe('ExtendedToken20Manager constructor', () => {
+  it('Should instanciate the ExtendedToken20Manager', () => {
+    const spyWarn = jest.spyOn(console, 'warn')
+    const sdk = new ExtendedToken20Manager()
+    expect(sdk).toBeDefined()
+    expect(sdk).toBeInstanceOf(ExtendedToken20Manager)
+    expect(spyWarn).toBeCalledWith("ExtendedToken20Manager is deprecated. Use Token20Manager instead.")
+  })
+})
+
 describe('ExtendedToken20Manager IERC20Metadata methods', () => {
   it('Should return the name of the token', async () => {
     const spyExecuteFunction = jest

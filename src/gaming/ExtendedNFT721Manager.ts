@@ -10,6 +10,11 @@ import { NFT721Manager } from '../managers'
 export class ExtendedNFT721Manager extends NFT721Manager {
   protected _ipfs: Ipfs | undefined
 
+  constructor () {
+    super()
+    console.warn("ExtendedNFT721Manager is deprecated. Use NFT721Manager instead.")
+  }
+
   // getters
   get ipfs(): Ipfs | undefined {
     return this._ipfs
