@@ -19,7 +19,7 @@ describe('ExtendedNFT721Manager constructor', () => {
     const sdk = new ExtendedNFT721Manager()
     expect(sdk).toBeDefined()
     expect(sdk).toBeInstanceOf(ExtendedNFT721Manager)
-    expect(spyWarn).toBeCalledWith("ExtendedNFT721Manager is deprecated. Use NFT721Manager instead.")
+    expect(spyWarn).toBeCalledWith("Deprecation notice: the ExtendedNFT721Manager class is being deprecated. Use NFT721Manager instead.")
   })
 })
 

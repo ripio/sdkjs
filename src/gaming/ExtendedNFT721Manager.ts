@@ -12,7 +12,7 @@ export class ExtendedNFT721Manager extends NFT721Manager {
 
   constructor () {
     super()
-    console.warn("ExtendedNFT721Manager is deprecated. Use NFT721Manager instead.")
+    console.warn("Deprecation notice: the ExtendedNFT721Manager class is being deprecated. Use NFT721Manager instead.")
   }
 
   // getters

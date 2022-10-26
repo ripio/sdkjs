@@ -13,7 +13,7 @@ export class ExtendedToken20Manager extends Token20Manager {
 
   constructor () {
     super()
-    console.warn("ExtendedToken20Manager is deprecated. Use Token20Manager instead.")
+    console.warn("Deprecation notice: the ExtendedToken20Manager class is being deprecated. Use Token20Manager instead.")
   }
 
   // <IERC20Metadata methods>

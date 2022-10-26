@@ -19,7 +19,7 @@ describe('ExtendedToken20Manager constructor', () => {
     const sdk = new ExtendedToken20Manager()
     expect(sdk).toBeDefined()
     expect(sdk).toBeInstanceOf(ExtendedToken20Manager)
-    expect(spyWarn).toBeCalledWith("ExtendedToken20Manager is deprecated. Use Token20Manager instead.")
+    expect(spyWarn).toBeCalledWith("Deprecation notice: the ExtendedToken20Manager class is being deprecated. Use Token20Manager instead.")
   })
 })
 
