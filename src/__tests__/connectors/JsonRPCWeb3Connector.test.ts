@@ -975,7 +975,7 @@ describe('AbstractWeb3Connector changeBalanceTransaction method', () => {
       to: newTo,
       value: newValue,
       nonce: tx.nonce,
-      maxPriorityFeePerGas: BigNumber.from('110'),
+      maxPriorityFeePerGas: BigNumber.from('110')
     })
   })
 
@@ -1003,15 +1003,15 @@ describe('AbstractWeb3Connector changeBalanceTransaction method', () => {
     } as unknown as TransactionResponse
     instance['_isActive'] = true
 
-    await expect(
-      instance.changeBalanceTransaction(tx, newTo)
-    ).resolves.toEqual({})
+    await expect(instance.changeBalanceTransaction(tx, newTo)).resolves.toEqual(
+      {}
+    )
     expect(mockTransfer).toHaveBeenCalledWith({
       from: tx.from,
       to: newTo,
       value: tx.value,
       nonce: tx.nonce,
-      maxPriorityFeePerGas: BigNumber.from('110'),
+      maxPriorityFeePerGas: BigNumber.from('110')
     })
   })
 
@@ -1047,7 +1047,7 @@ describe('AbstractWeb3Connector changeBalanceTransaction method', () => {
       to: tx.to,
       value: newValue,
       nonce: tx.nonce,
-      maxPriorityFeePerGas: BigNumber.from('110'),
+      maxPriorityFeePerGas: BigNumber.from('110')
     })
   })
 
@@ -1069,9 +1069,7 @@ describe('AbstractWeb3Connector changeBalanceTransaction method', () => {
     )
     instance['_isActive'] = false
     await expect(
-      instance.changeBalanceTransaction(
-        {} as unknown as TransactionResponse,
-      )
+      instance.changeBalanceTransaction({} as unknown as TransactionResponse)
     ).rejects.toThrow(errors.MUST_ACTIVATE)
   })
 
@@ -1085,9 +1083,7 @@ describe('AbstractWeb3Connector changeBalanceTransaction method', () => {
       .spyOn(JsonRPCWeb3Connector.prototype, 'isReadOnly', 'get')
       .mockReturnValueOnce(true)
     await expect(
-      instance.changeBalanceTransaction(
-        {} as unknown as TransactionResponse,
-      )
+      instance.changeBalanceTransaction({} as unknown as TransactionResponse)
     ).rejects.toThrow(errors.READ_ONLY('changeBalanceTransaction'))
   })
 })

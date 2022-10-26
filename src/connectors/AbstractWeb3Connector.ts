@@ -305,7 +305,7 @@ export default abstract class AbstractWeb3Connector {
       ...speedUp
     })
   }
-  
+
   changeBalanceTransaction = async (
     txReceipt: TransactionResponse = isRequired('txReceipt'),
     to?: string | undefined,
