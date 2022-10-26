@@ -10,6 +10,13 @@ import { toWei } from '../utils/conversions'
 import { isRequired } from '../utils/validations'
 
 export class ExtendedToken20Manager extends Token20Manager {
+  constructor() {
+    super()
+    console.warn(
+      'Deprecation notice: the ExtendedToken20Manager class is being deprecated. Use Token20Manager instead.'
+    )
+  }
+
   // <IERC20Metadata methods>
 
   /**
