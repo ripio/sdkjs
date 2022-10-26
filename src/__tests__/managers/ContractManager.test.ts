@@ -1922,9 +1922,15 @@ describe('Utils of ContractManager', () => {
       }
     ])
     sdk['_abi'] = abi
-    const spyImplementsFunction = jest.spyOn(validations, 'implementsFunction').mockReturnValueOnce(true)
+    const spyImplementsFunction = jest
+      .spyOn(validations, 'implementsFunction')
+      .mockReturnValueOnce(true)
     expect(sdk.implements(functionName, params)).toBe(true)
-    expect(spyImplementsFunction).toHaveBeenCalledWith(abi, functionName, params)
+    expect(spyImplementsFunction).toHaveBeenCalledWith(
+      abi,
+      functionName,
+      params
+    )
   })
 
   it('Should return false if ContractManager abi not implements the function', () => {
