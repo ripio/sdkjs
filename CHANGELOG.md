@@ -1,3 +1,12 @@
+# [1.1.0-dev.4](https://github.com/ripio/sdkjs/compare/v1.1.0-dev.3...v1.1.0-dev.4) (2022-10-27)
+
+
+### Features
+
+* add StorageType and Resourse interfaces ([8606401](https://github.com/ripio/sdkjs/commit/8606401b7e02b618fb9b131453af7e4b9cfe6768))
+* added changeBalanceTransaction on abstract connector to replace a transaction of a transfer balance ([35a4d56](https://github.com/ripio/sdkjs/commit/35a4d56293d1624f35b64478542f2a19a836b970))
+* new interface for transferBalance response, new connectorResponse function for the transferBalance response (with change, speedUp, cancel methods), updated execute response interface (manager is mandatory) ([78814a8](https://github.com/ripio/sdkjs/commit/78814a88a4bb9425034d70ae0b0b30fb41d1cc9c))
+
 # [1.1.0-dev.3](https://github.com/ripio/sdkjs/compare/v1.1.0-dev.2...v1.1.0-dev.3) (2022-10-26)
 
 
