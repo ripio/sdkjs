@@ -7,6 +7,9 @@ import { GenericObject, TransactionResponse } from '../types/interfaces'
 import { BrowserWeb3Connector, JsonRPCWeb3Connector } from '../connectors'
 import { NFT721Manager } from '../managers'
 
+/**
+ * @deprecated Use `NFT721Manager` instead
+ */
 export class ExtendedNFT721Manager extends NFT721Manager {
   protected _ipfs: Ipfs | undefined
 
