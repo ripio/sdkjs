@@ -13,9 +13,10 @@ const fakeTransactionExecuteResponse: ExecuteResponse = {
   transactionResponse: {} as unknown as TransactionResponseExtended
 }
 
+const spyWarn = jest.spyOn(console, 'warn').mockImplementation(() => {})
+
 describe('ExtendedNFT721Manager constructor', () => {
   it('Should instanciate the ExtendedNFT721Manager', () => {
-    const spyWarn = jest.spyOn(console, 'warn').mockImplementationOnce(() => {})
     const sdk = new ExtendedNFT721Manager()
     expect(sdk).toBeDefined()
     expect(sdk).toBeInstanceOf(ExtendedNFT721Manager)
@@ -26,9 +27,6 @@ describe('ExtendedNFT721Manager constructor', () => {
 })
 
 describe('ExtendedNFT721Manager activate', () => {
-  beforeEach(() => {
-    jest.spyOn(console, 'warn').mockImplementationOnce(() => {})
-  })
   it('Should activate the ExtendedNFT721Manager with ipfs url', async () => {
     const spySuperActivate = jest
       .spyOn(ContractManager.prototype, 'activate')
@@ -79,9 +77,6 @@ describe('ExtendedNFT721Manager activate', () => {
 })
 
 describe('ExtendedNFT721Manager isOwnerOf method', () => {
-  beforeEach(() => {
-    jest.spyOn(console, 'warn').mockImplementationOnce(() => {})
-  })
   it('Should throw error due to not passing address', () => {
     const sdk = new ExtendedNFT721Manager()
     expect(sdk.isOwnerOf()).rejects.toThrow(errors.IS_REQUIRED('address'))
@@ -160,9 +155,6 @@ describe('ExtendedNFT721Manager isOwnerOf method', () => {
 })
 
 describe('ExtendedNFT721Manager getIPFSTokenData method', () => {
-  beforeEach(() => {
-    jest.spyOn(console, 'warn').mockImplementationOnce(() => {})
-  })
   it('Should throw error due to not passing tokenId', async () => {
     const sdk = new ExtendedNFT721Manager()
     await expect(sdk.getIPFSTokenData()).rejects.toThrow(
@@ -277,9 +269,6 @@ describe('ExtendedNFT721Manager getIPFSTokenData method', () => {
 })
 
 describe('ExtendedNFT721Manager BURNABLE methods', () => {
-  beforeEach(() => {
-    jest.spyOn(console, 'warn').mockImplementationOnce(() => {})
-  })
   it('Should throw error due to not passing "tokenId" to burn', async () => {
     const sdk = new ExtendedNFT721Manager()
     await expect(sdk.burn()).rejects.toThrow(errors.IS_REQUIRED('tokenId'))
@@ -310,9 +299,6 @@ describe('ExtendedNFT721Manager BURNABLE methods', () => {
 })
 
 describe('ExtendedNFT721Manager MINTABLE methods', () => {
-  beforeEach(() => {
-    jest.spyOn(console, 'warn').mockImplementationOnce(() => {})
-  })
   it('Should throw error due to not passing "to" address to mint', async () => {
     const sdk = new ExtendedNFT721Manager()
     await expect(sdk.mint()).rejects.toThrow(errors.IS_REQUIRED('to'))
@@ -348,9 +334,6 @@ describe('ExtendedNFT721Manager MINTABLE methods', () => {
 })
 
 describe('ExtendedNFT721Manager PAUSABLE methods', () => {
-  beforeEach(() => {
-    jest.spyOn(console, 'warn').mockImplementationOnce(() => {})
-  })
   it('Should pause the contract', async () => {
     const spy = jest
       .spyOn(ContractManager.prototype, 'execute')
@@ -397,9 +380,6 @@ describe('ExtendedNFT721Manager PAUSABLE methods', () => {
 })
 
 describe('ExtendedNFT721Manager IERC721Metadata methods', () => {
-  beforeEach(() => {
-    jest.spyOn(console, 'warn').mockImplementationOnce(() => {})
-  })
   it('Should return the name of the contract', async () => {
     const spy = jest
       .spyOn(ContractManager.prototype, 'execute')
