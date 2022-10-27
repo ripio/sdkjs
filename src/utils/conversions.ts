@@ -3,6 +3,7 @@ import { ethers, BigNumber } from 'ethers'
 import { UnitTypes } from '../types/enums'
 import { formatFixed, parseFixed } from '@ethersproject/bignumber'
 import {
+  ConnectorResponseExtended,
   ExecuteResponse,
   TransactionResponseExtended
 } from '../types/interfaces'
@@ -63,7 +64,7 @@ export function hexToNumber(hex: string): number {
 export function extendTransactionResponse(
   tx: TransactionResponse,
   connector: AbstractWeb3Connector,
-  manager?: ContractManager
+  manager: ContractManager
 ): TransactionResponseExtended {
   if (!connector.isActive) throw errors.MUST_ACTIVATE
   return {
@@ -71,13 +72,26 @@ export function extendTransactionResponse(
     cancel: (gasSpeed?: BigNumber) => connector.cancelTransaction(tx, gasSpeed),
     speedUp: (gasSpeed?: BigNumber) =>
       connector.speedUpTransaction(tx, gasSpeed),
-    change: manager
-      ? (
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          newParams: Record<string, any>,
-          gasSpeed?: BigNumber
-        ) => manager.changeTransaction(tx, newParams, gasSpeed)
-      : undefined
+    change: (
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      newParams: Record<string, any>,
+      gasSpeed?: BigNumber
+    ) => manager.changeTransaction(tx, newParams, gasSpeed)
+  }
+}
+
+export function connectorResponse(
+  tx: TransactionResponse,
+  connector: AbstractWeb3Connector
+): ConnectorResponseExtended {
+  if (!connector.isActive) throw errors.MUST_ACTIVATE
+  return {
+    ...tx,
+    cancel: (gasSpeed?: BigNumber) => connector.cancelTransaction(tx, gasSpeed),
+    speedUp: (gasSpeed?: BigNumber) =>
+      connector.speedUpTransaction(tx, gasSpeed),
+    change: (to?: string, value?: BigNumber, gasSpeed?: BigNumber) =>
+      connector.changeBalanceTransaction(tx, to, value, gasSpeed)
   }
 }
 
@@ -92,7 +106,7 @@ export function getExecuteResponse(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   tx: any,
   connector: AbstractWeb3Connector,
-  manager?: ContractManager
+  manager: ContractManager
 ): ExecuteResponse {
   if (isTransactionResponse(tx)) {
     return {

@@ -61,6 +61,16 @@ export interface TransactionResponseExtended extends TransactionResponse {
   ) => Promise<TransactionResponse>
 }
 
+export interface ConnectorResponseExtended extends TransactionResponse {
+  cancel: (gasSpeed?: BigNumber) => Promise<TransactionResponse>
+  speedUp: (gasSpeed?: BigNumber) => Promise<TransactionResponse>
+  change: (
+    to?: string,
+    value?: BigNumber,
+    gasSpeed?: BigNumber
+  ) => Promise<TransactionResponse>
+}
+
 export interface ExecuteResponse {
   transactionResponse?: TransactionResponseExtended
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

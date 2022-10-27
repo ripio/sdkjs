@@ -3,8 +3,8 @@
 import { BigNumber, BigNumberish, ethers, Signature, Wallet } from 'ethers'
 import errorTypes from '../types/errors'
 import {
-  TransactionResponseExtended,
-  TransactionResponse
+  TransactionResponse,
+  ConnectorResponseExtended
 } from '../types/interfaces'
 import { parseFixed } from '@ethersproject/bignumber'
 import { UnitTypes } from '../types/enums'
@@ -14,7 +14,7 @@ import {
   isRequired,
   matchType
 } from '../utils/validations'
-import { extendTransactionResponse, fromWei } from '../utils/conversions'
+import { connectorResponse, fromWei } from '../utils/conversions'
 import { EIP2612PermitTypedDataSigner } from '../utils/typed-data'
 
 export default abstract class AbstractWeb3Connector {
@@ -133,7 +133,7 @@ export default abstract class AbstractWeb3Connector {
   transferBalance = async (
     amount: string,
     destinationAddress: string
-  ): Promise<TransactionResponseExtended> => {
+  ): Promise<ConnectorResponseExtended> => {
     // doing import inside function to avoid circular dependency
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     if (!this._isActive) {
@@ -146,7 +146,7 @@ export default abstract class AbstractWeb3Connector {
       value: parseFixed(amount, UnitTypes.ETHER)
     }
     const txResponse = await this._account!.sendTransaction(tx)
-    return extendTransactionResponse(txResponse, this)
+    return connectorResponse(txResponse, this)
   }
 
   /**
