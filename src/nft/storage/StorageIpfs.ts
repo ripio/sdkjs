@@ -3,6 +3,7 @@ import { create, IPFSHTTPClient } from 'ipfs-http-client'
 import ResourceIpfs from './ResourseIpfs'
 import StorageType from './StorageType'
 import { isRequired } from '../../utils/validations'
+import { stripIpfsUriPrefix } from '../../utils/ipfs-utils'
 
 export default class StorageIpfs implements StorageType {
   readonly storage: IPFSHTTPClient
@@ -16,10 +17,13 @@ export default class StorageIpfs implements StorageType {
   }
   /**
    * It returns a ResourceIpfs object.
-   * @param {string} cid - The content identifier of the data you want to retrieve.
+   * @param {string} cidOrURI - The content identifier of the data you want to retrieve (IPFS CID string or `ipfs://<cid>` style URI).
    * @returns A ResourceIpfs object
    */
-  async getData(cid: string = isRequired('cid')): Promise<ResourceIpfs> {
+  async getData(
+    cidOrURI: string = isRequired('cidOrURI')
+  ): Promise<ResourceIpfs> {
+    const cid = stripIpfsUriPrefix(cidOrURI)
     const data = await all(this.storage.cat(cid))
     return new ResourceIpfs(data)
   }
