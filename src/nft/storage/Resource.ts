@@ -3,7 +3,7 @@ export default interface Resource {
   data: any
 
   getStringData(): string
-  getBytesData(): any
+  getBytesData(): Uint8Array
   getBase64Data(): string
   getJsonData(): object
 }
