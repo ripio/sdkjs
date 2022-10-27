@@ -577,6 +577,7 @@ describe('AbstractWeb3Connector changeTransaction method', () => {
       'http://fake',
       'f31fa21342dafa7de378d8e19cd296dd905988e085d3950dcc35cbadac764d4a'
     )
+    jest.spyOn(global.console, 'warn').mockImplementationOnce(() => {})
     // mock the _speedUpGas method
     jest.spyOn(instance, '_speedUpGas').mockReturnValue({
       maxPriorityFeePerGas: BigNumber.from('110'),
@@ -637,6 +638,7 @@ describe('AbstractWeb3Connector changeTransaction method', () => {
   })
 
   it('should throw an error when txReceipt is not provided', async () => {
+    jest.spyOn(global.console, 'warn').mockImplementationOnce(() => {})
     const instance = new JsonRPCWeb3Connector(
       'http://fake',
       'f31fa21342dafa7de378d8e19cd296dd905988e085d3950dcc35cbadac764d4a'
@@ -648,6 +650,7 @@ describe('AbstractWeb3Connector changeTransaction method', () => {
   })
 
   it('should throw an error when interface is not provided', async () => {
+    jest.spyOn(global.console, 'warn').mockImplementationOnce(() => {})
     const instance = new JsonRPCWeb3Connector(
       'http://fake',
       'f31fa21342dafa7de378d8e19cd296dd905988e085d3950dcc35cbadac764d4a'
@@ -673,6 +676,7 @@ describe('AbstractWeb3Connector changeTransaction method', () => {
   })
 
   it('should throw an error if not activated', async () => {
+    jest.spyOn(global.console, 'warn').mockImplementationOnce(() => {})
     const instance = new JsonRPCWeb3Connector(
       'http://fake',
       'f31fa21342dafa7de378d8e19cd296dd905988e085d3950dcc35cbadac764d4a'
@@ -688,6 +692,7 @@ describe('AbstractWeb3Connector changeTransaction method', () => {
   })
 
   it('should throw an error if account is not set', async () => {
+    jest.spyOn(global.console, 'warn').mockImplementationOnce(() => {})
     const instance = new JsonRPCWeb3Connector(
       'http://fake',
       'f31fa21342dafa7de378d8e19cd296dd905988e085d3950dcc35cbadac764d4a'
@@ -706,6 +711,7 @@ describe('AbstractWeb3Connector changeTransaction method', () => {
   })
 
   it('should throw an error if inputParam not found in interface', async () => {
+    jest.spyOn(global.console, 'warn').mockImplementationOnce(() => {})
     const instance = new JsonRPCWeb3Connector(
       'http://fake',
       'f31fa21342dafa7de378d8e19cd296dd905988e085d3950dcc35cbadac764d4a'
@@ -749,6 +755,7 @@ describe('AbstractWeb3Connector changeTransaction method', () => {
   })
 
   it('should throw an error if parameter type is incorrect and is not a number', async () => {
+    jest.spyOn(global.console, 'warn').mockImplementationOnce(() => {})
     const instance = new JsonRPCWeb3Connector(
       'http://fake',
       'f31fa21342dafa7de378d8e19cd296dd905988e085d3950dcc35cbadac764d4a'
@@ -792,6 +799,7 @@ describe('AbstractWeb3Connector changeTransaction method', () => {
   })
 
   it('should throw an error if parameter type is incorrect and is a number', async () => {
+    jest.spyOn(global.console, 'warn').mockImplementationOnce(() => {})
     const instance = new JsonRPCWeb3Connector(
       'http://fake',
       'f31fa21342dafa7de378d8e19cd296dd905988e085d3950dcc35cbadac764d4a'
