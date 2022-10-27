@@ -54,7 +54,7 @@ export interface GenericObject {
 export interface TransactionResponseExtended extends TransactionResponse {
   cancel: (gasSpeed?: BigNumber) => Promise<TransactionResponse>
   speedUp: (gasSpeed?: BigNumber) => Promise<TransactionResponse>
-  change?: (
+  change: (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     newParams: Record<string, any>,
     gasSpeed?: BigNumber
