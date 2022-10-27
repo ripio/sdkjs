@@ -14,7 +14,8 @@ import {
   validateOutputs,
   validateAbi,
   validateIO,
-  isFloatNumber
+  isFloatNumber,
+  implementsFunction
 } from '../../utils/validations'
 
 const standard = [
@@ -760,5 +761,37 @@ describe('validateIO', () => {
         'input'
       )
     ])
+  })
+})
+
+describe('implementsFunction', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+    jest.restoreAllMocks()
+  })
+  it('Should return true if abi implements the function with params', () => {
+    const functionName = 'allowance'
+    const params = ['address', 'address']
+    const signature = `${functionName}(${params.join(',')})`
+    const abi = new ethers.utils.Interface(standard)
+    const spyGetFuntion = jest.spyOn(abi, 'getFunction')
+    expect(implementsFunction(abi, functionName, params)).toBe(true)
+    expect(spyGetFuntion).toHaveBeenCalledWith(signature)
+  })
+
+  it('Should return true if abi implements the function without params', () => {
+    const functionName = 'allowance'
+    const signature = `${functionName}`
+    const abi = new ethers.utils.Interface(standard)
+    const spyGetFuntion = jest.spyOn(abi, 'getFunction')
+    expect(implementsFunction(abi, functionName)).toBe(true)
+    expect(spyGetFuntion).toHaveBeenCalledWith(signature)
+  })
+
+  it('Should return false if abi not implements the function', () => {
+    const functionName = 'fakeFunction'
+    const params = ['fake']
+    const abi = new ethers.utils.Interface(standard)
+    expect(implementsFunction(abi, functionName, params)).toBe(false)
   })
 })

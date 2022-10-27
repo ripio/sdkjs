@@ -1,3 +1,11 @@
+# [1.1.0-dev.3](https://github.com/ripio/sdkjs/compare/v1.1.0-dev.2...v1.1.0-dev.3) (2022-10-26)
+
+
+### Features
+
+* add implements function to ContractManager ([7bdded6](https://github.com/ripio/sdkjs/commit/7bdded67aafefe1fa45436545c4652a24ba6b7d7))
+* deprecate extended managers ([9869798](https://github.com/ripio/sdkjs/commit/9869798b93770f4d35d275b1a0e6e0fca9f2abfe))
+
 # [1.1.0-dev.2](https://github.com/ripio/sdkjs/compare/v1.1.0-dev.1...v1.1.0-dev.2) (2022-10-25)
 
 

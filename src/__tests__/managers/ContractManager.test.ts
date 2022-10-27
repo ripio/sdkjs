@@ -1892,3 +1892,54 @@ describe('ContractManager changeTransaction tests', () => {
     ).rejects.toThrow(errors.NOT_BIGNUMBERISH('value'))
   })
 })
+
+describe('Utils of ContractManager', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+    jest.restoreAllMocks()
+  })
+
+  it('Should return true if ContractManager abi implements the function', () => {
+    const functionName = 'allowance'
+    const params = ['address', 'address']
+    const sdk = new ContractManager()
+    const abi = new ethers.utils.Interface([
+      {
+        inputs: [
+          {
+            name: 'owner',
+            type: 'address'
+          },
+          {
+            name: 'spender',
+            type: 'address'
+          }
+        ],
+        name: 'allowance',
+        outputs: [],
+        stateMutability: 'view',
+        type: 'function'
+      }
+    ])
+    sdk['_abi'] = abi
+    const spyImplementsFunction = jest
+      .spyOn(validations, 'implementsFunction')
+      .mockReturnValueOnce(true)
+    expect(sdk.implements(functionName, params)).toBe(true)
+    expect(spyImplementsFunction).toHaveBeenCalledWith(
+      abi,
+      functionName,
+      params
+    )
+  })
+
+  it('Should return false if ContractManager abi not implements the function', () => {
+    const functionName = 'fakeFunction'
+    const params = ['fake']
+    const sdk = new ContractManager()
+    const abi = {} as ethers.utils.Interface
+    sdk['_abi'] = abi
+    jest.spyOn(validations, 'implementsFunction').mockReturnValueOnce(false)
+    expect(sdk.implements(functionName, params)).toBe(false)
+  })
+})
