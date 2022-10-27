@@ -116,3 +116,12 @@ export interface DaiPermitMessage {
   expiry: BigNumberish
   allowed?: boolean
 }
+
+export interface NftMetadata {
+  name?: string
+  description?: string
+  image?: string
+  traits?: Array<object>
+  attributes?: Array<object>
+  [key: string]: unknown // Custom extra data
+}
