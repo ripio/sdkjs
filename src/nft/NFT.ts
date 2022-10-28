@@ -68,7 +68,8 @@ export class NFT {
     storageType: StorageType = isRequired('storageType')
   ): Promise<void> {
     if (this._imageUri) {
-      this._image = (await storageType.getData(this._imageUri)).getBase64Data()
+      const resource = await storageType.getData(this._imageUri)
+      this._image = await resource.getBase64Data()
     }
   }
 }
