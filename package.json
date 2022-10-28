@@ -140,8 +140,6 @@
     ]
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.197.0",
-    "@aws-sdk/credential-providers": "^3.198.0",
     "@babel/runtime": "^7.17.7",
     "ethers": "^5.6.4",
     "ipfs-http-client": "^56.0.2"
