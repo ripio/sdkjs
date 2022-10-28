@@ -1,3 +1,10 @@
+# [1.1.0-dev.5](https://github.com/ripio/sdkjs/compare/v1.1.0-dev.4...v1.1.0-dev.5) (2022-10-28)
+
+
+### Features
+
+* add nft class ([d8a73e2](https://github.com/ripio/sdkjs/commit/d8a73e295e813562b5faeb5489004920205dc8ab))
+
 # [1.1.0-dev.4](https://github.com/ripio/sdkjs/compare/v1.1.0-dev.3...v1.1.0-dev.4) (2022-10-27)
 
 
