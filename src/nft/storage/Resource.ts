@@ -26,6 +26,7 @@ export default abstract class Resource {
    * @returns The data property of the class
    */
   async getBytesData(): Promise<Uint8Array> {
+    await this.parseData()
     return this.parsedData!
   }
 
@@ -34,6 +35,7 @@ export default abstract class Resource {
    * @returns The base64 encoded data of the image.
    */
   async getBase64Data(): Promise<string> {
+    await this.parseData()
     return toString(this.parsedData!, 'base64')
   }
 
@@ -42,6 +44,7 @@ export default abstract class Resource {
    * @returns The JSON data is being returned.
    */
   async getJsonData(): Promise<object> {
+    await this.parseData()
     const stringData = await this.getStringData()
     return JSON.parse(stringData)
   }
