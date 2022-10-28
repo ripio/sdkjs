@@ -49,6 +49,12 @@
       "require": "./dist/cjs/utils/ethersUtils.js",
       "import": "./dist/esm/utils/ethersUtils.js",
       "default": "./dist/esm/utils/ethersUtils.js"
+    },
+    "./nft/storage": {
+      "types": "./dist/types/nft/storage/index.d.ts",
+      "require": "./dist/cjs/nft/storage/index.js",
+      "import": "./dist/esm/nft/storage/index.js",
+      "default": "./dist/esm/nft/storage/index.js"
     }
   },
   "typesVersions": {
