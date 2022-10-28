@@ -25,9 +25,9 @@ describe('StorageIpfs methods', () => {
     __resetIPFSMocks()
   })
 
-  it('Should throw error due not passing cidOrURI', () => {
+  it('Should throw error due not passing cidOrURI', async () => {
     const ipfs = new StorageIpfs('http://fake-ipfs-url:5001')
-    expect(ipfs.getData()).rejects.toThrow(errors.IS_REQUIRED('cidOrURI'))
+    await expect(ipfs.getData()).rejects.toThrow(errors.IS_REQUIRED('cidOrURI'))
   })
 
   it('Should retrieve a ResourceIpfs instance', async () => {
