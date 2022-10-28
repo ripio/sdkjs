@@ -1,10 +1,10 @@
-import ResourceIpfs from '../../../nft/storage/ResourseIpfs'
+import ResourceIpfs from '../../../nft/storage/ResourceIpfs'
 import errors from '../../../types/errors'
 
 describe('ResourceIpfs contructor', () => {
   it('Should create a new instance', () => {
-    const resourse = new ResourceIpfs([] as Uint8Array[])
-    expect(resourse).toBeInstanceOf(ResourceIpfs)
+    const resource = new ResourceIpfs([] as Uint8Array[])
+    expect(resource).toBeInstanceOf(ResourceIpfs)
   })
 
   it('Should throw error due not passing data', () => {
@@ -22,8 +22,8 @@ describe('ResourceIpfs methods', () => {
       new Uint8Array(new TextEncoder().encode('b')),
       new Uint8Array(new TextEncoder().encode('c'))
     ]
-    const resourse = new ResourceIpfs(data)
-    const result = resourse.getBytesData()
+    const resource = new ResourceIpfs(data)
+    const result = resource.getBytesData()
     expect(result).toStrictEqual(expected)
   })
 
@@ -32,8 +32,8 @@ describe('ResourceIpfs methods', () => {
     const spyGetBytesData = jest
       .spyOn(ResourceIpfs.prototype, 'getBytesData')
       .mockReturnValueOnce(new TextEncoder().encode(expected))
-    const resourse = new ResourceIpfs([] as Uint8Array[])
-    const result = resourse.getStringData()
+    const resource = new ResourceIpfs([] as Uint8Array[])
+    const result = resource.getStringData()
     expect(result).toStrictEqual(expected)
     expect(spyGetBytesData).toBeCalled()
   })
@@ -47,8 +47,8 @@ describe('ResourceIpfs methods', () => {
     const spyGetStringData = jest
       .spyOn(ResourceIpfs.prototype, 'getStringData')
       .mockReturnValueOnce(JSON.stringify(expected))
-    const resourse = new ResourceIpfs([] as Uint8Array[])
-    const result = resourse.getJsonData()
+    const resource = new ResourceIpfs([] as Uint8Array[])
+    const result = resource.getJsonData()
     expect(result).toStrictEqual(expected)
     expect(spyGetStringData).toBeCalled()
   })
@@ -58,8 +58,8 @@ describe('ResourceIpfs methods', () => {
     const spyGetBytesData = jest
       .spyOn(ResourceIpfs.prototype, 'getBytesData')
       .mockReturnValueOnce(new TextEncoder().encode('hello!'))
-    const resourse = new ResourceIpfs([] as Uint8Array[])
-    const result = resourse.getBase64Data()
+    const resource = new ResourceIpfs([] as Uint8Array[])
+    const result = resource.getBase64Data()
     expect(result).toStrictEqual(expected)
     expect(spyGetBytesData).toBeCalled()
   })

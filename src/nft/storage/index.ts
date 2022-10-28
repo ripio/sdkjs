@@ -1,2 +1,2 @@
-export { default as ResourseIpfs } from './ResourseIpfs'
+export { default as ResourceIpfs } from './ResourceIpfs'
 export { default as StorageIpfs } from './StorageIpfs'

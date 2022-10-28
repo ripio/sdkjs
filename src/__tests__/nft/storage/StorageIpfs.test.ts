@@ -3,7 +3,7 @@ import {
   __setMockCat
 } from '../../../__mocks__/ipfs-http-client'
 import StorageIpfs from '../../../nft/storage/StorageIpfs'
-import ResourceIpfs from '../../../nft/storage/ResourseIpfs'
+import ResourceIpfs from '../../../nft/storage/ResourceIpfs'
 import errors from '../../../types/errors'
 import * as ipfsUtils from '../../../utils/ipfs-utils'
 

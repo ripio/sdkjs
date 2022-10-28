@@ -1,6 +1,6 @@
 import all from 'it-all'
 import { create, IPFSHTTPClient } from 'ipfs-http-client'
-import ResourceIpfs from './ResourseIpfs'
+import ResourceIpfs from './ResourceIpfs'
 import StorageType from './StorageType'
 import { isRequired } from '../../utils/validations'
 import { stripIpfsUriPrefix } from '../../utils/ipfs-utils'

@@ -1,4 +1,4 @@
-import { isRequired } from './../../utils/validations'
+import { isRequired } from '../../utils/validations'
 import { concat } from 'uint8arrays/concat'
 import { toString } from 'uint8arrays/to-string'
 import Resource from './Resource'
