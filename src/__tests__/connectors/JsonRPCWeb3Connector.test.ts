@@ -942,3 +942,156 @@ describe('AbstractWeb3Connector detectLegacyChain method', () => {
     expect(connector['_isLegacy']).toBe(false)
   })
 })
+
+describe('AbstractWeb3Connector changeBalanceTransaction method', () => {
+  // this method belongs to abstract class but since we can't test abstract classes, we tested in its child.
+  beforeEach(() => {
+    jest.clearAllMocks()
+    jest.restoreAllMocks()
+  })
+
+  it('Should change the transaction', async () => {
+    const instance = new JsonRPCWeb3Connector(
+      'http://fake',
+      'f31fa21342dafa7de378d8e19cd296dd905988e085d3950dcc35cbadac764d4a'
+    )
+    const newTo = '0x00000000002'
+    const newValue = BigNumber.from('42')
+    // mock the _speedUpGas method
+    jest.spyOn(instance, '_speedUpGas').mockReturnValue({
+      maxPriorityFeePerGas: BigNumber.from('110'),
+      nonce: 1
+    })
+    const mockTransfer = jest
+      .spyOn(ethers.Wallet.prototype, 'sendTransaction')
+      .mockResolvedValueOnce({} as TransactionResponse)
+    const tx = {
+      from: '0x0001',
+      to: '0x0002',
+      nonce: 1,
+      gasPrice: BigNumber.from('10'),
+      maxPriorityFeePerGas: BigNumber.from('100'),
+      data: '0x0001'
+    } as unknown as TransactionResponse
+    instance['_isActive'] = true
+
+    await expect(
+      instance.changeBalanceTransaction(tx, newTo, newValue)
+    ).resolves.toEqual({})
+    expect(mockTransfer).toHaveBeenCalledWith({
+      from: tx.from,
+      to: newTo,
+      value: newValue,
+      nonce: tx.nonce,
+      maxPriorityFeePerGas: BigNumber.from('110')
+    })
+  })
+
+  it('Should change the transaction replace only "to" attribute', async () => {
+    const instance = new JsonRPCWeb3Connector(
+      'http://fake',
+      'f31fa21342dafa7de378d8e19cd296dd905988e085d3950dcc35cbadac764d4a'
+    )
+    const newTo = '0x00000000002'
+    // mock the _speedUpGas method
+    jest.spyOn(instance, '_speedUpGas').mockReturnValue({
+      maxPriorityFeePerGas: BigNumber.from('110'),
+      nonce: 1
+    })
+    const mockTransfer = jest
+      .spyOn(ethers.Wallet.prototype, 'sendTransaction')
+      .mockResolvedValueOnce({} as TransactionResponse)
+    const tx = {
+      from: '0x0001',
+      to: '0x0002',
+      nonce: 1,
+      gasPrice: BigNumber.from('10'),
+      maxPriorityFeePerGas: BigNumber.from('100'),
+      data: '0x0001'
+    } as unknown as TransactionResponse
+    instance['_isActive'] = true
+
+    await expect(instance.changeBalanceTransaction(tx, newTo)).resolves.toEqual(
+      {}
+    )
+    expect(mockTransfer).toHaveBeenCalledWith({
+      from: tx.from,
+      to: newTo,
+      value: tx.value,
+      nonce: tx.nonce,
+      maxPriorityFeePerGas: BigNumber.from('110')
+    })
+  })
+
+  it('Should change the transaction replace only "value" attribute', async () => {
+    const instance = new JsonRPCWeb3Connector(
+      'http://fake',
+      'f31fa21342dafa7de378d8e19cd296dd905988e085d3950dcc35cbadac764d4a'
+    )
+    const newValue = BigNumber.from('42')
+    // mock the _speedUpGas method
+    jest.spyOn(instance, '_speedUpGas').mockReturnValue({
+      maxPriorityFeePerGas: BigNumber.from('110'),
+      nonce: 1
+    })
+    const mockTransfer = jest
+      .spyOn(ethers.Wallet.prototype, 'sendTransaction')
+      .mockResolvedValueOnce({} as TransactionResponse)
+    const tx = {
+      from: '0x0001',
+      to: '0x0002',
+      nonce: 1,
+      gasPrice: BigNumber.from('10'),
+      maxPriorityFeePerGas: BigNumber.from('100'),
+      data: '0x0001'
+    } as unknown as TransactionResponse
+    instance['_isActive'] = true
+
+    await expect(
+      instance.changeBalanceTransaction(tx, undefined, newValue)
+    ).resolves.toEqual({})
+    expect(mockTransfer).toHaveBeenCalledWith({
+      from: tx.from,
+      to: tx.to,
+      value: newValue,
+      nonce: tx.nonce,
+      maxPriorityFeePerGas: BigNumber.from('110')
+    })
+  })
+
+  it('should throw an error when txReceipt is not provided', async () => {
+    const instance = new JsonRPCWeb3Connector(
+      'http://fake',
+      'f31fa21342dafa7de378d8e19cd296dd905988e085d3950dcc35cbadac764d4a'
+    )
+    instance['_isActive'] = true
+    await expect(instance.changeBalanceTransaction()).rejects.toThrow(
+      errors.IS_REQUIRED('txReceipt')
+    )
+  })
+
+  it('should throw an error if not activated', async () => {
+    const instance = new JsonRPCWeb3Connector(
+      'http://fake',
+      'f31fa21342dafa7de378d8e19cd296dd905988e085d3950dcc35cbadac764d4a'
+    )
+    instance['_isActive'] = false
+    await expect(
+      instance.changeBalanceTransaction({} as unknown as TransactionResponse)
+    ).rejects.toThrow(errors.MUST_ACTIVATE)
+  })
+
+  it('should throw an error if account is not set', async () => {
+    const instance = new JsonRPCWeb3Connector(
+      'http://fake',
+      'f31fa21342dafa7de378d8e19cd296dd905988e085d3950dcc35cbadac764d4a'
+    )
+    instance['_isActive'] = true
+    jest
+      .spyOn(JsonRPCWeb3Connector.prototype, 'isReadOnly', 'get')
+      .mockReturnValueOnce(true)
+    await expect(
+      instance.changeBalanceTransaction({} as unknown as TransactionResponse)
+    ).rejects.toThrow(errors.READ_ONLY('changeBalanceTransaction'))
+  })
+})
