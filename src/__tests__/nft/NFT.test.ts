@@ -1,6 +1,7 @@
 import { NftMetadata } from './../../types/interfaces'
 import { NFT } from '../../nft'
-import { Ipfs } from '../../utils'
+import Resource from '../../nft/storage/Resource'
+import StorageType from '../../nft/storage/StorageType'
 import errors from '../../types/errors'
 
 const base_nft_metadata: NftMetadata = {
@@ -27,6 +28,19 @@ describe('NFT constructor', () => {
     expect(nft).toBeInstanceOf(NFT)
   })
 
+  it('Should throw error due to not passing tokenId', async () => {
+    expect(() => {
+      new NFT(undefined, base_nft_metadata)
+    }).toThrowError(errors.IS_REQUIRED('tokenId'))
+  })
+
+  it('Should throw error due to not passing nftMetadata', async () => {
+    const tokenId = 'fake-tokenId'
+    expect(() => {
+      new NFT(tokenId)
+    }).toThrowError(errors.IS_REQUIRED('nftMetadata'))
+  })
+
   it('Should save the tokenId and nft metadata', () => {
     const tokenId = 'fake-tokenId'
     const nft = new NFT(tokenId, base_nft_metadata)
@@ -47,6 +61,17 @@ describe('NFT constructor', () => {
     delete nftMetadata.attributes
     const nft = new NFT(tokenId, nftMetadata)
     expect(nft.attributes).toBe(nftMetadata.traits)
+  })
+
+  it('Should save the tokenId and nft metadata (attributes as properties)', () => {
+    const tokenId = 'fake-tokenId'
+    const nftMetadata = {
+      ...base_nft_metadata,
+      properties: base_nft_metadata.attributes
+    }
+    delete nftMetadata.attributes
+    const nft = new NFT(tokenId, nftMetadata)
+    expect(nft.attributes).toBe(nftMetadata.properties)
   })
 })
 
@@ -101,30 +126,39 @@ describe('Getters of NFT', () => {
   })
 })
 
-describe('NFT saveImageBase64 function', () => {
+describe('NFT fetchBase64Image function', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     jest.restoreAllMocks()
   })
 
-  it('Should throw error due to not passing ipfs', async () => {
+  it('Should throw error due to not passing storageType', async () => {
     const tokenId = 'fake-tokenId'
     const nft = new NFT(tokenId, base_nft_metadata)
-    await expect(nft.saveImageBase64()).rejects.toThrow(
-      errors.IS_REQUIRED('ipfs')
+    await expect(nft.fetchBase64Image()).rejects.toThrow(
+      errors.IS_REQUIRED('storageType')
     )
   })
 
   it('Should save the base64 on image attribute', async () => {
     const tokenId = 'fake-tokenId'
     const fakeImage = 'fake-image'
-    const ipfs = new Ipfs('fake-url')
-    const spyGetIPFSBase64 = jest
-      .spyOn(ipfs, 'getIPFSBase64')
-      .mockResolvedValueOnce(fakeImage)
+    const resource: Resource = {
+      data: '',
+      getStringData: jest.fn(),
+      getBytesData: jest.fn(),
+      getBase64Data: jest.fn(() => {
+        return fakeImage
+      }),
+      getJsonData: jest.fn(),
+    } 
+    const storage: StorageType = {
+      storage: '',
+      getData: jest.fn().mockResolvedValue(resource)
+    } 
     const nft = new NFT(tokenId, base_nft_metadata)
-    await nft.saveImageBase64(ipfs)
+    await nft.fetchBase64Image(storage)
     expect(nft.image).toBe(fakeImage)
-    expect(spyGetIPFSBase64).toBeCalledWith(base_nft_metadata.image)
+    expect(storage.getData).toBeCalledWith(base_nft_metadata.image)
   })
 })

@@ -1,6 +1,6 @@
 import { NftMetadata } from '../types/interfaces'
-import { Ipfs } from '../utils/Ipfs'
 import { isRequired } from '../utils/validations'
+import StorageType from './storage/StorageType'
 
 export class NFT {
   protected _tokenId: string
@@ -64,9 +64,9 @@ export class NFT {
    * @param  {Ipfs} ipfs ipfs instance.
    * @return {Promise<void>}
    */
-  async saveImageBase64(ipfs: Ipfs = isRequired('ipfs')) {
+  async fetchBase64Image(storageType: StorageType = isRequired('storageType')): Promise<void> {
     if (this._imageUri) {
-      this._image = await ipfs.getIPFSBase64(this._imageUri)
+      this._image = (await storageType.getData(this._imageUri)).getBase64Data()
     }
   }
 }
