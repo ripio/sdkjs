@@ -24,7 +24,8 @@ export class NFT {
     this._name = nftMetadata.name
     this._description = nftMetadata.description
     this._imageUri = nftMetadata.image
-    this._attributes = nftMetadata.attributes || nftMetadata.traits
+    this._attributes =
+      nftMetadata.attributes || nftMetadata.traits || nftMetadata.properties
     this._jsonData = nftMetadata
   }
 
