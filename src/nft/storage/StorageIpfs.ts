@@ -1,4 +1,3 @@
-import all from 'it-all'
 import { create, IPFSHTTPClient } from 'ipfs-http-client'
 import ResourceIpfs from './ResourceIpfs'
 import StorageType from './StorageType'
@@ -24,7 +23,7 @@ export default class StorageIpfs implements StorageType {
     cidOrURI: string = isRequired('cidOrURI')
   ): Promise<ResourceIpfs> {
     const cid = stripIpfsUriPrefix(cidOrURI)
-    const data = await all(this.storage.cat(cid))
+    const data = this.storage.cat(cid)
     return new ResourceIpfs(data)
   }
 }
