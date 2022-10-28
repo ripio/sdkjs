@@ -61,7 +61,7 @@ export class NFT {
 
   /**
    * saves image base64 on image attribute
-   * @param  {Ipfs} ipfs ipfs instance.
+   * @param  {StorageType} storageType storageType instance.
    * @return {Promise<void>}
    */
   async fetchBase64Image(
