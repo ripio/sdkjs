@@ -12,12 +12,17 @@ export default abstract class Resource {
 
   abstract parseData(): Promise<void>
 
+  async setParsedData(): Promise<void> {
+    if (this.parseData != undefined) return
+    await this.parseData()
+  }
+
   /**
    * The function getStringData() returns a string representation of the data property of the object
    * @returns The string representation of the data.
    */
   async getStringData(): Promise<string> {
-    await this.parseData()
+    await this.setParsedData()
     return toString(this.parsedData!)
   }
 
@@ -26,7 +31,7 @@ export default abstract class Resource {
    * @returns The data property of the class
    */
   async getBytesData(): Promise<Uint8Array> {
-    await this.parseData()
+    await this.setParsedData()
     return this.parsedData!
   }
 
@@ -35,7 +40,7 @@ export default abstract class Resource {
    * @returns The base64 encoded data of the image.
    */
   async getBase64Data(): Promise<string> {
-    await this.parseData()
+    await this.setParsedData()
     return toString(this.parsedData!, 'base64')
   }
 
