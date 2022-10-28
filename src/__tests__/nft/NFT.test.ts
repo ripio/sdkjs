@@ -150,12 +150,12 @@ describe('NFT fetchBase64Image function', () => {
       getBase64Data: jest.fn(() => {
         return fakeImage
       }),
-      getJsonData: jest.fn(),
-    } 
+      getJsonData: jest.fn()
+    }
     const storage: StorageType = {
       storage: '',
       getData: jest.fn().mockResolvedValue(resource)
-    } 
+    }
     const nft = new NFT(tokenId, base_nft_metadata)
     await nft.fetchBase64Image(storage)
     expect(nft.image).toBe(fakeImage)

@@ -64,7 +64,9 @@ export class NFT {
    * @param  {Ipfs} ipfs ipfs instance.
    * @return {Promise<void>}
    */
-  async fetchBase64Image(storageType: StorageType = isRequired('storageType')): Promise<void> {
+  async fetchBase64Image(
+    storageType: StorageType = isRequired('storageType')
+  ): Promise<void> {
     if (this._imageUri) {
       this._image = (await storageType.getData(this._imageUri)).getBase64Data()
     }
