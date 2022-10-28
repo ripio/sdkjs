@@ -28,7 +28,7 @@ export default abstract class Resource {
 
   /**
    * It returns the data of the file as a Uint8Array.
-   * @returns The data property of the class
+   * @returns The parsed data property of the class
    */
   async getBytesData(): Promise<Uint8Array> {
     await this.setParsedData()
