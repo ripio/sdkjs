@@ -13,7 +13,7 @@ export default abstract class Resource {
   abstract parseData(): Promise<void>
 
   async setParsedData(): Promise<void> {
-    if (this.parseData != undefined) return
+    if (this.parsedData != undefined) return
     await this.parseData()
   }
 
