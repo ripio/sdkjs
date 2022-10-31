@@ -9,6 +9,9 @@ import {
 import { toWei } from '../utils/conversions'
 import { isRequired } from '../utils/validations'
 
+/**
+ * @deprecated Use `Token20Manager` instead
+ */
 export class ExtendedToken20Manager extends Token20Manager {
   constructor() {
     super()

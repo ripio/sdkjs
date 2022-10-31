@@ -7,6 +7,9 @@ import all from 'it-all'
 import { GenericObject } from '../types/interfaces'
 import errors from '../types/errors'
 
+/**
+ * @deprecated Use `StorageIpfs` instead
+ */
 export class Ipfs {
   private ipfs
 
@@ -17,6 +20,9 @@ export class Ipfs {
    */
   constructor(ipfsUrl: string = isRequired('ipfsUrl')) {
     this.ipfs = create({ url: ipfsUrl })
+    console.warn(
+      'Deprecation notice: the Ipfs class is being deprecated. Use StorageIpfs instead.'
+    )
   }
 
   /**

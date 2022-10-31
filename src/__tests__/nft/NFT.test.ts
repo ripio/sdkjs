@@ -147,10 +147,11 @@ describe('NFT fetchBase64Image function', () => {
       data: '',
       getStringData: jest.fn(),
       getBytesData: jest.fn(),
-      getBase64Data: jest.fn(() => {
-        return fakeImage
-      }),
-      getJsonData: jest.fn()
+      getBase64Data: jest.fn().mockResolvedValueOnce(fakeImage),
+      getJsonData: jest.fn(),
+      parsedData: undefined,
+      parseData: jest.fn(),
+      setParsedData: jest.fn()
     }
     const storage: StorageType = {
       storage: '',
