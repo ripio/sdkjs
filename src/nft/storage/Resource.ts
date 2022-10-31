@@ -10,10 +10,18 @@ export default abstract class Resource {
     this.data = data
   }
 
+  /**
+   * It parses the data/stream from the data attribute and transforms it into a byte array.
+   */
   abstract parseData(): Promise<void>
 
+  /**
+   * It sets the parsedData property of the class to the result of the parseData() function.
+   * If pasedData is already set, return.
+   * @returns The parsedData is asigned to parsedData attribute.
+   */
   async setParsedData(): Promise<void> {
-    if (this.parseData != undefined) return
+    if (this.parsedData != undefined) return
     await this.parseData()
   }
 
