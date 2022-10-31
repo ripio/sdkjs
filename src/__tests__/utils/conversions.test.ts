@@ -5,7 +5,8 @@ import {
   numberToHex,
   toWei,
   extendTransactionResponse,
-  getExecuteResponse
+  getExecuteResponse,
+  connectorResponse
 } from '../../utils/conversions'
 import { UnitTypes } from '../../types/enums'
 import { BigNumber } from 'ethers'
@@ -13,6 +14,7 @@ import AbstractWeb3Connector from '../../connectors/AbstractWeb3Connector'
 import { TransactionResponse } from '../../types/interfaces'
 import { validations } from '../../utils'
 import { ContractManager } from '../../managers'
+import errorTypes from '../../types/errors'
 
 describe('Test convert functions', () => {
   beforeEach(() => {
@@ -120,17 +122,6 @@ describe('Test convert functions', () => {
     )
   })
 
-  it('Should not have change the transaction response when manager was not provided', () => {
-    const tx = { wait: jest.fn() } as unknown as TransactionResponse
-    const connector = {
-      isActive: true
-    } as unknown as AbstractWeb3Connector
-    jest.spyOn(validations, 'isTransactionResponse').mockReturnValueOnce(true)
-    const extended = extendTransactionResponse(tx, connector)
-    expect(extended).toHaveProperty('change')
-    expect(extended.change).toBeUndefined()
-  })
-
   it('Should call changeTransaction when executing the change method of TransactionResponseExtended', () => {
     const tx = { change: jest.fn() } as unknown as TransactionResponse
     const connector = {
@@ -208,26 +199,6 @@ describe('Test convert functions', () => {
     expect(mockIsTR).toBeCalledWith(tx)
   })
 
-  it('Should return an ExecuteResponse with a transactionResponse without manager', () => {
-    const tx = { wait: () => jest.fn() } as unknown as TransactionResponse
-    const connector = {
-      isActive: true,
-      getMinConfirmations: jest.fn(() => 1)
-    } as unknown as AbstractWeb3Connector
-    const mockIsTR = jest
-      .spyOn(validations, 'isTransactionResponse')
-      .mockReturnValueOnce(true)
-    const executeResponse = getExecuteResponse(tx, connector)
-    expect(executeResponse).toHaveProperty('transactionResponse')
-    expect(executeResponse).not.toHaveProperty('value')
-    expect(executeResponse.transactionResponse?.cancel).toBeDefined()
-    expect(executeResponse.transactionResponse?.change).toBeUndefined()
-    expect(executeResponse.transactionResponse?.speedUp).toBeDefined()
-    expect(executeResponse.transactionResponse?.wait).toBeDefined()
-    expect(executeResponse.isTransaction).toBe(true)
-    expect(mockIsTR).toBeCalledWith(tx)
-  })
-
   it('Should return an ExecuteResponse with a value', () => {
     const tx = 123
     const connector = {
@@ -244,5 +215,165 @@ describe('Test convert functions', () => {
     expect(executeResponse).toHaveProperty('value')
     expect(executeResponse.value).toEqual(tx)
     expect(executeResponse.isTransaction).toBe(false)
+  })
+
+  it('Should extend a transaction response', () => {
+    const tx = { wait: jest.fn() } as unknown as TransactionResponse
+    const connector = {
+      isActive: true,
+      getMinConfirmations: jest.fn(() => 1)
+    } as unknown as AbstractWeb3Connector
+    const extended = connectorResponse(tx, connector)
+    expect(extended).toHaveProperty('cancel')
+    expect(extended).toHaveProperty('speedUp')
+    expect(extended).toHaveProperty('change')
+  })
+
+  it('Should call cancelTransaction when executing the cancel method of ConnectorResponseExtended', () => {
+    const tx = {
+      from: '0x004',
+      to: '0x003',
+      value: BigNumber.from('1')
+    } as unknown as TransactionResponse
+    const gasSpeed = BigNumber.from(1)
+    const connector = {
+      isActive: true,
+      cancelTransaction: jest.fn()
+    } as unknown as AbstractWeb3Connector
+    const extended = connectorResponse(tx, connector)
+    extended.cancel()
+    extended.cancel(gasSpeed)
+    expect(connector.cancelTransaction).toHaveBeenCalledTimes(2)
+    expect(connector.cancelTransaction).toHaveBeenNthCalledWith(
+      1,
+      tx,
+      undefined
+    )
+    expect(connector.cancelTransaction).toHaveBeenNthCalledWith(2, tx, gasSpeed)
+  })
+
+  it('Should call speedUpTransaction when executing the speedUp method of ConnectorResponseExtended', () => {
+    const tx = {
+      from: '0x004',
+      to: '0x003',
+      value: BigNumber.from('1')
+    } as unknown as TransactionResponse
+    const gasSpeed = BigNumber.from(1)
+    const connector = {
+      isActive: true,
+      speedUpTransaction: jest.fn()
+    } as unknown as AbstractWeb3Connector
+    const extended = connectorResponse(tx, connector)
+    extended.speedUp()
+    extended.speedUp(gasSpeed)
+    expect(connector.speedUpTransaction).toHaveBeenCalledTimes(2)
+    expect(connector.speedUpTransaction).toHaveBeenNthCalledWith(
+      1,
+      tx,
+      undefined
+    )
+    expect(connector.speedUpTransaction).toHaveBeenNthCalledWith(
+      2,
+      tx,
+      gasSpeed
+    )
+  })
+
+  it('Should call changeTransaction when executing the change method of ConnectorResponseExtended', () => {
+    const tx = {
+      from: '0x004',
+      to: '0x003',
+      value: BigNumber.from('1')
+    } as unknown as TransactionResponse
+    const connector = {
+      isActive: true,
+      changeBalanceTransaction: jest.fn()
+    } as unknown as AbstractWeb3Connector
+    const extended = connectorResponse(tx, connector)
+    extended.change!()
+    expect(connector.changeBalanceTransaction).toBeCalledWith(
+      tx,
+      undefined,
+      undefined,
+      undefined
+    )
+  })
+
+  it('Should call changeTransaction when executing the change method of ConnectorResponseExtended with "to" value', () => {
+    const tx = {
+      from: '0x004',
+      to: '0x003',
+      value: BigNumber.from('1')
+    } as unknown as TransactionResponse
+    const to = '0x001'
+    const connector = {
+      isActive: true,
+      changeBalanceTransaction: jest.fn()
+    } as unknown as AbstractWeb3Connector
+    const extended = connectorResponse(tx, connector)
+    expect(extended).toHaveProperty('change')
+    extended.change!(to)
+    expect(connector.changeBalanceTransaction).toBeCalledWith(
+      tx,
+      to,
+      undefined,
+      undefined
+    )
+  })
+
+  it('Should call changeTransaction when executing the change method with "value" param', () => {
+    const tx = {
+      from: '0x004',
+      to: '0x003',
+      value: BigNumber.from('1')
+    } as unknown as TransactionResponse
+    const value = BigNumber.from('2')
+    const connector = {
+      isActive: true,
+      changeBalanceTransaction: jest.fn()
+    } as unknown as AbstractWeb3Connector
+    const extended = connectorResponse(tx, connector)
+    expect(extended).toHaveProperty('change')
+    extended.change!(undefined, value)
+    expect(connector.changeBalanceTransaction).toBeCalledWith(
+      tx,
+      undefined,
+      value,
+      undefined
+    )
+  })
+
+  it('Should call changeTransaction when executing the change method with "speedUp" param', () => {
+    const tx = {
+      from: '0x004',
+      to: '0x003',
+      value: BigNumber.from('1')
+    } as unknown as TransactionResponse
+    const to = '0x005'
+    const value = BigNumber.from('2')
+    const speed = BigNumber.from('2')
+    const connector = {
+      isActive: true,
+      changeBalanceTransaction: jest.fn()
+    } as unknown as AbstractWeb3Connector
+    const extended = connectorResponse(tx, connector)
+    expect(extended).toHaveProperty('change')
+    extended.change!(to, value, speed)
+    expect(connector.changeBalanceTransaction).toBeCalledWith(
+      tx,
+      to,
+      value,
+      speed
+    )
+  })
+
+  it('Should throw an error if the connector is not active', () => {
+    const tx = { wait: jest.fn() } as unknown as TransactionResponse
+    const connector = {
+      isActive: false
+    } as unknown as AbstractWeb3Connector
+    expect(() => connectorResponse(tx, connector)).toThrow(
+      errorTypes.MUST_ACTIVATE
+    )
   })
 })

@@ -9,6 +9,7 @@ import {
 import { Ipfs } from '../../utils/Ipfs'
 import errors from '../../types/errors'
 
+const spyWarn = jest.spyOn(console, 'warn').mockImplementation(() => {})
 let ipfs: Ipfs
 function createInstance() {
   ipfs = new Ipfs('http://fake-ipfs-url:5001')
@@ -18,6 +19,9 @@ describe('Ipfs constructor', () => {
   it('Should create a new instance', () => {
     const instance = new Ipfs('http://fake-ipfs-url:5001')
     expect(instance).toBeInstanceOf(Ipfs)
+    expect(spyWarn).toBeCalledWith(
+      'Deprecation notice: the Ipfs class is being deprecated. Use StorageIpfs instead.'
+    )
   })
 
   it('Should throw error due not passing ipfsUrl', () => {

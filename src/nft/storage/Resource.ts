@@ -36,7 +36,7 @@ export default abstract class Resource {
 
   /**
    * It returns the data of the file as a Uint8Array.
-   * @returns The data property of the class
+   * @returns The parsed data property of the class
    */
   async getBytesData(): Promise<Uint8Array> {
     await this.setParsedData()
@@ -57,7 +57,6 @@ export default abstract class Resource {
    * @returns The JSON data is being returned.
    */
   async getJsonData(): Promise<object> {
-    await this.parseData()
     const stringData = await this.getStringData()
     return JSON.parse(stringData)
   }

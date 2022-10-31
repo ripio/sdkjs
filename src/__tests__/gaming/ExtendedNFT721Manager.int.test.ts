@@ -37,6 +37,7 @@ describe('ExtendedNFT721Manager methods', () => {
   let sdk: ExtendedNFT721Manager
 
   beforeEach(async () => {
+    jest.spyOn(console, 'warn').mockImplementationOnce(() => {})
     account = new Wallet(
       '0xa787a8e580be61e711f689ee3ac64f6155e9d67ae6c2e1371edb49c9b4993ada',
       w3

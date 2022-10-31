@@ -54,9 +54,19 @@ export interface GenericObject {
 export interface TransactionResponseExtended extends TransactionResponse {
   cancel: (gasSpeed?: BigNumber) => Promise<TransactionResponse>
   speedUp: (gasSpeed?: BigNumber) => Promise<TransactionResponse>
-  change?: (
+  change: (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     newParams: Record<string, any>,
+    gasSpeed?: BigNumber
+  ) => Promise<TransactionResponse>
+}
+
+export interface ConnectorResponseExtended extends TransactionResponse {
+  cancel: (gasSpeed?: BigNumber) => Promise<TransactionResponse>
+  speedUp: (gasSpeed?: BigNumber) => Promise<TransactionResponse>
+  change: (
+    to?: string,
+    value?: BigNumber,
     gasSpeed?: BigNumber
   ) => Promise<TransactionResponse>
 }
@@ -115,4 +125,14 @@ export interface DaiPermitMessage {
   nonce: BigNumberish
   expiry: BigNumberish
   allowed?: boolean
+}
+
+export interface NftMetadata {
+  name?: string
+  description?: string
+  image?: string
+  traits?: Array<object>
+  attributes?: Array<object>
+  properties?: Array<object>
+  [key: string]: unknown // Custom extra data
 }
