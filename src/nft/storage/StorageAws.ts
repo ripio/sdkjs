@@ -19,7 +19,7 @@ export default class StorageAws implements StorageType {
   }
 
   /**
-   * It takes a fileId, and returns a ResourceAws object
+   * It takes a resourceId, and returns a ResourceAws object
    * @param {string} resourceId - The name of the file you want to retrieve.
    * @returns A ResourceAws object
    */
