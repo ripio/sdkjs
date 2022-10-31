@@ -15,11 +15,11 @@ export default class StorageIpfs implements StorageType {
   }
   /**
    * It returns a ResourceIpfs object.
-   * @param {string} cidOrURI - The content identifier of the data you want to retrieve (IPFS CID string or `ipfs://<cid>` style URI).
+   * @param {string} resourceId - The content identifier of the data you want to retrieve (IPFS CID string or `ipfs://<cid>` style URI).
    * @returns A ResourceIpfs object
    */
-  async getData(cidOrURI: string): Promise<ResourceIpfs> {
-    const cid = stripIpfsUriPrefix(cidOrURI)
+  async getData(resourceId: string): Promise<ResourceIpfs> {
+    const cid = stripIpfsUriPrefix(resourceId)
     const data = this.storage.cat(cid)
     return new ResourceIpfs(data)
   }
