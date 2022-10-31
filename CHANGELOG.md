@@ -1,3 +1,11 @@
+# [1.1.0-dev.7](https://github.com/ripio/sdkjs/compare/v1.1.0-dev.6...v1.1.0-dev.7) (2022-10-31)
+
+
+### Features
+
+* added aws implementation for storage and resource ([70a9d59](https://github.com/ripio/sdkjs/commit/70a9d59e749db9911d5d733fee5f76425f9dfaaf))
+* changing resource from interface to abstract class ([77f1db0](https://github.com/ripio/sdkjs/commit/77f1db025a7196243858a23f43c8d50b15184f6f))
+
 # [1.1.0-dev.6](https://github.com/ripio/sdkjs/compare/v1.1.0-dev.5...v1.1.0-dev.6) (2022-10-31)
 
 
