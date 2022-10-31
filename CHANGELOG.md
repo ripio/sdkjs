@@ -1,3 +1,11 @@
+# [1.1.0-dev.6](https://github.com/ripio/sdkjs/compare/v1.1.0-dev.5...v1.1.0-dev.6) (2022-10-31)
+
+
+### Features
+
+* adding ResourceIpfs and StorageIpfs ([0647b9a](https://github.com/ripio/sdkjs/commit/0647b9af9c00dbf0b5e8b9c736e9d410445ed772))
+* changing resource from interface to abstract class ([94faf2c](https://github.com/ripio/sdkjs/commit/94faf2c0a7e972e1f7fb29c27ce1ab31d0290ee9))
+
 # [1.1.0-dev.5](https://github.com/ripio/sdkjs/compare/v1.1.0-dev.4...v1.1.0-dev.5) (2022-10-28)
 
 
