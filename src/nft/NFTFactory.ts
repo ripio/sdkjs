@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { isRequired } from '../utils/validations'
 import StorageType from './storage/StorageType'
 import { NFT_METADATA_FORMAT } from './types'
@@ -27,20 +28,6 @@ export class NFTFactory {
     this._nftFormat = nftFormat
   }
 
-  // getters
-  get manager(): NFT721Manager {
-    return this._manager
-  }
-
-  get storage(): StorageType {
-    return this._storage
-  }
-
-  get nftFormat(): NFT_METADATA_FORMAT {
-    return this._nftFormat
-  }
-  // end getters
-
   /**
    * Create a new NFT instance from a tokenId.
    * @param  {string} tokenId - The token id of the nft.
@@ -48,7 +35,7 @@ export class NFTFactory {
    */
   async createNFT(tokenId: string = isRequired('tokenId')): Promise<NFT> {
     if (!this._manager.implements('tokenURI', ['uint256'])) {
-      throw errors.TOKEN_URI_NOT_IMPLEMENTED(this._manager.contractAddr || '') // Avoid forbidden-non-null-assertion
+      throw errors.TOKEN_URI_NOT_IMPLEMENTED(this._manager.contractAddr!)
     }
 
     let tokenUri = ''
@@ -77,7 +64,7 @@ export class NFTFactory {
         break
       case NFT_METADATA_FORMAT.JSON_WITH_IMAGE: {
         const metadata = (await resource.getJsonData()) as NftMetadata
-        const imageResource = await this._storage.getData(metadata.image || '') // Avoid forbidden-non-null-assertion
+        const imageResource = await this._storage.getData(metadata.image!)
         const image = await imageResource.getBase64Data()
         nftArgs['nftMetadata'] = metadata
         nftArgs['image'] = image

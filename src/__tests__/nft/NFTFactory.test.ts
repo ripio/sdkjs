@@ -48,49 +48,9 @@ describe('NFTFactory constructor', () => {
       storage,
       NFT_METADATA_FORMAT.IMAGE
     )
-    expect(nftFactory.manager).toBe(nftManager)
-    expect(nftFactory.storage).toBe(storage)
-    expect(nftFactory.nftFormat).toBe(NFT_METADATA_FORMAT.IMAGE)
-  })
-})
-
-describe('Getters of NFTFactory', () => {
-  beforeEach(() => {
-    jest.clearAllMocks()
-    jest.restoreAllMocks()
-  })
-
-  it('Should return the tokenId when calling tokenId', () => {
-    const nftManager = {} as NFT721Manager
-    const storage = {} as StorageType
-    const nftFactory = new NFTFactory(
-      nftManager,
-      storage,
-      NFT_METADATA_FORMAT.IMAGE
-    )
-    expect(nftFactory.manager).toBe(nftManager)
-  })
-
-  it('Should return the name when calling name', () => {
-    const nftManager = {} as NFT721Manager
-    const storage = {} as StorageType
-    const nftFactory = new NFTFactory(
-      nftManager,
-      storage,
-      NFT_METADATA_FORMAT.IMAGE
-    )
-    expect(nftFactory.storage).toBe(storage)
-  })
-
-  it('Should return the description when calling description', () => {
-    const nftManager = {} as NFT721Manager
-    const storage = {} as StorageType
-    const nftFactory = new NFTFactory(
-      nftManager,
-      storage,
-      NFT_METADATA_FORMAT.IMAGE
-    )
-    expect(nftFactory.nftFormat).toBe(NFT_METADATA_FORMAT.IMAGE)
+    expect(nftFactory['_manager']).toBe(nftManager)
+    expect(nftFactory['_storage']).toBe(storage)
+    expect(nftFactory['_nftFormat']).toBe(NFT_METADATA_FORMAT.IMAGE)
   })
 })
 

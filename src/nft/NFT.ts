@@ -1,6 +1,4 @@
 import { NftMetadata } from '../types/interfaces'
-import { isRequired } from '../utils/validations'
-import StorageType from './storage/StorageType'
 
 export class NFT {
   protected _tokenId: string
@@ -65,18 +63,4 @@ export class NFT {
     return this._jsonData
   }
   // end getters
-
-  /**
-   * saves image base64 on image attribute
-   * @param  {StorageType} storageType storageType instance.
-   * @return {Promise<void>}
-   */
-  async fetchBase64Image(
-    storage: StorageType = isRequired('storage')
-  ): Promise<void> {
-    if (this._imageUri && !this._image) {
-      const resource = await storage.getData(this._imageUri)
-      this._image = await resource.getBase64Data()
-    }
-  }
 }
