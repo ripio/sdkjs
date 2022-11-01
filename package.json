@@ -38,12 +38,6 @@
       "import": "./dist/esm/types/index.js",
       "default": "./dist/esm/types/index.js"
     },
-    "./gaming": {
-      "types": "./dist/types/gaming/index.d.ts",
-      "require": "./dist/cjs/gaming/index.js",
-      "import": "./dist/esm/gaming/index.js",
-      "default": "./dist/esm/gaming/index.js"
-    },
     "./ethers-utils": {
       "types": "./dist/types/utils/ethersUtils.d.ts",
       "require": "./dist/cjs/utils/ethersUtils.js",
@@ -73,9 +67,6 @@
       ],
       "types": [
         "dist/types/types/index.d.ts"
-      ],
-      "gaming": [
-        "dist/types/gaming/index.d.ts"
       ],
       "ethers-utils": [
         "dist/types/utils/ethersUtils.d.ts"

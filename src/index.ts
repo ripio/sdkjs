@@ -1,5 +1,4 @@
 export * from './managers'
-export * from './gaming'
 export * from './utils'
 export * from './types'
 export * from './connectors'
