@@ -1,8 +1,5 @@
 import { NftMetadata } from './../../types/interfaces'
 import { NFT } from '../../nft'
-import Resource from '../../nft/storage/Resource'
-import StorageType from '../../nft/storage/StorageType'
-import errors from '../../types/errors'
 
 const base_nft_metadata: NftMetadata = {
   name: 'fake-name',
