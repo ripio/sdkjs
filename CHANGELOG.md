@@ -1,3 +1,10 @@
+# [1.1.0-dev.8](https://github.com/ripio/sdkjs/compare/v1.1.0-dev.7...v1.1.0-dev.8) (2022-11-02)
+
+
+### Features
+
+* add StorageHttp and ResourceHttp ([f7f99f2](https://github.com/ripio/sdkjs/commit/f7f99f2f551bd99effc1444c57453f72493a408f))
+
 # [1.1.0-dev.7](https://github.com/ripio/sdkjs/compare/v1.1.0-dev.6...v1.1.0-dev.7) (2022-10-31)
 
 
