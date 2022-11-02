@@ -14,7 +14,7 @@ describe('StorageHttp methods', () => {
     mock.reset()
   })
 
-  it('prueba', async () => {
+  it('Should retrieve a ResourceHttp instance', async () => {
     const resourceId = 'http://test/test'
     mock.onGet(resourceId).reply(200, 'data')
 
