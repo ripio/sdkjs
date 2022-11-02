@@ -7,7 +7,9 @@ import { NFT721Manager } from '../../managers/NFT721Manager'
 
 describe('NFTFactory constructor', () => {
   it('Should instanciate the NFTFactory', () => {
-    const nftManager = {} as NFT721Manager
+    const nftManager = {
+      isActive: true
+    } as NFT721Manager
     const storage = {} as StorageType
     const nftFactory = new NFTFactory(
       nftManager,
@@ -40,8 +42,20 @@ describe('NFTFactory constructor', () => {
     }).toThrowError(errors.IS_REQUIRED('nftFormat'))
   })
 
+  it('Should throw error if the nftManager is not activate', async () => {
+    const nftManager = {
+      isActive: false
+    } as unknown as NFT721Manager
+    const storage = {} as StorageType
+    expect(() => {
+      new NFTFactory(nftManager, storage, NFT_METADATA_FORMAT.IMAGE)
+    }).toThrowError(errors.MUST_ACTIVATE)
+  })
+
   it('Should save the nftManager, storage and nftFormat', () => {
-    const nftManager = {} as NFT721Manager
+    const nftManager = {
+      isActive: true
+    } as NFT721Manager
     const storage = {} as StorageType
     const nftFactory = new NFTFactory(
       nftManager,
@@ -61,7 +75,9 @@ describe('NFTFactory createNFT function', () => {
   })
 
   it('Should throw error due to not passing tokenId', async () => {
-    const nftManager = {} as NFT721Manager
+    const nftManager = {
+      isActive: true
+    } as NFT721Manager
     const storage = {} as StorageType
     const nftFactory = new NFTFactory(
       nftManager,
@@ -70,25 +86,6 @@ describe('NFTFactory createNFT function', () => {
     )
     await expect(nftFactory.createNFT()).rejects.toThrow(
       errors.IS_REQUIRED('tokenId')
-    )
-  })
-
-  it('Should throw error if the nftManager is not activate', async () => {
-    const tokenId = 'fake-tokenId'
-    const contractAddr = 'fake-address'
-    const nftManager = {
-      isActive: false,
-      contractAddr,
-      implements: jest.fn().mockReturnValueOnce(false)
-    } as unknown as NFT721Manager
-    const storage = {} as StorageType
-    const nftFactory = new NFTFactory(
-      nftManager,
-      storage,
-      NFT_METADATA_FORMAT.IMAGE
-    )
-    await expect(nftFactory.createNFT(tokenId)).rejects.toThrow(
-      errors.MUST_ACTIVATE
     )
   })
 
