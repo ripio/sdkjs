@@ -8,6 +8,13 @@ import { ProviderEvents } from '../../connectors/events'
 import AbstractWeb3Connector from '../../connectors/AbstractWeb3Connector'
 import { AddEthereumChainParameter } from '../../types/interfaces'
 
+declare global {
+  interface Window {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ethereum: any
+  }
+}
+
 describe('BrowserWeb3Connector', () => {
   beforeEach(() => {
     jest.clearAllMocks()
