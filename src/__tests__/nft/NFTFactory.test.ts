@@ -73,10 +73,30 @@ describe('NFTFactory createNFT function', () => {
     )
   })
 
+  it('Should throw error if the nftManager is not activate', async () => {
+    const tokenId = 'fake-tokenId'
+    const contractAddr = 'fake-address'
+    const nftManager = {
+      isActive: false,
+      contractAddr,
+      implements: jest.fn().mockReturnValueOnce(false)
+    } as unknown as NFT721Manager
+    const storage = {} as StorageType
+    const nftFactory = new NFTFactory(
+      nftManager,
+      storage,
+      NFT_METADATA_FORMAT.IMAGE
+    )
+    await expect(nftFactory.createNFT(tokenId)).rejects.toThrow(
+      errors.MUST_ACTIVATE
+    )
+  })
+
   it('Should throw error if the contract does not implement the function tokenURI(uint256)', async () => {
     const tokenId = 'fake-tokenId'
     const contractAddr = 'fake-address'
     const nftManager = {
+      isActive: true,
       contractAddr,
       implements: jest.fn().mockReturnValueOnce(false)
     } as unknown as NFT721Manager
@@ -95,6 +115,7 @@ describe('NFTFactory createNFT function', () => {
     const tokenId = 'fake-tokenId'
     const fakeError = new Error('fake-error')
     const nftManager = {
+      isActive: true,
       implements: jest.fn().mockReturnValueOnce(true),
       execute: jest.fn().mockRejectedValueOnce(fakeError)
     } as unknown as NFT721Manager
@@ -114,6 +135,7 @@ describe('NFTFactory createNFT function', () => {
     const fakeImage = 'fake-image'
     const tokenUri = 'fake-uri'
     const nftManager = {
+      isActive: true,
       implements: jest.fn().mockReturnValueOnce(true),
       execute: jest.fn().mockReturnValueOnce({ value: tokenUri })
     } as unknown as NFT721Manager
@@ -139,6 +161,7 @@ describe('NFTFactory createNFT function', () => {
     const fakeJson = {} as NftMetadata
     const tokenUri = 'fake-uri'
     const nftManager = {
+      isActive: true,
       implements: jest.fn().mockReturnValueOnce(true),
       execute: jest.fn().mockReturnValueOnce({ value: tokenUri })
     } as unknown as NFT721Manager
@@ -165,6 +188,7 @@ describe('NFTFactory createNFT function', () => {
     const fakeJson = { image: 'fake-image-uri' } as NftMetadata
     const tokenUri = 'fake-uri'
     const nftManager = {
+      isActive: true,
       implements: jest.fn().mockReturnValueOnce(true),
       execute: jest.fn().mockReturnValueOnce({ value: tokenUri })
     } as unknown as NFT721Manager

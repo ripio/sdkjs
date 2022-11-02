@@ -34,6 +34,9 @@ export class NFTFactory {
    * @return {Promise<NFT>} - Returns a new NFT instance.
    */
   async createNFT(tokenId: string = isRequired('tokenId')): Promise<NFT> {
+    if (!this._manager.isActive) {
+      throw errors.MUST_ACTIVATE
+    }
     if (!this._manager.implements('tokenURI', ['uint256'])) {
       throw errors.TOKEN_URI_NOT_IMPLEMENTED(this._manager.contractAddr!)
     }
