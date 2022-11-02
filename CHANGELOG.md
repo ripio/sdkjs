@@ -1,3 +1,10 @@
+# [1.1.0-dev.9](https://github.com/ripio/sdkjs/compare/v1.1.0-dev.8...v1.1.0-dev.9) (2022-11-02)
+
+
+### Features
+
+* Add NFTFactory ([e9716cd](https://github.com/ripio/sdkjs/commit/e9716cd7ba04cda5e2c30410e5bec1ee69533f88))
+
 # [1.1.0-dev.8](https://github.com/ripio/sdkjs/compare/v1.1.0-dev.7...v1.1.0-dev.8) (2022-11-02)
 
 
