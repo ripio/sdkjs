@@ -1,6 +1,4 @@
 import { NftMetadata } from '../types/interfaces'
-import { isRequired } from '../utils/validations'
-import StorageType from './storage/StorageType'
 
 export class NFT {
   protected _tokenId: string
@@ -9,24 +7,31 @@ export class NFT {
   protected _image: string | undefined
   protected _imageUri: string | undefined
   protected _attributes: Array<object> | undefined
-  protected _jsonData: NftMetadata
+  protected _jsonData: NftMetadata | undefined
 
   /**
    * @param {string} tokenId - The token ID of the nft.
    * @param {NftMetadata} nftMetadata - The metadata associated to the token.
+   * @param {string} image - Base64 of the image associated to the token.
    * @returns NFT object.
    */
-  constructor(
-    tokenId: string = isRequired('tokenId'),
-    nftMetadata: NftMetadata = isRequired('nftMetadata')
-  ) {
+  constructor({
+    tokenId,
+    nftMetadata,
+    image
+  }: {
+    tokenId: string
+    nftMetadata?: NftMetadata
+    image?: string
+  }) {
     this._tokenId = tokenId
-    this._name = nftMetadata.name
-    this._description = nftMetadata.description
-    this._imageUri = nftMetadata.image
+    this._name = nftMetadata?.name
+    this._description = nftMetadata?.description
+    this._imageUri = nftMetadata?.image
     this._attributes =
-      nftMetadata.attributes || nftMetadata.traits || nftMetadata.properties
+      nftMetadata?.attributes || nftMetadata?.traits || nftMetadata?.properties
     this._jsonData = nftMetadata
+    this._image = image
   }
 
   // getters
@@ -54,22 +59,8 @@ export class NFT {
     return this._attributes
   }
 
-  get jsonData(): NftMetadata {
+  get jsonData(): NftMetadata | undefined {
     return this._jsonData
   }
   // end getters
-
-  /**
-   * saves image base64 on image attribute
-   * @param  {StorageType} storageType storageType instance.
-   * @return {Promise<void>}
-   */
-  async fetchBase64Image(
-    storageType: StorageType = isRequired('storageType')
-  ): Promise<void> {
-    if (this._imageUri) {
-      const resource = await storageType.getData(this._imageUri)
-      this._image = await resource.getBase64Data()
-    }
-  }
 }
