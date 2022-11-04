@@ -1,7 +1,9 @@
+import fs from 'fs/promises'
 import { create, IPFSHTTPClient } from 'ipfs-http-client'
 import ResourceIpfs from './ResourceIpfs'
 import StorageType from './StorageType'
-import { stripIpfsUriPrefix } from '../../utils/ipfs-utils'
+import { ensureIpfsUriPrefix, stripIpfsUriPrefix } from '../../utils/ipfs-utils'
+import errors from '../../types/errors'
 
 export default class StorageIpfs implements StorageType {
   readonly storage: IPFSHTTPClient
@@ -13,14 +15,34 @@ export default class StorageIpfs implements StorageType {
   constructor(url: string) {
     this.storage = create({ url })
   }
-  /**
-   * It returns a ResourceIpfs object.
-   * @param {string} resourceId - The content identifier of the data you want to retrieve (IPFS CID string or `ipfs://<cid>` style URI).
-   * @returns A ResourceIpfs object
-   */
+
   async getData(resourceId: string): Promise<ResourceIpfs> {
     const cid = stripIpfsUriPrefix(resourceId)
     const data = this.storage.cat(cid)
     return new ResourceIpfs(data)
+  }
+
+  async storeFile(filepath: string): Promise<string> {
+    const content = await fs.readFile(filepath)
+    return this.addFileToIpfs(content)
+  }
+
+  async storeMetadata(properties: object): Promise<string> {
+    const metadata = JSON.stringify(properties)
+    return this.addFileToIpfs(metadata)
+  }
+
+  /**
+   * It takes a Buffer or string, adds it to IPFS, and returns the resource id
+   * @param {Buffer | string} content - File content
+   * @returns The content resource id of the content added to IPFS.
+   */
+  protected async addFileToIpfs(content: Buffer | string): Promise<string> {
+    try {
+      const { cid } = await this.storage.add(content)
+      return ensureIpfsUriPrefix(cid.toString())
+    } catch (error) {
+      throw errors.IPFS_ADD(<Error>error)
+    }
   }
 }
