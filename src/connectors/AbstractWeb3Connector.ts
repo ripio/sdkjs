@@ -152,36 +152,55 @@ export default abstract class AbstractWeb3Connector {
   /**
    * If the transaction has a maxPriorityFeePerGas, add 10% to it. Otherwise, add 10% to the gasPrice
    * @param {TransactionResponse} tx - TransactionResponse
-   * @param {BigNumber} [gasSpeed] - If the chain is EIP-1559, this is the gas price you
+   * @param {BigNumber} [gasSpeed] - If the chain is pre EIP-1559, this is the gas price you
    * want to use for the transaction. If not, this is the maxPriorityFeePerGas. If you don't specify
-   * this, the SDK will use the current gas price/maxPriorityFeePerGas.
-   * @returns an object containing the maxPriorityFeePerGas with a 10% increment and the nonce or the
-   * gasPrice with a 10% increment and a nonce
+   * this, the SDK will use the current gas price/maxPriorityFeePerGas with an increment based on the
+   * SpeedUpPercentage value specified on the connector.
+   * @returns an object containing a nonce and the gas price related parameters depending
+   * on if the chain is pre EIP-1559 or not.
    */
   _speedUpGas = (tx: TransactionResponse, gasSpeed?: BigNumber): any => {
-    const originalPrice: BigNumberish = tx.maxPriorityFeePerGas ?? tx.gasPrice!
     if (tx.maxPriorityFeePerGas) {
-      // chain with EIP-1559 support
-      // add 10% of gas to max priority if gasSpeed is not defined
+      // Chain with EIP-1559 support.
+      // If the gasSpeed param was not provided then calculate
+      // the maxPriorityFeePerGas based on the SpeedUpPercentage value.
       const maxPriorityFeePerGas =
         gasSpeed ??
-        tx.maxPriorityFeePerGas
-          .mul(this.speedUpPercentage)
+        tx.maxPriorityFeePerGas.mul(this.speedUpPercentage + 100).div(100)
+      let maxFeePerGas
+      if (gasSpeed != null) {
+        // The increased percentage for the maxPriorityFeePerGas based on the gasSpeed param provided.
+        // Multiplying by 100*10^18 to avoid truncation
+        // tx.MaxPriorityFeePerGas  == 100%
+        // gasSpeed                 == x(percentage)%
+        const percentage = gasSpeed
+          .mul(BigNumber.from('100000000000000000000'))
+          .div(tx.maxPriorityFeePerGas)
+
+        // tx.MaxFeePerGas      == 100%
+        // x(new maxFeePerGas)  == percentage%
+        maxFeePerGas = tx
+          .maxFeePerGas!.mul(percentage)
+          .div(BigNumber.from('100000000000000000000'))
+      } else {
+        // If the gasSpeed param was not provided then calculate the maxFeePerGas based on the SpeedUpPercentage value.
+        maxFeePerGas = tx
+          .maxFeePerGas!.mul(this.speedUpPercentage + 100)
           .div(100)
-          .add(originalPrice)
+      }
       return {
-        maxPriorityFeePerGas: maxPriorityFeePerGas,
+        maxFeePerGas,
+        maxPriorityFeePerGas,
         gasLimit: tx.gasLimit,
-        maxFeePerGas: maxPriorityFeePerGas.add(10),
         nonce: tx.nonce
       }
     } else {
-      // chain with no support for EIP-1559
-      // add 10% of gas to gasPrice if gasSpeed is not defined
+      // Chain with no support for EIP-1559
+      // If the gasSpeed param was not provided then calculate
+      // the gasPrice based on the SpeedUpPercentage value.
       return {
         gasPrice:
-          gasSpeed ??
-          tx.gasPrice!.mul(this.speedUpPercentage).div(100).add(originalPrice),
+          gasSpeed ?? tx.gasPrice!.mul(this.speedUpPercentage + 100).div(100),
         gasLimit: tx.gasLimit,
         nonce: tx.nonce
       }
