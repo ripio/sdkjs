@@ -1,3 +1,4 @@
+import fs from 'fs/promises'
 import {
   globSource,
   __resetIPFSMocks,
@@ -64,16 +65,29 @@ describe('StorageIpfs storeFiles method', () => {
 })
 
 describe('StorageIpfs storeMetadata method', () => {
-  beforeEach(() => {
-    __resetIPFSMocks()
-  })
-
   it('Should add a file with its properties and return the uri', async () => {
+    const spyStringify = jest.spyOn(JSON, 'stringify')
+    const properties = { someProp: 'prop' }
     const expectedUri = 'ipfs://fake-cid'
     const ipfs = new StorageIpfs('http://fake-ipfs-url:5001')
     ipfs['addFileToIpfs'] = jest.fn(() => Promise.resolve(expectedUri))
-    const cid = await ipfs.storeMetadata({ someProp: 'prop' })
+    const cid = await ipfs.storeMetadata(properties)
     expect(cid).toBe(expectedUri)
+    expect(spyStringify).toBeCalledWith(properties)
+    expect(ipfs['addFileToIpfs']).toBeCalled()
+  })
+})
+
+describe('StorageIpfs storeFile method', () => {
+  it('Should add a file with its properties and return the uri', async () => {
+    const spyReadFile = jest.spyOn(fs, 'readFile').mockImplementation(jest.fn())
+    const path = '/a/path'
+    const expectedUri = 'ipfs://fake-cid'
+    const ipfs = new StorageIpfs('http://fake-ipfs-url:5001')
+    ipfs['addFileToIpfs'] = jest.fn(() => Promise.resolve(expectedUri))
+    const cid = await ipfs.storeFile(path)
+    expect(cid).toBe(expectedUri)
+    expect(spyReadFile).toBeCalledWith(path)
     expect(ipfs['addFileToIpfs']).toBeCalled()
   })
 })
