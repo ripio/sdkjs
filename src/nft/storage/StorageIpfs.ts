@@ -56,7 +56,7 @@ export default class StorageIpfs implements StorageType {
    * @param {Buffer | string} content - File content
    * @returns The content resource id of the content added to IPFS.
    */
-  async addFileToIpfs(content: Buffer | string): Promise<string> {
+  protected async addFileToIpfs(content: Buffer | string): Promise<string> {
     try {
       const { cid } = await this.storage.add(content)
       return ensureIpfsUriPrefix(cid.toString())
