@@ -26,14 +26,6 @@ export default class StorageAws implements StorageType {
   storeMetadata(properties: object): Promise<string> {
     throw new Error('Method not implemented.')
   }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  storeFiles(path: string): Promise<string> {
-    throw new Error('Method not implemented.')
-  }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getDirectoryFiles(path: string): Promise<string[]> {
-    throw new Error('Method not implemented.')
-  }
 
   /**
    * It takes a resourceId, and returns a ResourceAws object

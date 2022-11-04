@@ -1,11 +1,8 @@
 import fs from 'fs/promises'
 import {
-  globSource,
   __resetIPFSMocks,
   __setMockAdd,
-  __setMockAddAll,
-  __setMockCat,
-  __setMockLs
+  __setMockCat
 } from '../../../__mocks__/ipfs-http-client'
 import StorageIpfs from '../../../nft/storage/StorageIpfs'
 import ResourceIpfs from '../../../nft/storage/ResourceIpfs'
@@ -38,32 +35,6 @@ describe('StorageIpfs getData method', () => {
   })
 })
 
-describe('StorageIpfs storeFiles method', () => {
-  beforeEach(() => {
-    __resetIPFSMocks()
-  })
-
-  it('Should return a cid when uploading a directory of images', async () => {
-    __setMockAddAll(function* () {
-      yield { cid: 'fake-cid-1' }
-      yield { cid: 'fake-cid-2' }
-      yield { cid: 'fake-cid-directory' }
-    })
-    const ipfs = new StorageIpfs('http://fake-ipfs-url:5001')
-    const cid = await ipfs.storeFiles('/fake/path')
-    expect(cid).toBe('fake-cid-directory')
-  })
-
-  it('Should return an error when directory does not exist', async () => {
-    const ipfs = new StorageIpfs('http://fake-ipfs-url:5001')
-    const dirError = 'No such file or directory'
-    globSource.mockImplementation(function () {
-      throw new Error(dirError)
-    })
-    await expect(ipfs.storeFiles('/fake/path')).rejects.toThrow(dirError)
-  })
-})
-
 describe('StorageIpfs storeMetadata method', () => {
   it('Should add a file with its properties and return the uri', async () => {
     const spyStringify = jest.spyOn(JSON, 'stringify')
@@ -89,35 +60,6 @@ describe('StorageIpfs storeFile method', () => {
     expect(cid).toBe(expectedUri)
     expect(spyReadFile).toBeCalledWith(path)
     expect(ipfs['addFileToIpfs']).toBeCalled()
-  })
-})
-
-describe('StorageIpfs getDirectoryFiles method', () => {
-  beforeEach(() => {
-    __resetIPFSMocks()
-  })
-
-  it('Should retrieve the resource id files of the directory', async () => {
-    const directoryFiles = [
-      { cid: 'cid-1', path: 'path-1' },
-      { cid: 'cid-2', path: 'path-2' }
-    ]
-    const expected = ['cid-1', 'cid-2']
-    __setMockLs(function* () {
-      yield* directoryFiles
-    })
-    const ipfs = new StorageIpfs('http://fake-ipfs-url:5001')
-    const links = await ipfs.getDirectoryFiles('fake-cid')
-    expect(links).toEqual(expected)
-  })
-
-  it('Should throw an error if the directory does not exists', async () => {
-    const dirError = 'No such file or directory'
-    __setMockLs(function () {
-      throw new Error(dirError)
-    })
-    const ipfs = new StorageIpfs('http://fake-ipfs-url:5001')
-    await expect(ipfs.getDirectoryFiles('fake-cid')).rejects.toThrow(dirError)
   })
 })
 

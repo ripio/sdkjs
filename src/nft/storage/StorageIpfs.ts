@@ -1,5 +1,5 @@
 import fs from 'fs/promises'
-import { create, globSource, IPFSHTTPClient } from 'ipfs-http-client'
+import { create, IPFSHTTPClient } from 'ipfs-http-client'
 import ResourceIpfs from './ResourceIpfs'
 import StorageType from './StorageType'
 import { ensureIpfsUriPrefix, stripIpfsUriPrefix } from '../../utils/ipfs-utils'
@@ -30,25 +30,6 @@ export default class StorageIpfs implements StorageType {
   async storeMetadata(properties: object): Promise<string> {
     const metadata = JSON.stringify(properties)
     return this.addFileToIpfs(metadata)
-  }
-
-  async storeFiles(path: string): Promise<string> {
-    let directoryCid = ''
-    for await (const file of this.storage.addAll(globSource(path, '**/*'), {
-      wrapWithDirectory: true
-    })) {
-      // the last file is the directory
-      directoryCid = file.cid.toString()
-    }
-    return directoryCid
-  }
-
-  async getDirectoryFiles(ipfsPath: string): Promise<Array<string>> {
-    const links = []
-    for await (const link of this.storage.ls(ipfsPath)) {
-      links.push(link.cid.toString())
-    }
-    return links
   }
 
   /**

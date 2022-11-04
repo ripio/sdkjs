@@ -42,21 +42,3 @@ describe('StorageHttp storeMetadata method', () => {
     }).toThrow('Method not implemented.')
   })
 })
-
-describe('StorageHttp storeFiles method', () => {
-  it('Should throw an error due not implemented method', () => {
-    const storage = new StorageHttp()
-    expect(() => {
-      storage.storeFiles('path')
-    }).toThrow('Method not implemented.')
-  })
-})
-
-describe('StorageHttp getDirectoryFiles method', () => {
-  it('Should throw an error due not implemented method', () => {
-    const storage = new StorageHttp()
-    expect(() => {
-      storage.getDirectoryFiles('path')
-    }).toThrow('Method not implemented.')
-  })
-})

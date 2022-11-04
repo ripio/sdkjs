@@ -47,21 +47,3 @@ describe('StorageAws storeMetadata method', () => {
     }).toThrow('Method not implemented.')
   })
 })
-
-describe('StorageAws storeFiles method', () => {
-  it('Should throw an error due not implemented method', () => {
-    const storage = new StorageAws('test_bucket', 'sa-east-1')
-    expect(() => {
-      storage.storeFiles('path')
-    }).toThrow('Method not implemented.')
-  })
-})
-
-describe('StorageAws getDirectoryFiles method', () => {
-  it('Should throw an error due not implemented method', () => {
-    const storage = new StorageAws('test_bucket', 'sa-east-1')
-    expect(() => {
-      storage.getDirectoryFiles('path')
-    }).toThrow('Method not implemented.')
-  })
-})
