@@ -34,7 +34,7 @@ describe('StorageAws storeFile method', () => {
   it('Should throw an error due not implemented method', () => {
     const storage = new StorageAws('test_bucket', 'sa-east-1')
     expect(() => {
-      storage.storeFile('filename')
+      storage.storeFile('filepath')
     }).toThrow('Method not implemented.')
   })
 })

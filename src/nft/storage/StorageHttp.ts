@@ -14,7 +14,7 @@ export default class StorageHttp implements StorageType {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  storeFile(filename: string): Promise<string> {
+  storeFile(filepath: string): Promise<string> {
     throw new Error('Method not implemented.')
   }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

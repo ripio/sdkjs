@@ -12,10 +12,10 @@ export default interface StorageType {
   getData(resourceId: string): Promise<Resource>
   /**
    * It uploads a file
-   * @param {string} filename - The name of the file you want to upload.
+   * @param {string} filepath - The path of the file you want to upload.
    * @returns returns the resource id of the uploaded file
    */
-  storeFile(filename: string): Promise<string>
+  storeFile(filepath: string): Promise<string>
   /**
    * It takes an object and stores it as JSON, returning the resource id of the file
    * @param {object} properties - metadata to store

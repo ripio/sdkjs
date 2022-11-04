@@ -29,7 +29,7 @@ describe('StorageHttp storeFile method', () => {
   it('Should throw an error due not implemented method', () => {
     const storage = new StorageHttp()
     expect(() => {
-      storage.storeFile('filename')
+      storage.storeFile('filepath')
     }).toThrow('Method not implemented.')
   })
 })

@@ -22,8 +22,8 @@ export default class StorageIpfs implements StorageType {
     return new ResourceIpfs(data)
   }
 
-  async storeFile(filename: string): Promise<string> {
-    const content = await fs.readFile(filename)
+  async storeFile(filepath: string): Promise<string> {
+    const content = await fs.readFile(filepath)
     return this.addFileToIpfs(content)
   }
 
