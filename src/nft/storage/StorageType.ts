@@ -33,5 +33,5 @@ export default interface StorageType {
    * @param  {string} path - resource id of the directory to list
    * @return {Promise<Array<string>>} returns an array of resource ids
    */
-  getDirectoryFiles(ipfsPath: string): Promise<Array<string>>
+  getDirectoryFiles(path: string): Promise<Array<string>>
 }
