@@ -69,20 +69,12 @@ describe('StorageIpfs storeMetadata method', () => {
   })
 
   it('Should add a file with its properties and return the uri', async () => {
-    const fakeCid = 'fake-cid'
     const expectedUri = 'ipfs://fake-cid'
-    __setMockAdd(() => Promise.resolve({ cid: fakeCid }))
     const ipfs = new StorageIpfs('http://fake-ipfs-url:5001')
+    ipfs['addFileToIpfs'] = jest.fn(() => Promise.resolve(expectedUri))
     const cid = await ipfs.storeMetadata({ someProp: 'prop' })
     expect(cid).toBe(expectedUri)
-  })
-
-  it('Should throw an error if ipfs.add throws an error', async () => {
-    __setMockAdd(() => Promise.reject(Error('Some ifps error')))
-    const ipfs = new StorageIpfs('http://fake-ipfs-url:5001')
-    await expect(ipfs.storeMetadata({ someProp: 'prop' })).rejects.toThrow(
-      errors.IPFS_ADD()
-    )
+    expect(ipfs['addFileToIpfs']).toBeCalled()
   })
 })
 
@@ -125,14 +117,14 @@ describe('StorageIpfs addFileToIpfs method', () => {
     const expectedUri = 'ipfs://fake-cid'
     __setMockAdd(() => Promise.resolve({ cid: fakeCid }))
     const ipfs = new StorageIpfs('http://fake-ipfs-url:5001')
-    const cid = await ipfs.addFileToIpfs('fake-image')
+    const cid = await ipfs['addFileToIpfs']('fake-image')
     expect(cid).toBe(expectedUri)
   })
 
   it('Should throw an error if ipfs.add throws an error', async () => {
     __setMockAdd(() => Promise.reject(Error('Some ifps error')))
     const ipfs = new StorageIpfs('http://fake-ipfs-url:5001')
-    await expect(ipfs.addFileToIpfs('fake-image')).rejects.toThrow(
+    await expect(ipfs['addFileToIpfs']('fake-image')).rejects.toThrow(
       errors.IPFS_ADD()
     )
   })
