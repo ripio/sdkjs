@@ -3,7 +3,7 @@ import MockAdapter from 'axios-mock-adapter'
 import axios from 'axios'
 import ResourceHttp from '../../../nft/storage/ResourceHttp'
 
-describe('StorageHttp methods', () => {
+describe('StorageHttp getData method', () => {
   let mock: MockAdapter
 
   beforeAll(() => {
@@ -22,5 +22,41 @@ describe('StorageHttp methods', () => {
     const resource = await httpStorage.getData(resourceId)
 
     expect(resource).toBeInstanceOf(ResourceHttp)
+  })
+})
+
+describe('StorageHttp storeFile method', () => {
+  it('Should throw an error due not implemented method', () => {
+    const storage = new StorageHttp()
+    expect(() => {
+      storage.storeFile('filename')
+    }).toThrow('Method not implemented.')
+  })
+})
+
+describe('StorageHttp storeMetadata method', () => {
+  it('Should throw an error due not implemented method', () => {
+    const storage = new StorageHttp()
+    expect(() => {
+      storage.storeMetadata({ test: 'test' })
+    }).toThrow('Method not implemented.')
+  })
+})
+
+describe('StorageHttp storeFiles method', () => {
+  it('Should throw an error due not implemented method', () => {
+    const storage = new StorageHttp()
+    expect(() => {
+      storage.storeFiles('path')
+    }).toThrow('Method not implemented.')
+  })
+})
+
+describe('StorageHttp getDirectoryFiles method', () => {
+  it('Should throw an error due not implemented method', () => {
+    const storage = new StorageHttp()
+    expect(() => {
+      storage.getDirectoryFiles('path')
+    }).toThrow('Method not implemented.')
   })
 })

@@ -18,6 +18,23 @@ export default class StorageAws implements StorageType {
     this.bucketName = bucketName
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  storeFile(filename: string): Promise<string> {
+    throw new Error('Method not implemented.')
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  storeMetadata(properties: object): Promise<string> {
+    throw new Error('Method not implemented.')
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  storeFiles(path: string): Promise<string> {
+    throw new Error('Method not implemented.')
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  getDirectoryFiles(path: string): Promise<string[]> {
+    throw new Error('Method not implemented.')
+  }
+
   /**
    * It takes a resourceId, and returns a ResourceAws object
    * @param {string} resourceId - The name of the file you want to retrieve.

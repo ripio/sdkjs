@@ -7,7 +7,7 @@ import {
   GetObjectCommand
 } from '../../../__mocks__/@aws-sdk/client-s3'
 
-describe('StorageAws tests', () => {
+describe('StorageAws getData method', () => {
   afterEach(() => {
     jest.clearAllMocks()
     __resetS3ClientMocks()
@@ -27,5 +27,41 @@ describe('StorageAws tests', () => {
     expect(resource).toBeInstanceOf(ResourceAWS)
     expect(resource.data).toEqual(retData)
     expect(mockData).toHaveBeenCalledWith(params)
+  })
+})
+
+describe('StorageAws storeFile method', () => {
+  it('Should throw an error due not implemented method', () => {
+    const storage = new StorageAws('test_bucket', 'sa-east-1')
+    expect(() => {
+      storage.storeFile('filename')
+    }).toThrow('Method not implemented.')
+  })
+})
+
+describe('StorageAws storeMetadata method', () => {
+  it('Should throw an error due not implemented method', () => {
+    const storage = new StorageAws('test_bucket', 'sa-east-1')
+    expect(() => {
+      storage.storeMetadata({ test: 'test' })
+    }).toThrow('Method not implemented.')
+  })
+})
+
+describe('StorageAws storeFiles method', () => {
+  it('Should throw an error due not implemented method', () => {
+    const storage = new StorageAws('test_bucket', 'sa-east-1')
+    expect(() => {
+      storage.storeFiles('path')
+    }).toThrow('Method not implemented.')
+  })
+})
+
+describe('StorageAws getDirectoryFiles method', () => {
+  it('Should throw an error due not implemented method', () => {
+    const storage = new StorageAws('test_bucket', 'sa-east-1')
+    expect(() => {
+      storage.getDirectoryFiles('path')
+    }).toThrow('Method not implemented.')
   })
 })

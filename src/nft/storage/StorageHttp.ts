@@ -12,6 +12,23 @@ export default class StorageHttp implements StorageType {
   constructor() {
     this.storage = axios.create({ responseType: 'arraybuffer' })
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  storeFile(filename: string): Promise<string> {
+    throw new Error('Method not implemented.')
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  storeMetadata(properties: object): Promise<string> {
+    throw new Error('Method not implemented.')
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  storeFiles(path: string): Promise<string> {
+    throw new Error('Method not implemented.')
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  getDirectoryFiles(path: string): Promise<string[]> {
+    throw new Error('Method not implemented.')
+  }
   /**
    * It returns a promise that resolves to a ResourceHttp object.
    * @param {string} resourceId - The url of the resource you want to retrieve.
