@@ -1,3 +1,10 @@
+# [1.1.0-dev.10](https://github.com/ripio/sdkjs/compare/v1.1.0-dev.9...v1.1.0-dev.10) (2022-11-07)
+
+
+### Bug Fixes
+
+* Updated speedUpGas method calculations ([12faaf5](https://github.com/ripio/sdkjs/commit/12faaf56f0e6f9055f04baa85f8f65c7d455bc75))
+
 # [1.1.0-dev.9](https://github.com/ripio/sdkjs/compare/v1.1.0-dev.8...v1.1.0-dev.9) (2022-11-02)
 
 
