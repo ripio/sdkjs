@@ -310,15 +310,19 @@ describe('AbstractWeb3Connector _speedUpGas method', () => {
     )
     const tx = instance._speedUpGas({
       maxPriorityFeePerGas: BigNumber.from('100'),
+      maxFeePerGas: BigNumber.from('1000'),
       nonce: 1
     } as unknown as TransactionResponse)
+    expect(tx).not.toHaveProperty('gasPrice')
     expect(tx).toHaveProperty('maxPriorityFeePerGas')
-    expect(tx.maxPriorityFeePerGas).toEqual(BigNumber.from('110'))
+    expect(tx).toHaveProperty('maxFeePerGas')
     expect(tx).toHaveProperty('nonce')
+    expect(tx.maxPriorityFeePerGas).toEqual(BigNumber.from('110'))
+    expect(tx.maxFeePerGas).toEqual(BigNumber.from('1100'))
     expect(tx.nonce).toBe(1)
   })
 
-  it('Should return maxPriorityFeePerGas with gasSpeed if tx has maxPriorityFeePerGas attribute and gasSpeed is provided', async () => {
+  it('Should return maxPriorityFeePerGas with gasSpeed if tx has maxPriorityFeePerGas attribute and gasSpeed was provided', async () => {
     const instance = new JsonRPCWeb3Connector(
       'http://fake',
       'f31fa21342dafa7de378d8e19cd296dd905988e085d3950dcc35cbadac764d4a'
@@ -327,13 +331,38 @@ describe('AbstractWeb3Connector _speedUpGas method', () => {
     const tx = instance._speedUpGas(
       {
         maxPriorityFeePerGas: BigNumber.from('100'),
+        maxFeePerGas: BigNumber.from('1000'),
         nonce: 1
       } as unknown as TransactionResponse,
       speed
     )
+    expect(tx).not.toHaveProperty('gasPrice')
     expect(tx).toHaveProperty('maxPriorityFeePerGas')
-    expect(tx.maxPriorityFeePerGas).toEqual(speed)
+    expect(tx).toHaveProperty('maxFeePerGas')
     expect(tx).toHaveProperty('nonce')
+    expect(tx.maxPriorityFeePerGas).toEqual(speed)
+    // as speed is the double of maxPriorityFeePerGas then the maxFeePerGas will be doubled
+    expect(tx.maxFeePerGas).toEqual(BigNumber.from('2000'))
+    expect(tx.nonce).toBe(1)
+  })
+
+  it('Should return maxPriorityFeePerGas with a custom increment if tx has maxPriorityFeePerGas attribute', async () => {
+    const instance = new JsonRPCWeb3Connector(
+      'http://fake',
+      'f31fa21342dafa7de378d8e19cd296dd905988e085d3950dcc35cbadac764d4a'
+    )
+    instance.speedUpPercentage = 20
+    const tx = instance._speedUpGas({
+      maxPriorityFeePerGas: BigNumber.from('100'),
+      maxFeePerGas: BigNumber.from('1000'),
+      nonce: 1
+    } as unknown as TransactionResponse)
+    expect(tx).not.toHaveProperty('gasPrice')
+    expect(tx).toHaveProperty('maxPriorityFeePerGas')
+    expect(tx).toHaveProperty('maxFeePerGas')
+    expect(tx).toHaveProperty('nonce')
+    expect(tx.maxPriorityFeePerGas).toEqual(BigNumber.from('120'))
+    expect(tx.maxFeePerGas).toEqual(BigNumber.from('1200'))
     expect(tx.nonce).toBe(1)
   })
 
@@ -347,8 +376,27 @@ describe('AbstractWeb3Connector _speedUpGas method', () => {
       nonce: 1
     } as unknown as TransactionResponse)
     expect(tx).not.toHaveProperty('maxPriorityFeePerGas')
+    expect(tx).not.toHaveProperty('maxFeePerGas')
     expect(tx).toHaveProperty('gasPrice')
     expect(tx.gasPrice).toEqual(BigNumber.from('110'))
+    expect(tx).toHaveProperty('nonce')
+    expect(tx.nonce).toBe(1)
+  })
+
+  it('Should return gasPrice with a custom increment if tx does not have maxPriorityFeePerGas attribute', async () => {
+    const instance = new JsonRPCWeb3Connector(
+      'http://fake',
+      'f31fa21342dafa7de378d8e19cd296dd905988e085d3950dcc35cbadac764d4a'
+    )
+    instance.speedUpPercentage = 20
+    const tx = instance._speedUpGas({
+      gasPrice: BigNumber.from('100'),
+      nonce: 1
+    } as unknown as TransactionResponse)
+    expect(tx).not.toHaveProperty('maxPriorityFeePerGas')
+    expect(tx).not.toHaveProperty('maxFeePerGas')
+    expect(tx).toHaveProperty('gasPrice')
+    expect(tx.gasPrice).toEqual(BigNumber.from('120'))
     expect(tx).toHaveProperty('nonce')
     expect(tx.nonce).toBe(1)
   })
@@ -367,6 +415,7 @@ describe('AbstractWeb3Connector _speedUpGas method', () => {
       speed
     )
     expect(tx).not.toHaveProperty('maxPriorityFeePerGas')
+    expect(tx).not.toHaveProperty('maxFeePerGas')
     expect(tx).toHaveProperty('gasPrice')
     expect(tx.gasPrice).toEqual(speed)
     expect(tx).toHaveProperty('nonce')
