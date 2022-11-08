@@ -23,6 +23,16 @@ const GetObjectCommand = jest
     }
   })
 
+const PutObjectCommand = jest
+  .fn()
+  .mockImplementation((data: Record<string, string>) => {
+    return {
+      Bucket: data['bucket'],
+      Key: data['key'],
+      Body: data['body']
+    }
+  })
+
 function __setMockSend(mock: any) {
   mockSend = mock
 }
@@ -34,6 +44,7 @@ function __resetS3ClientMocks() {
 export {
   mockS3Client as S3Client,
   GetObjectCommand,
+  PutObjectCommand,
   __setMockSend,
   __resetS3ClientMocks
 }
