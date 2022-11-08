@@ -94,13 +94,17 @@ describe('StorageAws addFileToAws method', () => {
 })
 
 describe('StorageAws generateResourceId method', () => {
+  afterEach(() => {
+    jest.restoreAllMocks()
+  })
+
   test.each([
     { overwriteFiles: true, expected: 'test.png' },
     { overwriteFiles: false, expected: 'test-1667846471039.png' }
   ])(
     'Should return the generated resource id when overwriteFiles is $overwriteFiles',
     ({ overwriteFiles, expected }) => {
-      Date.now = jest.fn(() => 1667846471039)
+      jest.spyOn(Date, 'now').mockReturnValue(1667846471039)
       const storage = new StorageAws('bucketName', 'region', overwriteFiles)
       const result = storage['generateResourceId']('test', 'png')
       expect(result).toBe(expected)
@@ -112,7 +116,7 @@ describe('StorageAws generateResourceId method', () => {
 })
 
 describe('StorageAws getters and setters', () => {
-  it.each([[true], [false]])(
+  it.each([true, false])(
     'Should return the _overwriteFiles property value (%s)',
     (value: boolean) => {
       const storage = new StorageAws('bucketName', 'region', value)
@@ -129,7 +133,7 @@ describe('StorageAws getters and setters', () => {
     expect(storage.overwriteFiles).toBe(true)
   })
 
-  it('Should return the _metadataFileName property value (%s)', () => {
+  it('Should return the _metadataFileName property value', () => {
     const storage = new StorageAws('bucketName', 'region', false, 'newName')
     expect(storage.metadataFileName).toBe('newName')
   })
