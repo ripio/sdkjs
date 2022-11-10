@@ -1,3 +1,11 @@
+# [1.1.0-dev.11](https://github.com/ripio/sdkjs/compare/v1.1.0-dev.10...v1.1.0-dev.11) (2022-11-10)
+
+
+### Features
+
+* add StorageAws upload functions ([a1a3a78](https://github.com/ripio/sdkjs/commit/a1a3a7802964db03b3861ba456c9878ff0432771))
+* add upload methods and docstrings to StorageType ([cbf2f2c](https://github.com/ripio/sdkjs/commit/cbf2f2cf3353c7e9f7b8270d0dae48bf1185aacc))
+
 # [1.1.0-dev.10](https://github.com/ripio/sdkjs/compare/v1.1.0-dev.9...v1.1.0-dev.10) (2022-11-07)
 
 
