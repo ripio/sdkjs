@@ -56,7 +56,7 @@ export default abstract class Resource {
    * It returns an object
    * @returns The JSON data is being returned.
    */
-  async getJsonData(): Promise<object> {
+  async getJsonData(): Promise<{ [key: string]: any }> {
     const stringData = await this.getStringData()
     return JSON.parse(stringData)
   }
