@@ -80,12 +80,9 @@
 ### Features
 
 * Add new override attributes on execute funtion ([14e193f](https://github.com/ripio/sdkjs/commit/14e193fbae84b561eaa28f8a16308931323f72fd))
-* fix JsonRPC tests ([1bdbe57](https://github.com/ripio/sdkjs/commit/1bdbe571a22301f6117b518aab0def433a5d5d86))
-* fix lint ([6a7dcc6](https://github.com/ripio/sdkjs/commit/6a7dcc6f8a76e425bb86d2a664990d82d3e8f276))
-* fix lint ([895a0d9](https://github.com/ripio/sdkjs/commit/895a0d9229c57792d104710e53deb71b1372aba0))
 * manage gas price on non legacy chains ([1770b68](https://github.com/ripio/sdkjs/commit/1770b687403310afe270c3af9b9482807ce37404))
 
-## [1.0.1](https://github.com/ripio/sdkjs/compare/v1.0.0...v1.0.1) (2022-10-05)
+# [1.0.1](https://github.com/ripio/sdkjs/compare/v1.0.0...v1.0.1) (2022-10-05)
 
 
 ### Bug Fixes
