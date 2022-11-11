@@ -13,7 +13,22 @@ const fakeTransactionExecuteResponse: ExecuteResponse = {
   transactionResponse: {} as unknown as TransactionResponseExtended
 }
 
+describe('ExtendedToken20Manager constructor', () => {
+  it('Should instanciate the ExtendedToken20Manager', () => {
+    const spyWarn = jest.spyOn(console, 'warn').mockImplementationOnce(() => {})
+    const sdk = new ExtendedToken20Manager()
+    expect(sdk).toBeDefined()
+    expect(sdk).toBeInstanceOf(ExtendedToken20Manager)
+    expect(spyWarn).toBeCalledWith(
+      'Deprecation notice: the ExtendedToken20Manager class is being deprecated. Use Token20Manager instead.'
+    )
+  })
+})
+
 describe('ExtendedToken20Manager IERC20Metadata methods', () => {
+  beforeEach(() => {
+    jest.spyOn(console, 'warn').mockImplementationOnce(() => {})
+  })
   it('Should return the name of the token', async () => {
     const spyExecuteFunction = jest
       .spyOn(ContractManager.prototype, 'execute')
@@ -61,6 +76,9 @@ describe('ExtendedToken20Manager IERC20Metadata methods', () => {
 })
 
 describe('ExtendedToken20Manager mint method', () => {
+  beforeEach(() => {
+    jest.spyOn(console, 'warn').mockImplementationOnce(() => {})
+  })
   it('Should throw an error due not passing to parameter', () => {
     const sdk = new ExtendedToken20Manager()
     expect(sdk.mint()).rejects.toThrow(errors.IS_REQUIRED('to'))
@@ -102,6 +120,9 @@ describe('ExtendedToken20Manager mint method', () => {
 })
 
 describe('ExtendedToken20Manager burn method', () => {
+  beforeEach(() => {
+    jest.spyOn(console, 'warn').mockImplementationOnce(() => {})
+  })
   it('Should burn sender tokens and return a tx hash', async () => {
     const spyExecute = jest
       .spyOn(ContractManager.prototype, 'execute')
@@ -151,6 +172,9 @@ describe('ExtendedToken20Manager burn method', () => {
 })
 
 describe('ExtendedToken20Manager burnFrom method', () => {
+  beforeEach(() => {
+    jest.spyOn(console, 'warn').mockImplementationOnce(() => {})
+  })
   it('Should burnFrom tokens and return a tx hash', async () => {
     const spyExecute = jest
       .spyOn(ContractManager.prototype, 'execute')
@@ -195,6 +219,9 @@ describe('ExtendedToken20Manager burnFrom method', () => {
 })
 
 describe('ExtendedToken20Manager pause method', () => {
+  beforeEach(() => {
+    jest.spyOn(console, 'warn').mockImplementationOnce(() => {})
+  })
   it('Should pause the contract and return a tx hash', async () => {
     const spyExecute = jest
       .spyOn(ContractManager.prototype, 'execute')
@@ -210,6 +237,9 @@ describe('ExtendedToken20Manager pause method', () => {
 })
 
 describe('ExtendedToken20Manager unpause method', () => {
+  beforeEach(() => {
+    jest.spyOn(console, 'warn').mockImplementationOnce(() => {})
+  })
   it('Should unpause the contract and return a tx hash', async () => {
     const spyExecute = jest
       .spyOn(ContractManager.prototype, 'execute')
@@ -227,6 +257,7 @@ describe('ExtendedToken20Manager unpause method', () => {
 describe('ExtendedToken20Manager permit method', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    jest.spyOn(console, 'warn').mockImplementationOnce(() => {})
   })
 
   it('Should throw an error if owner address is not provided', async () => {
@@ -302,6 +333,7 @@ describe('ExtendedToken20Manager permit method', () => {
 describe('ExtendedToken20Manager nonces method', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    jest.spyOn(console, 'warn').mockImplementationOnce(() => {})
   })
 
   it('Should throw error if owner is not provided', () => {
@@ -328,6 +360,9 @@ describe('ExtendedToken20Manager nonces method', () => {
 })
 
 describe('ExtendedToken20Manager domainSeparator method', () => {
+  beforeEach(() => {
+    jest.spyOn(console, 'warn').mockImplementationOnce(() => {})
+  })
   it('should return the domain separator', async () => {
     const spyExecute = jest
       .spyOn(ContractManager.prototype, 'execute')

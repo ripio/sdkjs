@@ -1,0 +1,5 @@
+export enum NFT_METADATA_FORMAT {
+  IMAGE,
+  JSON,
+  JSON_WITH_IMAGE
+}

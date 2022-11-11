@@ -13,11 +13,16 @@ const fakeTransactionExecuteResponse: ExecuteResponse = {
   transactionResponse: {} as unknown as TransactionResponseExtended
 }
 
+const spyWarn = jest.spyOn(console, 'warn').mockImplementation(() => {})
+
 describe('ExtendedNFT721Manager constructor', () => {
   it('Should instanciate the ExtendedNFT721Manager', () => {
     const sdk = new ExtendedNFT721Manager()
     expect(sdk).toBeDefined()
     expect(sdk).toBeInstanceOf(ExtendedNFT721Manager)
+    expect(spyWarn).toBeCalledWith(
+      'Deprecation notice: the ExtendedNFT721Manager class is being deprecated. Use NFT721Manager instead.'
+    )
   })
 })
 

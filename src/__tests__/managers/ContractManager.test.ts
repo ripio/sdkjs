@@ -1,8 +1,15 @@
-import { ExecuteResponse } from './../../types/interfaces'
+import { ExecuteResponse, TransactionResponse } from './../../types/interfaces'
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import EventEmitter from 'events'
-import { Contract, ethers, EventFilter, Signer, Wallet } from 'ethers'
+import {
+  BigNumber,
+  Contract,
+  ethers,
+  EventFilter,
+  Signer,
+  Wallet
+} from 'ethers'
 import { ProviderEvents } from '../../connectors/events'
 import JsonRPCWeb3Connector from '../../connectors/JsonRPCWeb3Connector'
 import BrowserWeb3Connector from '../../connectors/BrowserWeb3Connector'
@@ -12,7 +19,12 @@ import errors from '../../types/errors'
 import { ConnectInfo, ProviderRpcError } from '../../types/interfaces'
 import * as connectors from '../../utils/connectors'
 import { BaseProvider } from '@ethersproject/providers'
-import { Interface, ParamType } from 'ethers/lib/utils'
+import {
+  FunctionFragment,
+  Interface,
+  ParamType,
+  TransactionDescription
+} from 'ethers/lib/utils'
 import { FilterEvent } from '../../utils/validations'
 import { Event } from '@ethersproject/contracts'
 import { conversions, validations } from '../../utils'
@@ -363,7 +375,7 @@ describe('ContractManager execute function', () => {
     expect(mockGetExecuteResponse).toBeCalledWith(
       response,
       sdk['_connector'],
-      sdk['_abi']
+      sdk
     )
     expect(spyRequireParam).toBeCalledWith(
       [sdk.connector?.provider, sdk.contract, sdk.abi],
@@ -436,7 +448,7 @@ describe('ContractManager execute function', () => {
     expect(mockGetExecuteResponse).toHaveBeenCalledWith(
       tx,
       sdk['_connector'],
-      sdk['_abi']
+      sdk
     )
   })
 
@@ -740,7 +752,70 @@ describe('ContractManager execute function', () => {
     ).rejects.toThrow(errors.INVALID_PARAMETER('gasLimit'))
   })
 
-  it('Should override the default gasPrice', async () => {
+  it('Should throw an error if maxPriorityFeePerGas is not BigNumberish', async () => {
+    const sdk = new ContractManager()
+    const method = 'test'
+    const mockMethod = jest.fn().mockImplementationOnce(() => {
+      return 'result'
+    })
+    const mockGetFunction = jest.fn().mockReturnValueOnce({
+      payable: false,
+      inputs: [],
+      format: () => method
+    })
+    sdk['_abi'] = {
+      getFunction: mockGetFunction
+    } as unknown as ethers.utils.Interface
+    sdk['_connector'] = {
+      account: {} as Wallet,
+      provider: {} as ethers.providers.JsonRpcProvider
+    } as unknown as JsonRPCWeb3Connector
+    sdk['_contract'] = {
+      [method]: mockMethod
+    } as unknown as Contract
+    await expect(
+      sdk.execute({
+        method,
+        params: [],
+        overrides: { maxPriorityFeePerGas: '42.42' }
+      })
+    ).rejects.toThrow(errors.INVALID_PARAMETER('maxPriorityFeePerGas'))
+  })
+
+  it('Should throw an error if it is legacyChain when we use maxPriorityFeePerGas', async () => {
+    const sdk = new ContractManager()
+    const method = 'test'
+    const mockMethod = jest.fn().mockImplementationOnce(() => {
+      return 'result'
+    })
+    const mockGetFunction = jest.fn().mockReturnValueOnce({
+      payable: false,
+      inputs: [],
+      format: () => method
+    })
+    sdk['_abi'] = {
+      getFunction: mockGetFunction
+    } as unknown as ethers.utils.Interface
+    sdk['_connector'] = {
+      account: {} as Wallet,
+      provider: {} as ethers.providers.JsonRpcProvider,
+      isLegacy: true
+    } as unknown as JsonRPCWeb3Connector
+    sdk['_contract'] = {
+      [method]: mockMethod
+    } as unknown as Contract
+    await expect(
+      sdk.execute({
+        method,
+        params: [],
+        overrides: { maxPriorityFeePerGas: 100 }
+      })
+    ).rejects.toThrow(
+      errors.PARAMETER_NOT_SUPPORTED_ON_LEGACY_CHAIN('maxPriorityFeePerGas')
+    )
+  })
+
+  it('Should override the default maxPriorityFeePerGas', async () => {
     const sdk = new ContractManager()
     const method = 'test'
     const param1 = 'param1'
@@ -767,9 +842,170 @@ describe('ContractManager execute function', () => {
     await sdk.execute({
       method,
       params: [param1],
+      overrides: { maxPriorityFeePerGas: 100 }
+    })
+    expect(mockMethod).toBeCalledWith(param1, { maxPriorityFeePerGas: 100 })
+  })
+
+  it('Should throw an error if maxFeePerGas is not BigNumberish', async () => {
+    const sdk = new ContractManager()
+    const method = 'test'
+    const mockMethod = jest.fn().mockImplementationOnce(() => {
+      return 'result'
+    })
+    const mockGetFunction = jest.fn().mockReturnValueOnce({
+      payable: false,
+      inputs: [],
+      format: () => method
+    })
+    sdk['_abi'] = {
+      getFunction: mockGetFunction
+    } as unknown as ethers.utils.Interface
+    sdk['_connector'] = {
+      account: {} as Wallet,
+      provider: {} as ethers.providers.JsonRpcProvider
+    } as unknown as JsonRPCWeb3Connector
+    sdk['_contract'] = {
+      [method]: mockMethod
+    } as unknown as Contract
+    await expect(
+      sdk.execute({
+        method,
+        params: [],
+        overrides: { maxFeePerGas: '42.42' }
+      })
+    ).rejects.toThrow(errors.INVALID_PARAMETER('maxFeePerGas'))
+  })
+
+  it('Should throw an error if it is legacyChain when we use maxFeePerGas', async () => {
+    const sdk = new ContractManager()
+    const method = 'test'
+    const mockMethod = jest.fn().mockImplementationOnce(() => {
+      return 'result'
+    })
+    const mockGetFunction = jest.fn().mockReturnValueOnce({
+      payable: false,
+      inputs: [],
+      format: () => method
+    })
+    sdk['_abi'] = {
+      getFunction: mockGetFunction
+    } as unknown as ethers.utils.Interface
+    sdk['_connector'] = {
+      account: {} as Wallet,
+      provider: {} as ethers.providers.JsonRpcProvider,
+      isLegacy: true
+    } as unknown as JsonRPCWeb3Connector
+    sdk['_contract'] = {
+      [method]: mockMethod
+    } as unknown as Contract
+    await expect(
+      sdk.execute({
+        method,
+        params: [],
+        overrides: { maxFeePerGas: 100 }
+      })
+    ).rejects.toThrow(
+      errors.PARAMETER_NOT_SUPPORTED_ON_LEGACY_CHAIN('maxFeePerGas')
+    )
+  })
+
+  it('Should override the default maxFeePerGas', async () => {
+    const sdk = new ContractManager()
+    const method = 'test'
+    const param1 = 'param1'
+    const mockMethod = jest.fn().mockImplementationOnce(() => {
+      return 'result'
+    })
+    const mockGetFunction = jest.fn().mockReturnValueOnce({
+      payable: false,
+      inputs: [{ name: param1, type: 'address' }],
+      format: () => method
+    })
+    jest.spyOn(conversions, 'extendTransactionResponse')
+    sdk.safeMode = false
+    sdk['_abi'] = {
+      getFunction: mockGetFunction
+    } as unknown as ethers.utils.Interface
+    sdk['_connector'] = {
+      account: {} as Wallet,
+      provider: {} as ethers.providers.JsonRpcProvider
+    } as unknown as JsonRPCWeb3Connector
+    sdk['_contract'] = {
+      [method]: mockMethod
+    } as unknown as Contract
+    await sdk.execute({
+      method,
+      params: [param1],
+      overrides: { maxFeePerGas: 100 }
+    })
+    expect(mockMethod).toBeCalledWith(param1, { maxFeePerGas: 100 })
+  })
+
+  it('Should override the default gasPrice', async () => {
+    const sdk = new ContractManager()
+    const method = 'test'
+    const param1 = 'param1'
+    const mockMethod = jest.fn().mockImplementationOnce(() => {
+      return 'result'
+    })
+    const mockGetFunction = jest.fn().mockReturnValueOnce({
+      payable: false,
+      inputs: [{ name: param1, type: 'address' }],
+      format: () => method
+    })
+    jest.spyOn(conversions, 'extendTransactionResponse')
+    sdk.safeMode = false
+    sdk['_abi'] = {
+      getFunction: mockGetFunction
+    } as unknown as ethers.utils.Interface
+    sdk['_connector'] = {
+      account: {} as Wallet,
+      provider: {} as ethers.providers.JsonRpcProvider,
+      isLegacy: true
+    } as unknown as JsonRPCWeb3Connector
+    sdk['_contract'] = {
+      [method]: mockMethod
+    } as unknown as Contract
+    await sdk.execute({
+      method,
+      params: [param1],
       overrides: { gasPrice: 100 }
     })
     expect(mockMethod).toBeCalledWith(param1, { gasPrice: 100 })
+  })
+
+  it('Should throw an error if it is not legacyChain when we use gasPrice', async () => {
+    const sdk = new ContractManager()
+    const method = 'test'
+    const mockMethod = jest.fn().mockImplementationOnce(() => {
+      return 'result'
+    })
+    const mockGetFunction = jest.fn().mockReturnValueOnce({
+      payable: false,
+      inputs: [],
+      format: () => method
+    })
+    sdk['_abi'] = {
+      getFunction: mockGetFunction
+    } as unknown as ethers.utils.Interface
+    sdk['_connector'] = {
+      account: {} as Wallet,
+      provider: {} as ethers.providers.JsonRpcProvider,
+      isLegacy: false
+    } as unknown as JsonRPCWeb3Connector
+    sdk['_contract'] = {
+      [method]: mockMethod
+    } as unknown as Contract
+    await expect(
+      sdk.execute({
+        method,
+        params: [],
+        overrides: { gasPrice: 100 }
+      })
+    ).rejects.toThrow(
+      errors.PARAMETER_NOT_SUPPORTED_ON_NON_LEGACY_CHAIN('gasPrice')
+    )
   })
 
   it('Should throw an error if gasPrice is not BigNumberish', async () => {
@@ -788,7 +1024,8 @@ describe('ContractManager execute function', () => {
     } as unknown as ethers.utils.Interface
     sdk['_connector'] = {
       account: {} as Wallet,
-      provider: {} as ethers.providers.JsonRpcProvider
+      provider: {} as ethers.providers.JsonRpcProvider,
+      isLegacy: true
     } as unknown as JsonRPCWeb3Connector
     sdk['_contract'] = {
       [method]: mockMethod
@@ -1420,5 +1657,289 @@ describe('Event handling', () => {
       .mockResolvedValueOnce([Object.create(Event.prototype) as Event])
     sdk.eventsBetweenBlocks('Approval', 1)
     expect(spyEventBlocks).toHaveBeenCalledWith({}, 1, 'latest')
+  })
+})
+
+describe('ContractManager changeTransaction tests', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
+  it('should throw an error if is not active', async () => {
+    const cm = new ContractManager()
+    const tx = {} as ethers.providers.TransactionResponse
+    expect(cm.changeTransaction(tx, {})).rejects.toThrowError(
+      errors.MUST_ACTIVATE
+    )
+  })
+
+  it('Should change the transaction', async () => {
+    const connector = new JsonRPCWeb3Connector(
+      'http://fake',
+      'f31fa21342dafa7de378d8e19cd296dd905988e085d3950dcc35cbadac764d4a'
+    )
+    const instance = new ContractManager()
+    instance['_isActive'] = true
+    instance['_connector'] = connector
+    const mockParseTx = jest.fn().mockImplementation(
+      () =>
+        ({
+          args: {
+            0: '0x0001',
+            address: BigNumber.from('10')
+          }, // this is actually an array, but ethers makes a wierd thing where it also has keys with its values
+          functionFragment: {
+            inputs: [
+              {
+                name: 'address',
+                type: 'address'
+              } as unknown as ParamType,
+              {
+                name: 'value',
+                type: 'uint256'
+              } as unknown as ParamType
+            ]
+          } as unknown as FunctionFragment,
+          name: 'funcName',
+          signature: 'funcName(address)',
+          value: BigNumber.from('0')
+        } as unknown as TransactionDescription)
+    )
+    const fakeInterface = {
+      parseTransaction: mockParseTx,
+      encodeFunctionData: jest.fn().mockReturnValue('0x0003')
+    } as unknown as ethers.utils.Interface
+    instance['_abi'] = fakeInterface
+    // mock the _speedUpGas method
+    jest.spyOn(connector, '_speedUpGas').mockReturnValue({
+      maxPriorityFeePerGas: BigNumber.from('110'),
+      nonce: 1
+    })
+    const mockTransfer = jest
+      .spyOn(ethers.Wallet.prototype, 'sendTransaction')
+      .mockResolvedValueOnce({} as TransactionResponse)
+    const tx = {
+      from: '0x0001',
+      to: '0x0002',
+      nonce: 1,
+      gasPrice: BigNumber.from('10'),
+      maxPriorityFeePerGas: BigNumber.from('100'),
+      data: '0x0001'
+    } as unknown as TransactionResponse
+
+    await expect(
+      instance.changeTransaction(tx, { address: '0x003' })
+    ).resolves.toEqual({})
+    expect(mockTransfer).toHaveBeenCalledWith({
+      from: '0x0001',
+      to: '0x0002',
+      value: undefined,
+      nonce: 1,
+      maxPriorityFeePerGas: BigNumber.from('110'),
+      data: '0x0003'
+    })
+  })
+
+  it('should throw an error when txReceipt is not provided', async () => {
+    const instance = new ContractManager()
+    instance['_isActive'] = true
+    await expect(instance.changeTransaction()).rejects.toThrow(
+      errors.IS_REQUIRED('txReceipt')
+    )
+  })
+
+  it('should throw an error if newParams is not provided', async () => {
+    const instance = new ContractManager()
+    instance['_isActive'] = true
+    await expect(
+      instance.changeTransaction({} as unknown as TransactionResponse)
+    ).rejects.toThrow(errors.IS_REQUIRED('newParams'))
+  })
+
+  it('should throw an error if not activated', async () => {
+    const instance = new ContractManager()
+    instance['_isActive'] = false
+    await expect(
+      instance.changeTransaction({} as unknown as TransactionResponse, {})
+    ).rejects.toThrow(errors.MUST_ACTIVATE)
+  })
+
+  it('should throw an error if account is not set', async () => {
+    const instance = new ContractManager()
+    instance['_isActive'] = true
+    jest
+      .spyOn(ContractManager.prototype, 'isReadonly', 'get')
+      .mockReturnValueOnce(true)
+    await expect(
+      instance.changeTransaction({} as unknown as TransactionResponse, {})
+    ).rejects.toThrow(errors.READ_ONLY('changeTransaction'))
+  })
+
+  it('should throw an error if inputParam not found in interface', async () => {
+    const instance = new ContractManager()
+    instance['_isActive'] = true
+    const mockParseTx = jest.fn().mockImplementation(
+      () =>
+        ({
+          args: {
+            0: '0x0001',
+            address: BigNumber.from('10')
+          }, // this is actually an array, but ethers makes a wierd thing where it also has keys with its values
+          functionFragment: {
+            inputs: [
+              {
+                name: 'address',
+                type: 'address'
+              } as unknown as ParamType,
+              {
+                name: 'value',
+                type: 'uint256'
+              } as unknown as ParamType
+            ]
+          } as unknown as FunctionFragment,
+          name: 'funcName',
+          signature: 'funcName(address)',
+          value: BigNumber.from('0')
+        } as unknown as TransactionDescription)
+    )
+    const fakeInterface = {
+      parseTransaction: mockParseTx,
+      encodeFunctionData: jest.fn().mockReturnValue('0x0003')
+    } as unknown as ethers.utils.Interface
+    instance['_abi'] = fakeInterface
+    await expect(
+      instance.changeTransaction({} as unknown as TransactionResponse, {
+        badAddress: '0x003'
+      })
+    ).rejects.toThrow(errors.INVALID_PARAMETER('badAddress'))
+  })
+
+  it('should throw an error if parameter type is incorrect and is not a number', async () => {
+    const instance = new ContractManager()
+    instance['_isActive'] = true
+    const mockParseTx = jest.fn().mockImplementation(
+      () =>
+        ({
+          args: {
+            0: '0x0001',
+            address: BigNumber.from('10')
+          }, // this is actually an array, but ethers makes a wierd thing where it also has keys with its values
+          functionFragment: {
+            inputs: [
+              {
+                name: 'address',
+                type: 'address'
+              } as unknown as ParamType,
+              {
+                name: 'value',
+                type: 'uint256'
+              } as unknown as ParamType
+            ]
+          } as unknown as FunctionFragment,
+          name: 'funcName',
+          signature: 'funcName(address)',
+          value: BigNumber.from('0')
+        } as unknown as TransactionDescription)
+    )
+    const fakeInterface = {
+      parseTransaction: mockParseTx,
+      encodeFunctionData: jest.fn().mockReturnValue('0x0003')
+    } as unknown as ethers.utils.Interface
+    instance['_abi'] = fakeInterface
+    await expect(
+      instance.changeTransaction({} as unknown as TransactionResponse, {
+        address: true
+      })
+    ).rejects.toThrow(errors.INVALID_PARAM_TYPE('address', 'string', 'boolean'))
+  })
+
+  it('should throw an error if parameter type is incorrect and is a number', async () => {
+    const instance = new ContractManager()
+    instance['_isActive'] = true
+    const mockParseTx = jest.fn().mockImplementation(
+      () =>
+        ({
+          args: {
+            0: '0x0001',
+            address: BigNumber.from('10')
+          }, // this is actually an array, but ethers makes a wierd thing where it also has keys with its values
+          functionFragment: {
+            inputs: [
+              {
+                name: 'address',
+                type: 'address'
+              } as unknown as ParamType,
+              {
+                name: 'value',
+                type: 'uint256'
+              } as unknown as ParamType
+            ]
+          } as unknown as FunctionFragment,
+          name: 'funcName',
+          signature: 'funcName(address)',
+          value: BigNumber.from('0')
+        } as unknown as TransactionDescription)
+    )
+    const fakeInterface = {
+      parseTransaction: mockParseTx,
+      encodeFunctionData: jest.fn().mockReturnValue('0x0003')
+    } as unknown as ethers.utils.Interface
+    instance['_abi'] = fakeInterface
+    await expect(
+      instance.changeTransaction({} as unknown as TransactionResponse, {
+        value: '1.1'
+      })
+    ).rejects.toThrow(errors.NOT_BIGNUMBERISH('value'))
+  })
+})
+
+describe('Utils of ContractManager', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+    jest.restoreAllMocks()
+  })
+
+  it('Should return true if ContractManager abi implements the function', () => {
+    const functionName = 'allowance'
+    const params = ['address', 'address']
+    const sdk = new ContractManager()
+    const abi = new ethers.utils.Interface([
+      {
+        inputs: [
+          {
+            name: 'owner',
+            type: 'address'
+          },
+          {
+            name: 'spender',
+            type: 'address'
+          }
+        ],
+        name: 'allowance',
+        outputs: [],
+        stateMutability: 'view',
+        type: 'function'
+      }
+    ])
+    sdk['_abi'] = abi
+    const spyImplementsFunction = jest
+      .spyOn(validations, 'implementsFunction')
+      .mockReturnValueOnce(true)
+    expect(sdk.implements(functionName, params)).toBe(true)
+    expect(spyImplementsFunction).toHaveBeenCalledWith(
+      abi,
+      functionName,
+      params
+    )
+  })
+
+  it('Should return false if ContractManager abi not implements the function', () => {
+    const functionName = 'fakeFunction'
+    const params = ['fake']
+    const sdk = new ContractManager()
+    const abi = {} as ethers.utils.Interface
+    sdk['_abi'] = abi
+    jest.spyOn(validations, 'implementsFunction').mockReturnValueOnce(false)
+    expect(sdk.implements(functionName, params)).toBe(false)
   })
 })

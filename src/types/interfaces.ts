@@ -25,8 +25,12 @@ export interface ProviderRpcError extends Error {
 export interface OverrideExecuteOptions {
   /* the amount of gas to allow a node to use during the execution of the code */
   gasLimit?: BigNumberish
-  /* the price to pay per gas */
+  /* the price to pay per gas (before EIP-1559) */
   gasPrice?: BigNumberish
+  /* tip to the miner (after EIP-1559) */
+  maxPriorityFeePerGas?: BigNumberish
+  /* base fee plus tip (after EIP-1559) */
+  maxFeePerGas?: BigNumberish
 }
 
 /* Defining the interface for the options object that is passed to the execute function. */
@@ -50,9 +54,19 @@ export interface GenericObject {
 export interface TransactionResponseExtended extends TransactionResponse {
   cancel: (gasSpeed?: BigNumber) => Promise<TransactionResponse>
   speedUp: (gasSpeed?: BigNumber) => Promise<TransactionResponse>
-  change?: (
+  change: (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     newParams: Record<string, any>,
+    gasSpeed?: BigNumber
+  ) => Promise<TransactionResponse>
+}
+
+export interface ConnectorResponseExtended extends TransactionResponse {
+  cancel: (gasSpeed?: BigNumber) => Promise<TransactionResponse>
+  speedUp: (gasSpeed?: BigNumber) => Promise<TransactionResponse>
+  change: (
+    to?: string,
+    value?: BigNumber,
     gasSpeed?: BigNumber
   ) => Promise<TransactionResponse>
 }
@@ -111,4 +125,14 @@ export interface DaiPermitMessage {
   nonce: BigNumberish
   expiry: BigNumberish
   allowed?: boolean
+}
+
+export interface NftMetadata {
+  name?: string
+  description?: string
+  image?: string
+  traits?: Array<object>
+  attributes?: Array<object>
+  properties?: Array<object>
+  [key: string]: unknown // Custom extra data
 }

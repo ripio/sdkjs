@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { ethers, Contract, Wallet } from 'ethers'
+import { ethers, Contract, Wallet, BigNumber } from 'ethers'
 import { ParamType } from 'ethers/lib/utils'
 import EventEmitter from 'events'
 import {
@@ -8,7 +8,9 @@ import {
   requireParam,
   isBigNumber,
   isFloatNumber,
-  FilterEvent
+  FilterEvent,
+  isRequired,
+  implementsFunction
 } from '../utils/validations'
 import errorTypes from '../types/errors'
 import { ProviderEvents } from '../connectors/events'
@@ -19,7 +21,8 @@ import {
   ProviderRpcError,
   ContractEvents,
   ValueInput,
-  ExecuteResponse
+  ExecuteResponse,
+  TransactionResponse
 } from '../types/interfaces'
 import { getExecuteResponse, toWei } from '../utils/conversions'
 import { getConnector } from '../utils/connectors'
@@ -174,6 +177,16 @@ export class ContractManager {
   validateStandard(): void {}
 
   /**
+   * It validates that the ContractManager ABI have a specific function
+   * @param {string} functionName - the name of the function
+   * @param {string} paramsTypes - the types of the params of the function
+   * @return {boolean} returns true if the function is implemented, false otherwise
+   */
+  implements(functionName: string, paramsTypes?: string[]): boolean {
+    return implementsFunction(this._abi!, functionName, paramsTypes)
+  }
+
+  /**
    * async activator for ContractManager
    * @param  {string} contractAddress contract address
    * @param  {Array<any>} contractAbi parsed json object of contract's abi
@@ -284,6 +297,7 @@ export class ContractManager {
       [this._connector?.provider, this._contract, this._abi],
       errorTypes.SDK_NOT_INITIALIZED
     )
+    const isLegacyChain = this.connector?.isLegacy
     let iFunction
     try {
       // attempts to get function from abi
@@ -319,8 +333,28 @@ export class ContractManager {
     if (overrides?.gasLimit && !isBigNumber(overrides?.gasLimit))
       throw errorTypes.INVALID_PARAMETER('gasLimit')
 
-    if (overrides?.gasPrice && !isBigNumber(overrides?.gasPrice))
-      throw errorTypes.INVALID_PARAMETER('gasPrice')
+    if (overrides?.gasPrice) {
+      if (!isLegacyChain)
+        throw errorTypes.PARAMETER_NOT_SUPPORTED_ON_NON_LEGACY_CHAIN('gasPrice')
+      if (!isBigNumber(overrides?.gasPrice))
+        throw errorTypes.INVALID_PARAMETER('gasPrice')
+    }
+
+    if (overrides?.maxPriorityFeePerGas) {
+      if (isLegacyChain)
+        throw errorTypes.PARAMETER_NOT_SUPPORTED_ON_LEGACY_CHAIN(
+          'maxPriorityFeePerGas'
+        )
+      if (!isBigNumber(overrides?.maxPriorityFeePerGas))
+        throw errorTypes.INVALID_PARAMETER('maxPriorityFeePerGas')
+    }
+
+    if (overrides?.maxFeePerGas) {
+      if (isLegacyChain)
+        throw errorTypes.PARAMETER_NOT_SUPPORTED_ON_LEGACY_CHAIN('maxFeePerGas')
+      if (!isBigNumber(overrides?.maxFeePerGas))
+        throw errorTypes.INVALID_PARAMETER('maxFeePerGas')
+    }
 
     if (iFunction.inputs.length !== params.length)
       throw errorTypes.INVALID_PARAMETER_COUNT(
@@ -373,10 +407,71 @@ export class ContractManager {
       }
       // call contract's method with params
       const txResponse = await this._contract![methodName](...txParams, options)
-      return getExecuteResponse(txResponse, this._connector!, this._abi!)
+      return getExecuteResponse(txResponse, this._connector!, this)
     } catch (error: any) {
       throw errorTypes.TRANSACTION_FAILED(error)
     }
+  }
+
+  /**
+   * It takes a transaction receipt, an interface, new parameters, and a gas speed, and sends a new
+   * transactionResponse with its params modified, and a new transaction receipt.
+   * @param {TransactionResponse} txReceipt - The transaction receipt that you want to change.
+   * @param newParams - An object with the new parameters you want to change.
+   * @param {BigNumber} [gasSpeed] - The speed at which you want to send the transaction.
+   * @returns A promise that resolves to a TransactionResponse
+   */
+  changeTransaction = async (
+    txReceipt: TransactionResponse = isRequired('txReceipt'),
+    newParams: Record<string, any> = isRequired('newParams'),
+    gasSpeed?: BigNumber
+  ): Promise<TransactionResponse> => {
+    if (!this._isActive) {
+      throw errorTypes.MUST_ACTIVATE
+    }
+    if (this.isReadonly) throw errorTypes.READ_ONLY('changeTransaction')
+    const decodedData = this.abi!.parseTransaction(txReceipt)
+    const inputs = decodedData.functionFragment.inputs
+    // validate that provided params belong to the function
+    // check every param's type
+    Object.entries(newParams).forEach((param: Record<string, any>) => {
+      // check if param exists in fragment
+      const inputParam = inputs.find((input: any) => input.name === param[0])
+      if (!inputParam) {
+        throw errorTypes.INVALID_PARAMETER(param[0])
+      }
+
+      // type of user's input
+      const paramType = typeof param[1]
+      // type of abi's contract input matching to js types
+      const abiParamType = matchType(inputParam.type)
+      if (abiParamType !== null && paramType !== abiParamType) {
+        if (abiParamType !== 'number')
+          throw errorTypes.INVALID_PARAM_TYPE(param[0], abiParamType, paramType)
+        // Checking if the parameter is BigNumberish.
+        else if (abiParamType === 'number' && !isBigNumber(param))
+          throw errorTypes.NOT_BIGNUMBERISH(param[0])
+      }
+    })
+    // get new arguments and replace previous ones with new ones if they where provided
+    const newArgs = inputs.map(
+      (input: any) => newParams[input.name] ?? decodedData.args[input.name]
+    )
+
+    // encode the new params to the transaction using encodeFunctionData
+    const newData = this.abi!.encodeFunctionData(
+      decodedData.functionFragment,
+      newArgs
+    )
+
+    const speedUp = await this.connector!._speedUpGas(txReceipt, gasSpeed)
+    return this.connector!.account!.sendTransaction({
+      from: txReceipt.from,
+      to: txReceipt.to,
+      value: txReceipt.value,
+      data: newData,
+      ...speedUp
+    })
   }
 
   // getters

@@ -45,11 +45,15 @@ describe('JsonRPCWeb3Connector constructor', () => {
       .spyOn(ethers.providers.JsonRpcProvider.prototype, 'getNetwork')
       .mockResolvedValueOnce({ name: '', chainId: 1 })
     const instance = new JsonRPCWeb3Connector('http://fake')
+    const spyDetectLegacyChain = jest
+      .spyOn(instance, 'detectLegacyChain')
+      .mockImplementationOnce(async () => {})
     await instance.activate()
     expect(instance).toBeInstanceOf(JsonRPCWeb3Connector)
     expect(instance.provider).not.toBeUndefined()
     expect(instance.chainId).toBe(1)
     expect(instance.account).toBeUndefined()
+    expect(spyDetectLegacyChain).toHaveBeenCalled()
   })
 
   it('Should create a new instance with an account', async () => {
@@ -60,11 +64,16 @@ describe('JsonRPCWeb3Connector constructor', () => {
       'http://fake',
       '651e3c36052bdb537d46ca6036542e422f32ca5a30d8348a281707ffbe37ee91'
     )
+
+    const spyDetectLegacyChain = jest
+      .spyOn(instance, 'detectLegacyChain')
+      .mockImplementationOnce(async () => {})
     await instance.activate()
     expect(instance).toBeInstanceOf(JsonRPCWeb3Connector)
     expect(instance.provider).not.toBeUndefined()
     expect(instance.chainId).toBe(1)
     expect(instance.account).not.toBeUndefined()
+    expect(spyDetectLegacyChain).toHaveBeenCalled()
   })
 })
 
@@ -74,28 +83,43 @@ describe('JsonRPCWeb3Connector activate method', () => {
       .spyOn(ethers.providers.JsonRpcProvider.prototype, 'getNetwork')
       .mockResolvedValueOnce({ name: '', chainId: 1 })
     const instance = new JsonRPCWeb3Connector('http://fake')
+    const spyDetectLegacyChain = jest
+      .spyOn(instance, 'detectLegacyChain')
+      .mockImplementationOnce(async () => {})
     const result = await instance.activate()
     expect(result).toStrictEqual({
       provider: instance.provider,
       chainId: instance.chainId,
       account: undefined
     })
+    expect(spyDetectLegacyChain).toHaveBeenCalled()
   })
 
   it('Should activate the provider with an account', async () => {
     jest
       .spyOn(ethers.providers.JsonRpcProvider.prototype, 'getNetwork')
       .mockResolvedValueOnce({ name: '', chainId: 1 })
+    jest
+      .spyOn(ethers.providers.JsonRpcProvider.prototype, 'getFeeData')
+      .mockResolvedValueOnce({
+        maxFeePerGas: null,
+        maxPriorityFeePerGas: null,
+        gasPrice: BigNumber.from('1')
+      })
     const instance = new JsonRPCWeb3Connector(
       'http://fake',
       '651e3c36052bdb537d46ca6036542e422f32ca5a30d8348a281707ffbe37ee91'
     )
+    const spyDetectLegacyChain = jest
+      .spyOn(instance, 'detectLegacyChain')
+      .mockImplementationOnce(async () => {})
     const result = await instance.activate()
     expect(result).toStrictEqual({
       provider: instance.provider,
       chainId: instance.chainId,
       account: instance.account
     })
+    expect(spyDetectLegacyChain).toHaveBeenCalled()
   })
 
   it('Should throw an error if activating without provider or chainId', async () => {
@@ -118,7 +142,8 @@ describe('JsonRPCWeb3Connector deactivate method', () => {
       'deactivate'
     )
     const instance = new JsonRPCWeb3Connector('http://fake')
-    await instance.activate()
+    instance['_isActive'] = true
+    instance['_chainId'] = 5
     await instance.deactivate()
     expect(spyAbstractWeb3ProviderDeactivate).toHaveBeenCalled()
   })
@@ -136,7 +161,8 @@ describe('JsonRPCWeb3Connector deactivate method', () => {
     mockWS.removeAllListeners = jest.fn()
     const instance = Object.create(JsonRPCWeb3Connector.prototype)
     instance['_provider'] = mockWS
-    await instance.activate()
+    instance['_isActive'] = true
+    instance['_chainId'] = 5
     await instance.deactivate()
     expect(spyAbstractWeb3ProviderDeactivate).toHaveBeenCalled()
     expect(mockWS.removeAllListeners).toHaveBeenCalled()
@@ -284,15 +310,19 @@ describe('AbstractWeb3Connector _speedUpGas method', () => {
     )
     const tx = instance._speedUpGas({
       maxPriorityFeePerGas: BigNumber.from('100'),
+      maxFeePerGas: BigNumber.from('1000'),
       nonce: 1
     } as unknown as TransactionResponse)
+    expect(tx).not.toHaveProperty('gasPrice')
     expect(tx).toHaveProperty('maxPriorityFeePerGas')
-    expect(tx.maxPriorityFeePerGas).toEqual(BigNumber.from('110'))
+    expect(tx).toHaveProperty('maxFeePerGas')
     expect(tx).toHaveProperty('nonce')
+    expect(tx.maxPriorityFeePerGas).toEqual(BigNumber.from('110'))
+    expect(tx.maxFeePerGas).toEqual(BigNumber.from('1100'))
     expect(tx.nonce).toBe(1)
   })
 
-  it('Should return maxPriorityFeePerGas with gasSpeed if tx has maxPriorityFeePerGas attribute and gasSpeed is provided', async () => {
+  it('Should return maxPriorityFeePerGas with gasSpeed if tx has maxPriorityFeePerGas attribute and gasSpeed was provided', async () => {
     const instance = new JsonRPCWeb3Connector(
       'http://fake',
       'f31fa21342dafa7de378d8e19cd296dd905988e085d3950dcc35cbadac764d4a'
@@ -301,13 +331,38 @@ describe('AbstractWeb3Connector _speedUpGas method', () => {
     const tx = instance._speedUpGas(
       {
         maxPriorityFeePerGas: BigNumber.from('100'),
+        maxFeePerGas: BigNumber.from('1000'),
         nonce: 1
       } as unknown as TransactionResponse,
       speed
     )
+    expect(tx).not.toHaveProperty('gasPrice')
     expect(tx).toHaveProperty('maxPriorityFeePerGas')
-    expect(tx.maxPriorityFeePerGas).toEqual(speed)
+    expect(tx).toHaveProperty('maxFeePerGas')
     expect(tx).toHaveProperty('nonce')
+    expect(tx.maxPriorityFeePerGas).toEqual(speed)
+    // as speed is the double of maxPriorityFeePerGas then the maxFeePerGas will be doubled
+    expect(tx.maxFeePerGas).toEqual(BigNumber.from('2000'))
+    expect(tx.nonce).toBe(1)
+  })
+
+  it('Should return maxPriorityFeePerGas with a custom increment if tx has maxPriorityFeePerGas attribute', async () => {
+    const instance = new JsonRPCWeb3Connector(
+      'http://fake',
+      'f31fa21342dafa7de378d8e19cd296dd905988e085d3950dcc35cbadac764d4a'
+    )
+    instance.speedUpPercentage = 20
+    const tx = instance._speedUpGas({
+      maxPriorityFeePerGas: BigNumber.from('100'),
+      maxFeePerGas: BigNumber.from('1000'),
+      nonce: 1
+    } as unknown as TransactionResponse)
+    expect(tx).not.toHaveProperty('gasPrice')
+    expect(tx).toHaveProperty('maxPriorityFeePerGas')
+    expect(tx).toHaveProperty('maxFeePerGas')
+    expect(tx).toHaveProperty('nonce')
+    expect(tx.maxPriorityFeePerGas).toEqual(BigNumber.from('120'))
+    expect(tx.maxFeePerGas).toEqual(BigNumber.from('1200'))
     expect(tx.nonce).toBe(1)
   })
 
@@ -321,8 +376,27 @@ describe('AbstractWeb3Connector _speedUpGas method', () => {
       nonce: 1
     } as unknown as TransactionResponse)
     expect(tx).not.toHaveProperty('maxPriorityFeePerGas')
+    expect(tx).not.toHaveProperty('maxFeePerGas')
     expect(tx).toHaveProperty('gasPrice')
     expect(tx.gasPrice).toEqual(BigNumber.from('110'))
+    expect(tx).toHaveProperty('nonce')
+    expect(tx.nonce).toBe(1)
+  })
+
+  it('Should return gasPrice with a custom increment if tx does not have maxPriorityFeePerGas attribute', async () => {
+    const instance = new JsonRPCWeb3Connector(
+      'http://fake',
+      'f31fa21342dafa7de378d8e19cd296dd905988e085d3950dcc35cbadac764d4a'
+    )
+    instance.speedUpPercentage = 20
+    const tx = instance._speedUpGas({
+      gasPrice: BigNumber.from('100'),
+      nonce: 1
+    } as unknown as TransactionResponse)
+    expect(tx).not.toHaveProperty('maxPriorityFeePerGas')
+    expect(tx).not.toHaveProperty('maxFeePerGas')
+    expect(tx).toHaveProperty('gasPrice')
+    expect(tx.gasPrice).toEqual(BigNumber.from('120'))
     expect(tx).toHaveProperty('nonce')
     expect(tx.nonce).toBe(1)
   })
@@ -341,6 +415,7 @@ describe('AbstractWeb3Connector _speedUpGas method', () => {
       speed
     )
     expect(tx).not.toHaveProperty('maxPriorityFeePerGas')
+    expect(tx).not.toHaveProperty('maxFeePerGas')
     expect(tx).toHaveProperty('gasPrice')
     expect(tx.gasPrice).toEqual(speed)
     expect(tx).toHaveProperty('nonce')
@@ -551,6 +626,7 @@ describe('AbstractWeb3Connector changeTransaction method', () => {
       'http://fake',
       'f31fa21342dafa7de378d8e19cd296dd905988e085d3950dcc35cbadac764d4a'
     )
+    jest.spyOn(global.console, 'warn').mockImplementationOnce(() => {})
     // mock the _speedUpGas method
     jest.spyOn(instance, '_speedUpGas').mockReturnValue({
       maxPriorityFeePerGas: BigNumber.from('110'),
@@ -611,6 +687,7 @@ describe('AbstractWeb3Connector changeTransaction method', () => {
   })
 
   it('should throw an error when txReceipt is not provided', async () => {
+    jest.spyOn(global.console, 'warn').mockImplementationOnce(() => {})
     const instance = new JsonRPCWeb3Connector(
       'http://fake',
       'f31fa21342dafa7de378d8e19cd296dd905988e085d3950dcc35cbadac764d4a'
@@ -622,6 +699,7 @@ describe('AbstractWeb3Connector changeTransaction method', () => {
   })
 
   it('should throw an error when interface is not provided', async () => {
+    jest.spyOn(global.console, 'warn').mockImplementationOnce(() => {})
     const instance = new JsonRPCWeb3Connector(
       'http://fake',
       'f31fa21342dafa7de378d8e19cd296dd905988e085d3950dcc35cbadac764d4a'
@@ -647,6 +725,7 @@ describe('AbstractWeb3Connector changeTransaction method', () => {
   })
 
   it('should throw an error if not activated', async () => {
+    jest.spyOn(global.console, 'warn').mockImplementationOnce(() => {})
     const instance = new JsonRPCWeb3Connector(
       'http://fake',
       'f31fa21342dafa7de378d8e19cd296dd905988e085d3950dcc35cbadac764d4a'
@@ -662,6 +741,7 @@ describe('AbstractWeb3Connector changeTransaction method', () => {
   })
 
   it('should throw an error if account is not set', async () => {
+    jest.spyOn(global.console, 'warn').mockImplementationOnce(() => {})
     const instance = new JsonRPCWeb3Connector(
       'http://fake',
       'f31fa21342dafa7de378d8e19cd296dd905988e085d3950dcc35cbadac764d4a'
@@ -680,6 +760,7 @@ describe('AbstractWeb3Connector changeTransaction method', () => {
   })
 
   it('should throw an error if inputParam not found in interface', async () => {
+    jest.spyOn(global.console, 'warn').mockImplementationOnce(() => {})
     const instance = new JsonRPCWeb3Connector(
       'http://fake',
       'f31fa21342dafa7de378d8e19cd296dd905988e085d3950dcc35cbadac764d4a'
@@ -723,6 +804,7 @@ describe('AbstractWeb3Connector changeTransaction method', () => {
   })
 
   it('should throw an error if parameter type is incorrect and is not a number', async () => {
+    jest.spyOn(global.console, 'warn').mockImplementationOnce(() => {})
     const instance = new JsonRPCWeb3Connector(
       'http://fake',
       'f31fa21342dafa7de378d8e19cd296dd905988e085d3950dcc35cbadac764d4a'
@@ -766,6 +848,7 @@ describe('AbstractWeb3Connector changeTransaction method', () => {
   })
 
   it('should throw an error if parameter type is incorrect and is a number', async () => {
+    jest.spyOn(global.console, 'warn').mockImplementationOnce(() => {})
     const instance = new JsonRPCWeb3Connector(
       'http://fake',
       'f31fa21342dafa7de378d8e19cd296dd905988e085d3950dcc35cbadac764d4a'
@@ -856,5 +939,208 @@ describe('AbstractWeb3Connector signTypedData method', () => {
     expect(signer.sign).toHaveBeenCalled()
     expect(signer.sign).toHaveBeenCalledWith(connector.account)
     expect(signature).toBe('0x123')
+  })
+})
+
+describe('AbstractWeb3Connector detectLegacyChain method', () => {
+  // this method belongs to abstract class but since we can't test abstract classes, we tested in its child.
+  beforeEach(() => {
+    jest.clearAllMocks()
+    jest.resetModules()
+  })
+
+  it('Should throw an error if the connector not active', async () => {
+    const connector = new JsonRPCWeb3Connector('http://fake')
+
+    await expect(connector.detectLegacyChain()).rejects.toThrow(
+      errors.MUST_ACTIVATE
+    )
+  })
+
+  it('Should set _isLegacy with true when maxFeePerGas is null', async () => {
+    const connector = new JsonRPCWeb3Connector('http://fake')
+    connector['_isActive'] = true
+    const mockGetFeeData = jest
+      .spyOn(ethers.providers.JsonRpcProvider.prototype, 'getFeeData')
+      .mockResolvedValueOnce({
+        maxFeePerGas: null,
+        maxPriorityFeePerGas: null,
+        gasPrice: BigNumber.from('1')
+      })
+
+    await connector.detectLegacyChain()
+
+    expect(mockGetFeeData).toHaveBeenCalled()
+    expect(connector['_isLegacy']).toBe(true)
+  })
+
+  it('Should set _isLegacy with false when maxFeePerGas is not null', async () => {
+    const connector = new JsonRPCWeb3Connector('http://fake')
+    connector['_isActive'] = true
+    const mockGetFeeData = jest
+      .spyOn(ethers.providers.JsonRpcProvider.prototype, 'getFeeData')
+      .mockResolvedValueOnce({
+        maxFeePerGas: BigNumber.from('1'),
+        maxPriorityFeePerGas: BigNumber.from('1'),
+        gasPrice: null
+      })
+
+    await connector.detectLegacyChain()
+
+    expect(mockGetFeeData).toHaveBeenCalled()
+    expect(connector['_isLegacy']).toBe(false)
+  })
+})
+
+describe('AbstractWeb3Connector changeBalanceTransaction method', () => {
+  // this method belongs to abstract class but since we can't test abstract classes, we tested in its child.
+  beforeEach(() => {
+    jest.clearAllMocks()
+    jest.restoreAllMocks()
+  })
+
+  it('Should change the transaction', async () => {
+    const instance = new JsonRPCWeb3Connector(
+      'http://fake',
+      'f31fa21342dafa7de378d8e19cd296dd905988e085d3950dcc35cbadac764d4a'
+    )
+    const newTo = '0x00000000002'
+    const newValue = BigNumber.from('42')
+    // mock the _speedUpGas method
+    jest.spyOn(instance, '_speedUpGas').mockReturnValue({
+      maxPriorityFeePerGas: BigNumber.from('110'),
+      nonce: 1
+    })
+    const mockTransfer = jest
+      .spyOn(ethers.Wallet.prototype, 'sendTransaction')
+      .mockResolvedValueOnce({} as TransactionResponse)
+    const tx = {
+      from: '0x0001',
+      to: '0x0002',
+      nonce: 1,
+      gasPrice: BigNumber.from('10'),
+      maxPriorityFeePerGas: BigNumber.from('100'),
+      data: '0x0001'
+    } as unknown as TransactionResponse
+    instance['_isActive'] = true
+
+    await expect(
+      instance.changeBalanceTransaction(tx, newTo, newValue)
+    ).resolves.toEqual({})
+    expect(mockTransfer).toHaveBeenCalledWith({
+      from: tx.from,
+      to: newTo,
+      value: newValue,
+      nonce: tx.nonce,
+      maxPriorityFeePerGas: BigNumber.from('110')
+    })
+  })
+
+  it('Should change the transaction replace only "to" attribute', async () => {
+    const instance = new JsonRPCWeb3Connector(
+      'http://fake',
+      'f31fa21342dafa7de378d8e19cd296dd905988e085d3950dcc35cbadac764d4a'
+    )
+    const newTo = '0x00000000002'
+    // mock the _speedUpGas method
+    jest.spyOn(instance, '_speedUpGas').mockReturnValue({
+      maxPriorityFeePerGas: BigNumber.from('110'),
+      nonce: 1
+    })
+    const mockTransfer = jest
+      .spyOn(ethers.Wallet.prototype, 'sendTransaction')
+      .mockResolvedValueOnce({} as TransactionResponse)
+    const tx = {
+      from: '0x0001',
+      to: '0x0002',
+      nonce: 1,
+      gasPrice: BigNumber.from('10'),
+      maxPriorityFeePerGas: BigNumber.from('100'),
+      data: '0x0001'
+    } as unknown as TransactionResponse
+    instance['_isActive'] = true
+
+    await expect(instance.changeBalanceTransaction(tx, newTo)).resolves.toEqual(
+      {}
+    )
+    expect(mockTransfer).toHaveBeenCalledWith({
+      from: tx.from,
+      to: newTo,
+      value: tx.value,
+      nonce: tx.nonce,
+      maxPriorityFeePerGas: BigNumber.from('110')
+    })
+  })
+
+  it('Should change the transaction replace only "value" attribute', async () => {
+    const instance = new JsonRPCWeb3Connector(
+      'http://fake',
+      'f31fa21342dafa7de378d8e19cd296dd905988e085d3950dcc35cbadac764d4a'
+    )
+    const newValue = BigNumber.from('42')
+    // mock the _speedUpGas method
+    jest.spyOn(instance, '_speedUpGas').mockReturnValue({
+      maxPriorityFeePerGas: BigNumber.from('110'),
+      nonce: 1
+    })
+    const mockTransfer = jest
+      .spyOn(ethers.Wallet.prototype, 'sendTransaction')
+      .mockResolvedValueOnce({} as TransactionResponse)
+    const tx = {
+      from: '0x0001',
+      to: '0x0002',
+      nonce: 1,
+      gasPrice: BigNumber.from('10'),
+      maxPriorityFeePerGas: BigNumber.from('100'),
+      data: '0x0001'
+    } as unknown as TransactionResponse
+    instance['_isActive'] = true
+
+    await expect(
+      instance.changeBalanceTransaction(tx, undefined, newValue)
+    ).resolves.toEqual({})
+    expect(mockTransfer).toHaveBeenCalledWith({
+      from: tx.from,
+      to: tx.to,
+      value: newValue,
+      nonce: tx.nonce,
+      maxPriorityFeePerGas: BigNumber.from('110')
+    })
+  })
+
+  it('should throw an error when txReceipt is not provided', async () => {
+    const instance = new JsonRPCWeb3Connector(
+      'http://fake',
+      'f31fa21342dafa7de378d8e19cd296dd905988e085d3950dcc35cbadac764d4a'
+    )
+    instance['_isActive'] = true
+    await expect(instance.changeBalanceTransaction()).rejects.toThrow(
+      errors.IS_REQUIRED('txReceipt')
+    )
+  })
+
+  it('should throw an error if not activated', async () => {
+    const instance = new JsonRPCWeb3Connector(
+      'http://fake',
+      'f31fa21342dafa7de378d8e19cd296dd905988e085d3950dcc35cbadac764d4a'
+    )
+    instance['_isActive'] = false
+    await expect(
+      instance.changeBalanceTransaction({} as unknown as TransactionResponse)
+    ).rejects.toThrow(errors.MUST_ACTIVATE)
+  })
+
+  it('should throw an error if account is not set', async () => {
+    const instance = new JsonRPCWeb3Connector(
+      'http://fake',
+      'f31fa21342dafa7de378d8e19cd296dd905988e085d3950dcc35cbadac764d4a'
+    )
+    instance['_isActive'] = true
+    jest
+      .spyOn(JsonRPCWeb3Connector.prototype, 'isReadOnly', 'get')
+      .mockReturnValueOnce(true)
+    await expect(
+      instance.changeBalanceTransaction({} as unknown as TransactionResponse)
+    ).rejects.toThrow(errors.READ_ONLY('changeBalanceTransaction'))
   })
 })

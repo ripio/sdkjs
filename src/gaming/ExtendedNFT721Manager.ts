@@ -7,8 +7,18 @@ import { GenericObject, TransactionResponse } from '../types/interfaces'
 import { BrowserWeb3Connector, JsonRPCWeb3Connector } from '../connectors'
 import { NFT721Manager } from '../managers'
 
+/**
+ * @deprecated Use `NFT721Manager` instead
+ */
 export class ExtendedNFT721Manager extends NFT721Manager {
   protected _ipfs: Ipfs | undefined
+
+  constructor() {
+    super()
+    console.warn(
+      'Deprecation notice: the ExtendedNFT721Manager class is being deprecated. Use NFT721Manager instead.'
+    )
+  }
 
   // getters
   get ipfs(): Ipfs | undefined {

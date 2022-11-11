@@ -83,6 +83,16 @@ const errors = {
   READ_ONLY: (funcName: string) =>
     new Error(
       `Connector is in read only mode, unable to execute function ${funcName}`
+    ),
+  PARAMETER_NOT_SUPPORTED_ON_LEGACY_CHAIN: (param: string) =>
+    new Error(`Invalid parameter ${param} in legacy chain (before EIP-1559)`),
+  PARAMETER_NOT_SUPPORTED_ON_NON_LEGACY_CHAIN: (param: string) =>
+    new Error(
+      `Invalid parameter ${param} in non legacy chain (after EIP-1559)`
+    ),
+  TOKEN_URI_NOT_IMPLEMENTED: (contractAddr: string) =>
+    new Error(
+      `The ${contractAddr} contract does not implement the tokenURI(uint256) function`
     )
 }
 

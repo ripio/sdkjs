@@ -3,8 +3,8 @@
 import { BigNumber, BigNumberish, ethers, Signature, Wallet } from 'ethers'
 import errorTypes from '../types/errors'
 import {
-  TransactionResponseExtended,
-  TransactionResponse
+  TransactionResponse,
+  ConnectorResponseExtended
 } from '../types/interfaces'
 import { parseFixed } from '@ethersproject/bignumber'
 import { UnitTypes } from '../types/enums'
@@ -14,7 +14,7 @@ import {
   isRequired,
   matchType
 } from '../utils/validations'
-import { extendTransactionResponse, fromWei } from '../utils/conversions'
+import { connectorResponse, fromWei } from '../utils/conversions'
 import { EIP2612PermitTypedDataSigner } from '../utils/typed-data'
 
 export default abstract class AbstractWeb3Connector {
@@ -27,6 +27,7 @@ export default abstract class AbstractWeb3Connector {
   protected _chainId: number | undefined
   protected _isActive = false
   protected _speedUpPercentage = 10 // default to 10%
+  protected _isLegacy: boolean | undefined // EIP-1559
 
   abstract activate(): Promise<{
     provider: ethers.providers.Web3Provider | ethers.providers.JsonRpcProvider
@@ -39,6 +40,7 @@ export default abstract class AbstractWeb3Connector {
     this._chainId = undefined
     this._provider = undefined
     this._isActive = false
+    this._isLegacy = undefined
   }
 
   /**
@@ -89,6 +91,10 @@ export default abstract class AbstractWeb3Connector {
     this._speedUpPercentage = value
   }
 
+  get isLegacy(): boolean | undefined {
+    return this._isLegacy
+  }
+
   /**
    * This function takes a transaction hash as a string and returns a promise that resolves to an
    * object containing the transaction details or null if the transaction hash is invalid
@@ -127,7 +133,7 @@ export default abstract class AbstractWeb3Connector {
   transferBalance = async (
     amount: string,
     destinationAddress: string
-  ): Promise<TransactionResponseExtended> => {
+  ): Promise<ConnectorResponseExtended> => {
     // doing import inside function to avoid circular dependency
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     if (!this._isActive) {
@@ -140,42 +146,61 @@ export default abstract class AbstractWeb3Connector {
       value: parseFixed(amount, UnitTypes.ETHER)
     }
     const txResponse = await this._account!.sendTransaction(tx)
-    return extendTransactionResponse(txResponse, this)
+    return connectorResponse(txResponse, this)
   }
 
   /**
    * If the transaction has a maxPriorityFeePerGas, add 10% to it. Otherwise, add 10% to the gasPrice
    * @param {TransactionResponse} tx - TransactionResponse
-   * @param {BigNumber} [gasSpeed] - If the chain is EIP-1559, this is the gas price you
+   * @param {BigNumber} [gasSpeed] - If the chain is pre EIP-1559, this is the gas price you
    * want to use for the transaction. If not, this is the maxPriorityFeePerGas. If you don't specify
-   * this, the SDK will use the current gas price/maxPriorityFeePerGas.
-   * @returns an object containing the maxPriorityFeePerGas with a 10% increment and the nonce or the
-   * gasPrice with a 10% increment and a nonce
+   * this, the SDK will use the current gas price/maxPriorityFeePerGas with an increment based on the
+   * SpeedUpPercentage value specified on the connector.
+   * @returns an object containing a nonce and the gas price related parameters depending
+   * on if the chain is pre EIP-1559 or not.
    */
   _speedUpGas = (tx: TransactionResponse, gasSpeed?: BigNumber): any => {
-    const originalPrice: BigNumberish = tx.maxPriorityFeePerGas ?? tx.gasPrice!
     if (tx.maxPriorityFeePerGas) {
-      // chain with EIP-1559 support
-      // add 10% of gas to max priority if gasSpeed is not defined
+      // Chain with EIP-1559 support.
+      // If the gasSpeed param was not provided then calculate
+      // the maxPriorityFeePerGas based on the SpeedUpPercentage value.
       const maxPriorityFeePerGas =
         gasSpeed ??
-        tx.maxPriorityFeePerGas
-          .mul(this.speedUpPercentage)
+        tx.maxPriorityFeePerGas.mul(this.speedUpPercentage + 100).div(100)
+      let maxFeePerGas
+      if (gasSpeed != null) {
+        // The increased percentage for the maxPriorityFeePerGas based on the gasSpeed param provided.
+        // Multiplying by 100*10^18 to avoid truncation
+        // tx.MaxPriorityFeePerGas  == 100%
+        // gasSpeed                 == x(percentage)%
+        const percentage = gasSpeed
+          .mul(BigNumber.from('100000000000000000000'))
+          .div(tx.maxPriorityFeePerGas)
+
+        // tx.MaxFeePerGas      == 100%
+        // x(new maxFeePerGas)  == percentage%
+        maxFeePerGas = tx
+          .maxFeePerGas!.mul(percentage)
+          .div(BigNumber.from('100000000000000000000'))
+      } else {
+        // If the gasSpeed param was not provided then calculate the maxFeePerGas based on the SpeedUpPercentage value.
+        maxFeePerGas = tx
+          .maxFeePerGas!.mul(this.speedUpPercentage + 100)
           .div(100)
-          .add(originalPrice)
+      }
       return {
-        maxPriorityFeePerGas: maxPriorityFeePerGas,
+        maxFeePerGas,
+        maxPriorityFeePerGas,
         gasLimit: tx.gasLimit,
-        maxFeePerGas: maxPriorityFeePerGas.add(10),
         nonce: tx.nonce
       }
     } else {
-      // chain with no support for EIP-1559
-      // add 10% of gas to gasPrice if gasSpeed is not defined
+      // Chain with no support for EIP-1559
+      // If the gasSpeed param was not provided then calculate
+      // the gasPrice based on the SpeedUpPercentage value.
       return {
         gasPrice:
-          gasSpeed ??
-          tx.gasPrice!.mul(this.speedUpPercentage).div(100).add(originalPrice),
+          gasSpeed ?? tx.gasPrice!.mul(this.speedUpPercentage + 100).div(100),
         gasLimit: tx.gasLimit,
         nonce: tx.nonce
       }
@@ -252,6 +277,9 @@ export default abstract class AbstractWeb3Connector {
     newParams: Record<string, any> = isRequired('newParams'),
     gasSpeed?: BigNumber
   ): Promise<TransactionResponse> => {
+    console.warn(
+      'Deprecation notice: this method is being moved to ContractManager class.'
+    )
     if (!this._isActive) {
       throw errorTypes.MUST_ACTIVATE
     }
@@ -300,11 +328,45 @@ export default abstract class AbstractWeb3Connector {
     })
   }
 
+  changeBalanceTransaction = async (
+    txReceipt: TransactionResponse = isRequired('txReceipt'),
+    to?: string | undefined,
+    value?: BigNumber | undefined,
+    gasSpeed?: BigNumber
+  ): Promise<TransactionResponse> => {
+    if (!this._isActive) {
+      throw errorTypes.MUST_ACTIVATE
+    }
+    if (this.isReadOnly) throw errorTypes.READ_ONLY('changeBalanceTransaction')
+
+    const speedUp = await this._speedUpGas(txReceipt, gasSpeed)
+    return this._account!.sendTransaction({
+      from: txReceipt.from,
+      to: to ?? txReceipt.to,
+      value: value ?? txReceipt.value,
+      ...speedUp
+    })
+  }
+
   signTypedData = async (
     instance: EIP2612PermitTypedDataSigner
   ): Promise<Signature> => {
     if (!this._isActive) throw errorTypes.MUST_ACTIVATE
     if (this.isReadOnly) throw errorTypes.READ_ONLY('signTypedData')
     return await instance.sign(this._account!)
+  }
+
+  /**
+   * Sets the value of _isLegacy depending on the values of ethers.getFeeData
+   * @returns A void promise
+   */
+  detectLegacyChain = async (): Promise<void> => {
+    if (!this._isActive) {
+      throw errorTypes.MUST_ACTIVATE
+    }
+
+    // check the value of maxFeePerGas to see if it supports EIP-1559
+    const { maxFeePerGas } = await this._provider!.getFeeData()
+    this._isLegacy = maxFeePerGas === null
   }
 }
