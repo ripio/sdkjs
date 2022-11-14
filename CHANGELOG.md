@@ -1,3 +1,34 @@
+# [1.1.0](https://github.com/ripio/sdkjs/compare/v1.0.1...v1.1.0) (2022-11-11)
+### Deprecation notice
+
+- Ipfs class will be deprecated on version 1.2.0
+- ExtendedNFT721Manager class will be deprecated on version 1.2.0
+- ExtendedToken20Manager class will be deprecated on version 1.2.0
+
+### Features
+
+- add StorageAws upload functions ([a1a3a78](https://github.com/ripio/sdkjs/commit/a1a3a7802964db03b3861ba456c9878ff0432771))
+- add upload methods and docstrings to StorageType ([cbf2f2c](https://github.com/ripio/sdkjs/commit/cbf2f2cf3353c7e9f7b8270d0dae48bf1185aacc))
+- Add NFTFactory ([e9716cd](https://github.com/ripio/sdkjs/commit/e9716cd7ba04cda5e2c30410e5bec1ee69533f88))
+- add StorageHttp and ResourceHttp ([f7f99f2](https://github.com/ripio/sdkjs/commit/f7f99f2f551bd99effc1444c57453f72493a408f))
+- added aws implementation for storage and resource ([70a9d59](https://github.com/ripio/sdkjs/commit/70a9d59e749db9911d5d733fee5f76425f9dfaaf))
+- changing resource from interface to abstract class ([77f1db0](https://github.com/ripio/sdkjs/commit/77f1db025a7196243858a23f43c8d50b15184f6f))
+- adding ResourceIpfs and StorageIpfs ([0647b9a](https://github.com/ripio/sdkjs/commit/0647b9af9c00dbf0b5e8b9c736e9d410445ed772))
+- changing resource from interface to abstract class ([94faf2c](https://github.com/ripio/sdkjs/commit/94faf2c0a7e972e1f7fb29c27ce1ab31d0290ee9))
+- add nft class ([d8a73e2](https://github.com/ripio/sdkjs/commit/d8a73e295e813562b5faeb5489004920205dc8ab))
+- add StorageType and Resourse interfaces ([8606401](https://github.com/ripio/sdkjs/commit/8606401b7e02b618fb9b131453af7e4b9cfe6768))
+- added changeBalanceTransaction on abstract connector to replace a transaction of a transfer balance ([35a4d56](https://github.com/ripio/sdkjs/commit/35a4d56293d1624f35b64478542f2a19a836b970))
+- new interface for transferBalance response, new connectorResponse function for the transferBalance response (with change, speedUp, cancel methods), updated execute response interface (manager is mandatory) ([78814a8](https://github.com/ripio/sdkjs/commit/78814a88a4bb9425034d70ae0b0b30fb41d1cc9c))
+- add implements function to ContractManager ([7bdded6](https://github.com/ripio/sdkjs/commit/7bdded67aafefe1fa45436545c4652a24ba6b7d7))
+- deprecate extended managers ([9869798](https://github.com/ripio/sdkjs/commit/9869798b93770f4d35d275b1a0e6e0fca9f2abfe))
+- Moving changeTransaction logic to ContractManager class. ([6510453](https://github.com/ripio/sdkjs/commit/65104532548c8e9267af7c89eed01787943fec5e))
+- Add new override attributes on execute funtion ([14e193f](https://github.com/ripio/sdkjs/commit/14e193fbae84b561eaa28f8a16308931323f72fd))
+- manage gas price on non legacy chains ([1770b68](https://github.com/ripio/sdkjs/commit/1770b687403310afe270c3af9b9482807ce37404))
+
+### Bug Fixes
+
+- Updated speedUpGas method calculations ([12faaf5](https://github.com/ripio/sdkjs/commit/12faaf56f0e6f9055f04baa85f8f65c7d455bc75))
+
 # [1.1.0-dev.11](https://github.com/ripio/sdkjs/compare/v1.1.0-dev.10...v1.1.0-dev.11) (2022-11-10)
 
 
