@@ -29,10 +29,6 @@
 
 - Updated speedUpGas method calculations ([12faaf5](https://github.com/ripio/sdkjs/commit/12faaf56f0e6f9055f04baa85f8f65c7d455bc75))
 
-Co-authored-by: farkas <ariel.farkas@ripio.com>
-Co-authored-by: Mauricio Blanco <mauricio.blanco@ripio.com>
-Co-authored-by: Agustin Mauras <agustin.mauras@ripio.com>
-
 # [1.1.0-dev.11](https://github.com/ripio/sdkjs/compare/v1.1.0-dev.10...v1.1.0-dev.11) (2022-11-10)
 
 
