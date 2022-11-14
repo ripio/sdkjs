@@ -1,6 +1,6 @@
 {
   "name": "@ripio/sdk",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "SDK to interact with Smart Contracts and wallets",
   "files": [
     "dist"
