@@ -3,8 +3,21 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
+    "lint:check": "npm run sdk:lint:check && npm run nft:lint:check && npm run storage-aws:lint:check && npm run storage-http:lint:check && npm run storage-ipfs:lint:check",
+    "format:check": "npm run sdk:format:check && npm run nft:format:check && npm run storage-aws:format:check && npm run storage-http:format:check && npm run storage-ipfs:format:check",
+    "sdk:lint:check": "npm run lint:check -w @ripio/sdk",
+    "nft:lint:check": "npm run lint:check -w @ripio/nft",
+    "storage-aws:lint:check": "npm run lint:check -w @ripio/storage-aws",
+    "storage-http:lint:check": "npm run lint:check -w @ripio/storage-http",
+    "storage-ipfs:lint:check": "npm run lint:check -w @ripio/storage-ipfs",
+    "sdk:format:check": "npm run format:check -w @ripio/sdk",
+    "nft:format:check": "npm run format:check -w @ripio/nft",
+    "storage-aws:format:check": "npm run format:check -w @ripio/storage-aws",
+    "storage-http:format:check": "npm run format:check -w @ripio/storage-http",
+    "storage-ipfs:format:check": "npm run format:check -w @ripio/storage-ipfs",
+    "build": "npm run build -w @ripio/sdk && npm run build -w @ripio/nft npm run build -w @ripio/storage-aws npm run build -w @ripio/storage-http npm run build -w @ripio/storage-ipfs",
     "test": "jest",
-    "test-cov": "jest --ci --coverage --reporters=default --reporters=jest-junit"
+    "test-cov": "npm run buil && jest --ci --coverage --reporters=default --reporters=jest-junit"
   },
   "private": true,
   "devDependencies": {
