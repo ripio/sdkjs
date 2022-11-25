@@ -17,7 +17,7 @@
     "storage-ipfs:format:check": "npm run format:check -w @ripio/storage-ipfs",
     "build": "npm run build -w @ripio/sdk && npm run build -w @ripio/nft && npm run build -w @ripio/storage-aws && npm run build -w @ripio/storage-http && npm run build -w @ripio/storage-ipfs",
     "test": "jest",
-    "test-cov": "npm run build && jest --ci --coverage --reporters=default --reporters=jest-junit"
+    "test-cov": "jest --ci --coverage --reporters=default --reporters=jest-junit"
   },
   "private": true,
   "devDependencies": {

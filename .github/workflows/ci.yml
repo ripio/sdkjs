@@ -47,6 +47,8 @@ jobs:
       # Install deps
       - name: Install deps
         run: npm ci
+      - name: Build
+        run: npm run build
       # run tests
       - name: Run tests
         run: npm run test-cov
