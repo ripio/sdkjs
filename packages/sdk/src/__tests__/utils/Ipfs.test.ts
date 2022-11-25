@@ -5,7 +5,7 @@ import {
   __setMockLs,
   __setMockCat,
   globSource
-} from '../../../../../__mocks__/ipfs-http-client'
+} from '../../__mocks__/ipfs-http-client'
 import { Ipfs } from '../../utils/Ipfs'
 import errors from '../../types/errors'
 

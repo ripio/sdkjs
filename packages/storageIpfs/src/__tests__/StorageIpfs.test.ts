@@ -3,7 +3,7 @@ import {
   __resetIPFSMocks,
   __setMockAdd,
   __setMockCat
-} from '../../../../__mocks__/ipfs-http-client'
+} from '../__mocks__/ipfs-http-client'
 import StorageIpfs from '../StorageIpfs'
 import ResourceIpfs from '../ResourceIpfs'
 import * as ipfsUtils from '..//utils'
