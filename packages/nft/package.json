@@ -34,6 +34,9 @@
         ],
         "types": [
           "dist/types/types/index.d.ts"
+        ],
+        "storage": [
+          "dist/types/storage/index.d.ts"
         ]
       }
     },
