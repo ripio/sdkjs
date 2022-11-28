@@ -1,6 +1,6 @@
 import all from 'it-all'
 import { concat } from 'uint8arrays/concat'
-import { Resource } from '@ripio/nft'
+import { Resource } from '@ripio/sdk-nft'
 
 export default class ResourceIpfs extends Resource {
   async parseData(): Promise<void> {

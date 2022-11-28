@@ -59,6 +59,6 @@
     "dependencies": {
         "@babel/runtime": "^7.17.7",
         "ipfs-http-client": "^56.0.2",
-        "@ripio/nft":"*"
+        "@ripio/sdk-nft":"*"
     }
 }

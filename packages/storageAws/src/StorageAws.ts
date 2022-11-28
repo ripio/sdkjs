@@ -1,7 +1,7 @@
 import fs from 'fs/promises'
 import path from 'path'
 import ResourceAws from './ResourceAws'
-import { StorageType } from '@ripio/nft'
+import { StorageType } from '@ripio/sdk-nft'
 import {
   S3Client,
   GetObjectCommand,

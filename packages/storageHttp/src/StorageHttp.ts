@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from 'axios'
 import ResourceHttp from './ResourceHttp'
-import { StorageType } from '@ripio/nft'
+import { StorageType } from '@ripio/sdk-nft'
 
 export default class StorageHttp implements StorageType {
   readonly storage: AxiosInstance

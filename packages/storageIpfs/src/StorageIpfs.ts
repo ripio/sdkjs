@@ -1,7 +1,7 @@
 import fs from 'fs/promises'
 import { create, IPFSHTTPClient } from 'ipfs-http-client'
 import ResourceIpfs from './ResourceIpfs'
-import { StorageType } from '@ripio/nft'
+import { StorageType } from '@ripio/sdk-nft'
 import { ensureIpfsUriPrefix, stripIpfsUriPrefix } from './utils'
 import errors from './types/errors'
 

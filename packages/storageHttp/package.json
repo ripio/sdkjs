@@ -50,6 +50,6 @@
     "dependencies": {
       "@babel/runtime": "^7.17.7",
       "axios": "^1.1.3",
-      "@ripio/nft":"*"
+      "@ripio/sdk-nft":"*"
     }
 }
