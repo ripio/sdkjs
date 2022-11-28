@@ -50,10 +50,6 @@ const errors = {
     new Error(`event does not have ${param} input or invalid type`),
   IPFS_ADD: (error?: Error) =>
     new Error('Error while adding the file to IPFS', { cause: error }),
-  ADDRESS_OWNERSHIP_ERROR: (error?: Error) =>
-    new Error('Error when checking the address ownership', {
-      cause: error
-    }),
   GET_TOKEN_URI: (param: string, error?: Error) =>
     new Error(
       `Error while retrieving tokenURI from token with id ${param}, token id may not exists`,
