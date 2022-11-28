@@ -1,7 +1,7 @@
 {
   "name": "ripio",
   "version": "0.0.0",
-  "license": "MIT",
+  "license": "Apache 2.0",
   "scripts": {
     "lint:check": "npm run sdk:lint:check && npm run sdk-nft:lint:check && npm run sdk-storage-aws:lint:check && npm run sdk-storage-http:lint:check && npm run sdk-storage-ipfs:lint:check",
     "format:check": "npm run sdk:format:check && npm run sdk-nft:format:check && npm run sdk-storage-aws:format:check && npm run sdk-storage-http:format:check && npm run sdk-storage-ipfs:format:check",
