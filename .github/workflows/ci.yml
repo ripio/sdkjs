@@ -33,9 +33,12 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    container: node:16-buster
     steps:
       - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.14.0'
       - name: Cache npm
         uses: actions/cache@v3
         with:
