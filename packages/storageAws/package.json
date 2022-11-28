@@ -1,5 +1,5 @@
 {
-    "name": "@ripio/storage-aws",
+    "name": "@ripio/sdk-storage-aws",
     "version": "1.0.0",
     "description": "Storage AWS",
     "files": [

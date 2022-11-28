@@ -1,5 +1,5 @@
 {
-    "name": "@ripio/storage-ipfs",
+    "name": "@ripio/sdk-storage-ipfs",
     "version": "1.0.0",
     "description": "Storage Ipfs",
     "files": [
