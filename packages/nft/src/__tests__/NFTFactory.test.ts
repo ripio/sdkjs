@@ -2,8 +2,7 @@ import { NftMetadata } from '../types/interfaces'
 import { NFT, NFTFactory, NFT_METADATA_FORMAT } from '../'
 import Resource from '../storage/Resource'
 import StorageType from '../storage/StorageType'
-import { errors } from '@ripio/sdk'
-import { NFT721Manager } from '@ripio/sdk'
+import { errors, NFT721Manager } from '@ripio/sdk'
 
 describe('NFTFactory constructor', () => {
   it('Should instanciate the NFTFactory', () => {

@@ -2,8 +2,7 @@
 import StorageType from './storage/StorageType'
 import { NFT_METADATA_FORMAT } from './types'
 import { NFT } from './NFT'
-import { NFT721Manager } from '@ripio/sdk'
-import { errors } from '@ripio/sdk'
+import { errors, NFT721Manager } from '@ripio/sdk'
 import { NftMetadata } from './types/interfaces'
 
 const { MUST_ACTIVATE, TOKEN_URI_NOT_IMPLEMENTED, GET_TOKEN_URI } =
