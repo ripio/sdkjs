@@ -1,7 +1,7 @@
 {
     "name": "@ripio/sdk-storage-http",
     "version": "1.0.0",
-    "description": "Get data related to an NFT through http",
+    "description": "Get data related to a NFT through http",
     "files": [
       "dist"
     ],

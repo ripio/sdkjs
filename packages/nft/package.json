@@ -1,7 +1,7 @@
 {
     "name": "@ripio/sdk-nft",
     "version": "1.0.0",
-    "description": "Tools to interact with an NFT",
+    "description": "Tools to interact with a NFT",
     "files": [
       "dist"
     ],
