@@ -1,7 +1,7 @@
 {
     "name": "@ripio/sdk-storage-aws",
     "version": "1.0.0",
-    "description": "Storage AWS",
+    "description": "Get and upload data related to an NFT hosted on AWS",
     "files": [
       "dist"
     ],
