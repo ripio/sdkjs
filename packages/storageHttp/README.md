@@ -13,7 +13,7 @@ Please be polite and respectful when creating issues.
 ### Install
 
 ```bash
-npm install @ripio/sdk-nft
+npm install @ripio/sdk-storage-http
 ```
 
 ### Documentation
