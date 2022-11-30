@@ -25,3 +25,7 @@ Read the [docs](https://github.com/ripio/sdkjs/wiki) in our project's wiki.
 - [Intro](https://github.com/ripio/sdkjs/wiki/1.-Intro)
 - [Getting started](https://github.com/ripio/sdkjs/wiki/2.-Getting-started)
 - [Overview](https://github.com/ripio/sdkjs/wiki/3.-Overview)
+
+# License
+
+Apache 2.0
