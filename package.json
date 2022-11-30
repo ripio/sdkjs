@@ -3,23 +3,46 @@
   "version": "0.0.0",
   "license": "Apache 2.0",
   "scripts": {
-    "lint:check": "npm run sdk:lint:check && npm run sdk-nft:lint:check && npm run sdk-storage-aws:lint:check && npm run sdk-storage-http:lint:check && npm run sdk-storage-ipfs:lint:check",
-    "format:check": "npm run sdk:format:check && npm run sdk-nft:format:check && npm run sdk-storage-aws:format:check && npm run sdk-storage-http:format:check && npm run sdk-storage-ipfs:format:check",
-    "sdk:lint:check": "npm run lint:check -w @ripio/sdk",
-    "sdk-nft:lint:check": "npm run lint:check -w @ripio/sdk-nft",
-    "sdk-storage-aws:lint:check": "npm run lint:check -w @ripio/sdk-storage-aws",
-    "sdk-storage-http:lint:check": "npm run lint:check -w @ripio/sdk-storage-http",
-    "sdk-storage-ipfs:lint:check": "npm run lint:check -w @ripio/sdk-storage-ipfs",
-    "sdk:format:check": "npm run format:check -w @ripio/sdk",
-    "sdk-nft:format:check": "npm run format:check -w @ripio/sdk-nft",
-    "sdk-storage-aws:format:check": "npm run format:check -w @ripio/sdk-storage-aws",
-    "sdk-storage-http:format:check": "npm run format:check -w @ripio/sdk-storage-http",
-    "sdk-storage-ipfs:format:check": "npm run format:check -w @ripio/sdk-storage-ipfs",
-    "build": "npm run build -w @ripio/sdk && npm run build -w @ripio/sdk-nft && npm run build -w @ripio/sdk-storage-aws && npm run build -w @ripio/sdk-storage-http && npm run build -w @ripio/sdk-storage-ipfs",
+    "lint:check": "npm run lint:check -workspaces",
+    "format:check": "npm run format:check -workspaces",
+    "build": "npm run build -workspaces",
+    "release":"npm run release -workspaces",
     "test": "jest",
     "test-cov": "jest --ci --coverage --reporters=default --reporters=jest-junit"
   },
   "private": true,
+  "release": {
+    "branches": [
+      "+([0-9])?(.{+([0-9]),x}).x",
+      "main",
+      {
+        "name": "develop",
+        "prerelease": "dev"
+      }
+    ],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/npm",
+      "@semantic-release/changelog",
+      [
+        "@semantic-release/git",
+        {
+          "assets": [
+            "CHANGELOG.md", "package.json"
+          ],
+          "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+        }
+      ],
+      [
+        "@semantic-release/changelog",
+        {
+          "changelogFile": "CHANGELOG.md",
+          "changelogTitle": "# Versioning Changelog"
+        }
+      ]
+    ]
+  },
   "devDependencies": {
     "@babel/cli": "^7.17.6",
     "@babel/core": "^7.17.7",
@@ -27,21 +50,26 @@
     "@babel/plugin-transform-runtime": "^7.17.0",
     "@babel/preset-env": "^7.16.11",
     "@babel/preset-typescript": "^7.16.7",
+    "@semantic-release/changelog": "^6.0.2",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/npm": "^9.0.1",
     "@types/jest": "^29.2.0",
     "@typescript-eslint/eslint-plugin": "^5.15.0",
     "@typescript-eslint/parser": "^5.15.0",
+    "axios-mock-adapter": "^1.21.2",
     "eslint": "^8.9.0",
     "eslint-config-prettier": "^8.4.0",
     "eslint-plugin-prettier": "^4.0.0",
+    "ganache": "^7.0.3",
     "jest": "^29.2.2",
     "jest-environment-jsdom": "^29.2.2",
     "jest-junit": "^14.0.1",
+    "prettier": "^2.6.2",
+    "semantic-release": "^19.0.5",
+    "semantic-release-monorepo": "^7.0.5",
     "ts-jest": "^29.0.3",
     "ts-node": "^10.7.0",
-    "prettier": "^2.6.2",
-    "typescript": "^4.9.3",
-    "ganache": "^7.0.3",
-    "axios-mock-adapter": "^1.21.2"
+    "typescript": "^4.9.3"
   },
   "workspaces": [
     "packages/*"
