@@ -81,7 +81,8 @@
       "test-watch": "jest --watch",
       "test-init": "jest --init",
       "test-cov": "jest --ci --coverage --reporters=default --reporters=jest-junit",
-      "ts:defs": "tsc --declaration --outDir . --emitDeclarationOnly"
+      "ts:defs": "tsc --declaration --outDir . --emitDeclarationOnly",
+      "release": "npx semantic-release -e semantic-release-monorepo"
     },
     "repository": {
       "type": "git",
