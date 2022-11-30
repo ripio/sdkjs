@@ -72,6 +72,10 @@
     "typescript": "^4.9.3"
   },
   "workspaces": [
-    "packages/*"
+    "packages/sdk",
+    "packages/nft",
+    "packages/storageAws",
+    "packages/storageHttp",
+    "packages/storageIpfs"
   ]
 }
