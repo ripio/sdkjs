@@ -1,5 +1,4 @@
 const errors = {
-  IPFS_NOT_INITIALIZED: new Error('IPFS is not initialized'),
   SDK_NOT_INITIALIZED: new Error('SDK is not initialized'),
   PROVIDER_NOT_INITIALIZED: new Error('Not initialized'),
   SDK_ACTIVATION_IN_PROGRESS: new Error(
@@ -48,8 +47,6 @@ const errors = {
     new Error(`${param} event does not belong to contract`),
   INVALID_EVENT_PARAMETER: (param: string) =>
     new Error(`event does not have ${param} input or invalid type`),
-  IPFS_ADD: (error?: Error) =>
-    new Error('Error while adding the file to IPFS', { cause: error }),
   GET_TOKEN_URI: (param: string, error?: Error) =>
     new Error(
       `Error while retrieving tokenURI from token with id ${param}, token id may not exists`,
