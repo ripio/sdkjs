@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { BigNumber, BigNumberish, ethers, Signature, Wallet } from 'ethers'
+import { BigNumber, ethers, Signature, Wallet } from 'ethers'
 import errorTypes from '../types/errors'
 import {
   TransactionResponse,
@@ -97,17 +97,30 @@ export default abstract class AbstractWeb3Connector {
 
   /**
    * This function takes a transaction hash as a string and returns a promise that resolves to an
-   * object containing the transaction details or null if the transaction hash is invalid
+   * object containing the transaction details.
    * @param {string} txHash - The transaction hash of the transaction you want to get.
-   * @returns A promise that resolves to a TransactionResponse or null.
+   * @returns A promise that resolves to a TransactionResponse.
    */
-  getTransaction = async (
-    txHash: string
-  ): Promise<TransactionResponse | null> => {
+  getTransaction = async (txHash: string): Promise<TransactionResponse> => {
     if (!this._isActive) {
       throw errorTypes.MUST_ACTIVATE
     }
     return this._provider!.getTransaction(txHash)
+  }
+
+  /**
+   * This function takes a block hash or tag as a string or number and returns a promise that
+   * resolves to a block object containing the transactions and block details.
+   * @param {ethers.providers.BlockTag} blockHashOrBlockTag - The hash or tag of the block you want to get.
+   * @returns A promise that resolves to a Block.
+   */
+  getBlock = async (
+    blockHashOrBlockTag: ethers.providers.BlockTag
+  ): Promise<ethers.providers.Block> => {
+    if (!this._isActive) {
+      throw errorTypes.MUST_ACTIVATE
+    }
+    return this._provider!.getBlock(blockHashOrBlockTag)
   }
 
   /**

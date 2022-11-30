@@ -195,6 +195,42 @@ describe('AbstractWeb3Connector getTransactionFromHash method', () => {
   })
 })
 
+describe('AbstractWeb3Connector getBlock method', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+    jest.restoreAllMocks()
+  })
+  // this method belongs to abstract class but since we can't test abstract classes, we tested in its child.
+  it('Should call getBlock from provider with a string and return an object with block data', async () => {
+    const instance = new JsonRPCWeb3Connector('http://fake')
+    instance['_isActive'] = true
+    const mockGetBlock = jest
+      .spyOn(ethers.providers.JsonRpcProvider.prototype, 'getBlock')
+      .mockResolvedValueOnce({} as ethers.providers.Block)
+    const block = await instance.getBlock('block-hash')
+    expect(mockGetBlock).toHaveBeenCalledWith('block-hash')
+    expect(block).toEqual({})
+  })
+
+  it('Should call getBlock from provider with a number and return an object with block data', async () => {
+    const instance = new JsonRPCWeb3Connector('http://fake')
+    instance['_isActive'] = true
+    const mockGetBlock = jest
+      .spyOn(ethers.providers.JsonRpcProvider.prototype, 'getBlock')
+      .mockResolvedValueOnce({} as ethers.providers.Block)
+    const block = await instance.getBlock(123)
+    expect(mockGetBlock).toHaveBeenCalledWith(123)
+    expect(block).toEqual({})
+  })
+
+  it('Should throw an error if provider is not defined (not activated)', async () => {
+    const instance = new JsonRPCWeb3Connector('http://fake')
+    expect(instance.getBlock('block-hash')).rejects.toThrow(
+      errors.MUST_ACTIVATE
+    )
+  })
+})
+
 describe('AbstractWeb3Connector getBalance method', () => {
   // this method belongs to abstract class but since we can't test abstract classes, we tested in its child.
   beforeEach(() => {
