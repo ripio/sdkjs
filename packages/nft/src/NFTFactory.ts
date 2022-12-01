@@ -5,8 +5,7 @@ import { NFT } from './NFT'
 import { errors, NFT721Manager } from '@ripio/sdk'
 import { NftMetadata } from './types/interfaces'
 
-const { MUST_ACTIVATE, TOKEN_URI_NOT_IMPLEMENTED, GET_TOKEN_URI } =
-  errors.default
+const { MUST_ACTIVATE, TOKEN_URI_NOT_IMPLEMENTED, GET_TOKEN_URI } = errors
 
 export class NFTFactory {
   protected _manager: NFT721Manager

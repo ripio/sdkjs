@@ -26,7 +26,7 @@ describe('NFTFactory constructor', () => {
     const storage = {} as StorageType
     expect(() => {
       new NFTFactory(nftManager, storage, NFT_METADATA_FORMAT.IMAGE)
-    }).toThrowError(errors.default.MUST_ACTIVATE)
+    }).toThrowError(errors.MUST_ACTIVATE)
   })
 
   it('Should save the nftManager, storage and nftFormat', () => {
@@ -66,7 +66,7 @@ describe('NFTFactory createNFT function', () => {
       NFT_METADATA_FORMAT.IMAGE
     )
     await expect(nftFactory.createNFT(tokenId)).rejects.toThrow(
-      errors.default.TOKEN_URI_NOT_IMPLEMENTED(contractAddr)
+      errors.TOKEN_URI_NOT_IMPLEMENTED(contractAddr)
     )
   })
 
@@ -85,7 +85,7 @@ describe('NFTFactory createNFT function', () => {
       NFT_METADATA_FORMAT.IMAGE
     )
     expect(async () => await nftFactory.createNFT(tokenId)).rejects.toThrow(
-      errors.default.GET_TOKEN_URI(tokenId, fakeError)
+      errors.GET_TOKEN_URI(tokenId, fakeError)
     )
   })
 
