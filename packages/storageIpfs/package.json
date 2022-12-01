@@ -1,65 +1,65 @@
 {
     "name": "@ripio/sdk-storage-ipfs",
-    "version": "1.0.0",
+    "version": "1.0.0-dev.1",
     "description": "Get and upload data related to a NFT hosted on Ipfs",
     "files": [
-      "dist"
+        "dist"
     ],
     "main": "dist/cjs/index.js",
     "types": "dist/types/index.d.ts",
-    "exports":{
-      ".": {
-        "types": "./dist/types/index.d.ts",
-        "require": "./dist/cjs/index.js",
-        "import": "./dist/esm/index.js",
-        "default": "./dist/esm/index.js"
-      },
-      "./types": {
-        "types": "./dist/types/types/index.d.ts",
-        "require": "./dist/cjs/types/index.js",
-        "import": "./dist/esm/types/index.js",
-        "default": "./dist/esm/types/index.js"
-      }
+    "exports": {
+        ".": {
+            "types": "./dist/types/index.d.ts",
+            "require": "./dist/cjs/index.js",
+            "import": "./dist/esm/index.js",
+            "default": "./dist/esm/index.js"
+        },
+        "./types": {
+            "types": "./dist/types/types/index.d.ts",
+            "require": "./dist/cjs/types/index.js",
+            "import": "./dist/esm/types/index.js",
+            "default": "./dist/esm/types/index.js"
+        }
     },
     "typesVersions": {
-      "*": {
-        ".": [
-          "dist/types/index.d.ts"
-        ],
-        "types": [
-          "dist/types/types/index.d.ts"
-        ]
-      }
+        "*": {
+            ".": [
+                "dist/types/index.d.ts"
+            ],
+            "types": [
+                "dist/types/types/index.d.ts"
+            ]
+        }
     },
     "scripts": {
-      "type-check": "tsc --noEmit",
-      "type-check:watch": "npm run type-check -- --watch",
-      "build": "npm run build:esm && npm run build:cjs",
-      "build:esm": "tsc --project tsconfig.esm.json",
-      "build:cjs": "tsc --project tsconfig.cjs.json",
-      "lint:check": "eslint --ext .ts src",
-      "lint:fix": "eslint --ext .ts --fix src",
-      "format:check": "prettier --check \"./**/*.ts\" src",
-      "format:fix": "prettier --write \"./**/*.ts\" src",
-      "test": "jest",
-      "test-watch": "jest --watch",
-      "test-init": "jest --init",
-      "test-cov": "jest --ci --coverage --reporters=default --reporters=jest-junit",
-      "ts:defs": "tsc --declaration --outDir . --emitDeclarationOnly",
-      "release": "npx semantic-release -e semantic-release-monorepo"
+        "type-check": "tsc --noEmit",
+        "type-check:watch": "npm run type-check -- --watch",
+        "build": "npm run build:esm && npm run build:cjs",
+        "build:esm": "tsc --project tsconfig.esm.json",
+        "build:cjs": "tsc --project tsconfig.cjs.json",
+        "lint:check": "eslint --ext .ts src",
+        "lint:fix": "eslint --ext .ts --fix src",
+        "format:check": "prettier --check \"./**/*.ts\" src",
+        "format:fix": "prettier --write \"./**/*.ts\" src",
+        "test": "jest",
+        "test-watch": "jest --watch",
+        "test-init": "jest --init",
+        "test-cov": "jest --ci --coverage --reporters=default --reporters=jest-junit",
+        "ts:defs": "tsc --declaration --outDir . --emitDeclarationOnly",
+        "release": "npx semantic-release -e semantic-release-monorepo"
     },
     "repository": {
-      "type": "git",
-      "url": "git+https://github.com/ripio/sdkjs.git"
+        "type": "git",
+        "url": "git+https://github.com/ripio/sdkjs.git"
     },
     "license": "Apache 2.0",
     "publishConfig": {
-      "access": "public",
-      "types": "dist/types"
+        "access": "public",
+        "types": "dist/types"
     },
     "dependencies": {
         "@babel/runtime": "^7.17.7",
         "ipfs-http-client": "^56.0.2",
-        "@ripio/sdk-nft":"*"
+        "@ripio/sdk-nft": "*"
     }
 }
