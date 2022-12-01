@@ -1,0 +1,100 @@
+{
+    "name": "@ripio/sdk",
+    "version": "1.1.0",
+    "description": "SDK to interact with Smart Contracts and wallets",
+    "files": [
+      "dist"
+    ],
+    "main": "dist/cjs/index.js",
+    "types": "dist/types/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/types/index.d.ts",
+        "require": "./dist/cjs/index.js",
+        "import": "./dist/esm/index.js",
+        "default": "./dist/esm/index.js"
+      },
+      "./managers": {
+        "types": "./dist/types/managers/index.d.ts",
+        "require": "./dist/cjs/managers/index.js",
+        "import": "./dist/esm/managers/index.js",
+        "default": "./dist/esm/managers/index.js"
+      },
+      "./connectors": {
+        "types": "./dist/types/connectors/index.d.ts",
+        "require": "./dist/cjs/connectors/index.js",
+        "import": "./dist/esm/connectors/index.js",
+        "default": "./dist/esm/connectors/index.js"
+      },
+      "./utils": {
+        "types": "./dist/types/utils/index.d.ts",
+        "require": "./dist/cjs/utils/index.js",
+        "import": "./dist/esm/utils/index.js",
+        "default": "./dist/esm/utils/index.js"
+      },
+      "./types": {
+        "types": "./dist/types/types/index.d.ts",
+        "require": "./dist/cjs/types/index.js",
+        "import": "./dist/esm/types/index.js",
+        "default": "./dist/esm/types/index.js"
+      },
+      "./ethers-utils": {
+        "types": "./dist/types/utils/ethersUtils.d.ts",
+        "require": "./dist/cjs/utils/ethersUtils.js",
+        "import": "./dist/esm/utils/ethersUtils.js",
+        "default": "./dist/esm/utils/ethersUtils.js"
+      }
+    },
+    "typesVersions": {
+      "*": {
+        ".": [
+          "dist/types/index.d.ts"
+        ],
+        "managers": [
+          "dist/types/managers/index.d.ts"
+        ],
+        "connectors": [
+          "dist/types/connectors/index.d.ts"
+        ],
+        "utils": [
+          "dist/types/utils/index.d.ts"
+        ],
+        "types": [
+          "dist/types/types/index.d.ts"
+        ],
+        "ethers-utils": [
+          "dist/types/utils/ethersUtils.d.ts"
+        ]
+      }
+    },
+    "scripts": {
+      "type-check": "tsc --noEmit",
+      "type-check:watch": "npm run type-check -- --watch",
+      "build": "npm run build:esm && npm run build:cjs",
+      "build:esm": "tsc --project tsconfig.esm.json",
+      "build:cjs": "tsc --project tsconfig.cjs.json",
+      "lint:check": "eslint --ext .ts src",
+      "lint:fix": "eslint --ext .ts --fix src",
+      "format:check": "prettier --check \"./**/*.ts\" src",
+      "format:fix": "prettier --write \"./**/*.ts\" src",
+      "test": "jest",
+      "test-watch": "jest --watch",
+      "test-init": "jest --init",
+      "test-cov": "jest --ci --coverage --reporters=default --reporters=jest-junit",
+      "ts:defs": "tsc --declaration --outDir . --emitDeclarationOnly",
+      "release": "npx semantic-release -e semantic-release-monorepo"
+    },
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/ripio/sdkjs.git"
+    },
+    "license": "Apache 2.0",
+    "publishConfig": {
+      "access": "public",
+      "types": "dist/types"
+    },
+    "dependencies": {
+      "@babel/runtime": "^7.17.7",
+      "ethers": "^5.6.4"
+    }
+}
