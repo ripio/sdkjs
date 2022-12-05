@@ -1,3 +1,5 @@
+[![codecov](https://codecov.io/github/ripio/sdkjs/branch/main/graph/badge.svg?token=CTSO4X4EIP)](https://codecov.io/github/ripio/sdkjs)
+
 # Setup
 
 ## Install node
