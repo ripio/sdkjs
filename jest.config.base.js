@@ -2,7 +2,7 @@
 module.exports = {
   clearMocks: true,
   collectCoverage: true,
-  coverageDirectory: '../../coverage',
+  coverageDirectory: '<rootDir>/coverage',
   coverageReporters: ['json', 'text', 'lcov', 'clover', 'cobertura'],
   preset: 'ts-jest',
   reporters: ['default', 'jest-junit'],
