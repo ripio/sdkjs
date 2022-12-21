@@ -1,3 +1,41 @@
+# [@ripio/sdk-v2.0.0](https://github.com/ripio/sdkjs/compare/@ripio/sdk-v1.1.0...@ripio/sdk-v2.0.0) (2022-12-02)
+
+
+* add license to readme ([86947a8](https://github.com/ripio/sdkjs/commit/86947a872e0bfdd1f137ee732cfcb672c9dbca5a))
+* remove Ipfs ([1babba1](https://github.com/ripio/sdkjs/commit/1babba1272e15b3d677be74cf01c3d437735bf53))
+
+
+### Features
+
+* added getBlock method and updated return type of getTransaction ([25420a5](https://github.com/ripio/sdkjs/commit/25420a53d5d2540dae5bd1d86fd6bc6663a3d823))
+* update readme ([ae383cc](https://github.com/ripio/sdkjs/commit/ae383cc0b0d66066aee6e3118ad87e471af1898f))
+
+
+### BREAKING CHANGES
+
+* Move NFT, NFTFactory, StorageIpfs, StorageAws and StorageHttp to individual packages
+* ExtendedNFT721Manager and ExtendedToken20Manager classes removed
+* remove ipfs
+
+# @ripio/sdk-v1.0.0 (2022-12-02)
+
+
+* add license to readme ([86947a8](https://github.com/ripio/sdkjs/commit/86947a872e0bfdd1f137ee732cfcb672c9dbca5a))
+* remove Ipfs ([1babba1](https://github.com/ripio/sdkjs/commit/1babba1272e15b3d677be74cf01c3d437735bf53))
+
+
+### Features
+
+* added getBlock method and updated return type of getTransaction ([25420a5](https://github.com/ripio/sdkjs/commit/25420a53d5d2540dae5bd1d86fd6bc6663a3d823))
+* update readme ([ae383cc](https://github.com/ripio/sdkjs/commit/ae383cc0b0d66066aee6e3118ad87e471af1898f))
+
+
+### BREAKING CHANGES
+
+* Move NFT, NFTFactory, StorageIpfs, StorageAws and StorageHttp to individual packages
+* ExtendedNFT721Manager and ExtendedToken20Manager classes removed
+* remove ipfs
+
 # [@ripio/sdk-v2.0.0-dev.1](https://github.com/ripio/sdkjs/compare/@ripio/sdk-v1.2.0-dev.1...@ripio/sdk-v2.0.0-dev.1) (2022-12-01)
 
 
