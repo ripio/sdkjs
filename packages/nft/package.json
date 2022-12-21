@@ -68,6 +68,7 @@
     },
     "dependencies": {
         "@babel/runtime": "^7.17.7",
-        "@ripio/sdk": "*"
+        "@ripio/sdk": "*",
+        "uint8arrays": "^3.0.0"
     }
 }
