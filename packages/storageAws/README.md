@@ -20,11 +20,11 @@ npm install @ripio/sdk-storage-aws
 
 Read the [docs](https://ripio.github.io/sdkjs) on github pages.
 
-- [sdk](https://ripio.github.io/sdkjs/sdk/v2.0.0)
-- [sdk nft](https://ripio.github.io/sdkjs/sdk-nft/v1.0.0)
-- [sdk storage aws](https://ripio.github.io/sdkjs/sdk-storage-aws/v1.0.0)
-- [sdk storage http](https://ripio.github.io/sdkjs/sdk-storage-http/v1.0.0)
-- [sdk storage ipfs](https://ripio.github.io/sdkjs/sdk-storage-ipfs/v1.0.0)
+- [sdk](https://ripio.github.io/sdkjs/sdk)
+- [sdk nft](https://ripio.github.io/sdkjs/sdk-nft)
+- [sdk storage aws](https://ripio.github.io/sdkjs/sdk-storage-aws)
+- [sdk storage http](https://ripio.github.io/sdkjs/sdk-storage-http)
+- [sdk storage ipfs](https://ripio.github.io/sdkjs/sdk-storage-ipfs)
 # License
 
 Apache 2.0
