@@ -1,6 +1,6 @@
 ## Installation
 
-To install ripiosdk we recommend node 16 or above, although it might work with lower versions.
+To install ripio sdk we recommend node 16 or above, although it might work with lower versions.
 
 ```
 npm i @ripio/sdk

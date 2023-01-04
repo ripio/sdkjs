@@ -37,4 +37,12 @@ The deploys are automatically done by merging using semantic-release.
 
 Follow the [commit style guide](https://github.com/semantic-release/semantic-release#how-does-it-work) so the commits will be added to the changelog.
 
-Later, during the CI (in develop and main branches) a new package version will be created and uploaded to npmjs registry.
+# Documentation
+
+Read the [docs](https://ripio.github.io/sdkjs) on github pages.
+
+- [sdk](https://ripio.github.io/sdkjs/sdk/v2.0.0)
+- [sdk nft](https://ripio.github.io/sdkjs/sdk-nft/v1.0.0)
+- [sdk storage aws](https://ripio.github.io/sdkjs/sdk-storage-aws/v1.0.0)
+- [sdk storage http](https://ripio.github.io/sdkjs/sdk-storage-http/v1.0.0)
+- [sdk storage ipfs](https://ripio.github.io/sdkjs/sdk-storage-ipfs/v1.0.0)
