@@ -1,4 +1,4 @@
-import { NftMetadata } from './types/interfaces'
+import { NFTMetadata } from './types/interfaces'
 
 export class NFT {
   protected _tokenId: string
@@ -7,11 +7,11 @@ export class NFT {
   protected _image: string | undefined
   protected _imageUri: string | undefined
   protected _attributes: Array<object> | undefined
-  protected _jsonData: NftMetadata | undefined
+  protected _jsonData: NFTMetadata | undefined
 
   /**
    * @param {string} tokenId - The token ID of the nft.
-   * @param {NftMetadata} nftMetadata - The metadata associated to the token.
+   * @param {NFTMetadata} nftMetadata - The metadata associated to the token.
    * @param {string} image - Base64 of the image associated to the token.
    * @returns NFT object.
    */
@@ -21,7 +21,7 @@ export class NFT {
     image
   }: {
     tokenId: string
-    nftMetadata?: NftMetadata
+    nftMetadata?: NFTMetadata
     image?: string
   }) {
     this._tokenId = tokenId
@@ -59,7 +59,7 @@ export class NFT {
     return this._attributes
   }
 
-  get jsonData(): NftMetadata | undefined {
+  get jsonData(): NFTMetadata | undefined {
     return this._jsonData
   }
   // end getters

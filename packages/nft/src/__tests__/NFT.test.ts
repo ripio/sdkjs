@@ -1,7 +1,7 @@
-import { NftMetadata } from '../types/interfaces'
+import { NFTMetadata } from '../types/interfaces'
 import { NFT } from '../NFT'
 
-const base_nft_metadata: NftMetadata = {
+const base_nft_metadata: NFTMetadata = {
   name: 'fake-name',
   description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   image: 'ipfs://fake-uri',
