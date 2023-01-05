@@ -13,3 +13,11 @@ Contract Layer: This set of classes allows developers to interact with the block
 Standard Layer: Contains a set of classes that allow developers to interact more clearly with many of the ERC standards (e.g. ERC20, ERC721). It also makes it easier to perform some tasks associated with this type of contract.
 
 Gaming Layer (work in progress): set of classes that represent specific functionalities of a use case, in this particular case gaming. The game developer can interact only with these classes in the layer without getting involved with contracts or ERCs. The game developer can increase functionality by inheriting from any of these classes.
+
+### Resources
+
+- [sdk](https://ripio.github.io/sdkjs/sdk)
+- [sdk nft](https://ripio.github.io/sdkjs/sdk-nft)
+- [sdk storage aws](https://ripio.github.io/sdkjs/sdk-storage-aws)
+- [sdk storage http](https://ripio.github.io/sdkjs/sdk-storage-http)
+- [sdk storage ipfs](https://ripio.github.io/sdkjs/sdk-storage-ipfs)
