@@ -12,7 +12,6 @@ npm install @ripio/sdk-nft
 
 Class to represent a NFT
 
-<meta charset="utf-8"><b style="font-weight:normal;" id="docs-internal-guid-6725d38f-7fff-9d4e-b2e8-b435539120c7"><div dir="ltr" style="margin-left:0pt;" align="left">
 ```javascript
 // commonJS
 const { NFT } = require('@rgc/sdk');
@@ -62,13 +61,11 @@ nft.jsonData;
 //   ]
 // }
 ```
-</div><br /></b>
 
 #### NFTFactory
 
 Given a NFT721Manager, a StorageType (StorageIpfs, StorageAws, StorageHttp) and a NFT_METADATA_FORMAT, it creates a NFTFactory instance to interact with NFTs
 
-<meta charset="utf-8"><b style="font-weight:normal;" id="docs-internal-guid-6725d38f-7fff-9d4e-b2e8-b435539120c7"><div dir="ltr" style="margin-left:0pt;" align="left">
 ```javascript
 // commonJS
 const { NFTFactory } = require('@rgc/sdk');
@@ -77,7 +74,6 @@ import { NFTFactory } from '@rgc/sdk';
 // Create NFTFactory instance
 const nftFactory = new NFTFactory(NFT_MANAGER, STORAGE, FORMAT);
 ```
-</div><br /></b>
 
 Where:
 
@@ -89,10 +85,14 @@ NFTFactory methods:
 
 - createNFT:
 
-<meta charset="utf-8"><b style="font-weight:normal;" id="docs-internal-guid-3ad13627-7fff-8080-cb26-bc5f83557428"><div dir="ltr" style="margin-left:0pt;" align="left">
 ```javascript
 nftFactory.createNFT("aTokenId");
 NFT {...} // NFT instance
-````
+```
 
-</div><br /></b>
+### Other resources
+
+- [sdk](https://ripio.github.io/sdkjs/sdk)
+- [sdk storage aws](https://ripio.github.io/sdkjs/sdk-storage-aws)
+- [sdk storage http](https://ripio.github.io/sdkjs/sdk-storage-http)
+- [sdk storage ipfs](https://ripio.github.io/sdkjs/sdk-storage-ipfs)
