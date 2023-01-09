@@ -15,9 +15,9 @@ export default class StorageIpfs implements StorageType {
   constructor(url: string) {
     this.storage = create({ url })
   }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   storeBase64Image(base64: string): Promise<string> {
-    throw new Error('Method not implemented.')
+    return this.addFileToIpfs(base64)
   }
 
   async getData(resourceId: string): Promise<ResourceIpfs> {
