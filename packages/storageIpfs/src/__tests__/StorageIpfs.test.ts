@@ -85,3 +85,12 @@ describe('StorageIpfs addFileToIpfs method', () => {
     )
   })
 })
+
+describe('StorageIpfs storeBase64Image method', () => {
+  it('Should throw an error due not implemented method', () => {
+    const ipfs = new StorageIpfs('http://fake-ipfs-url:5001')
+    expect(() => {
+      ipfs.storeBase64Image('base64')
+    }).toThrow('Method not implemented.')
+  })
+})
