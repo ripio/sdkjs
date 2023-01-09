@@ -95,7 +95,7 @@ const errors = {
     new Error(
       `Error while retrieving the balance of the owner with address ${param}`,
       { cause: error }
-    ),
+    )
 }
 
 export default errors
