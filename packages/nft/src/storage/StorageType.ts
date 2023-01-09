@@ -17,6 +17,12 @@ export default interface StorageType {
    */
   storeFile(filepath: string): Promise<string>
   /**
+   * It uploads a file
+   * @param {string} base64 - The bas64 you want to upload.
+   * @returns returns the resource id of the uploaded file
+   */
+  storeBase64Image(base64: string): Promise<string>
+  /**
    * It takes an object and stores it as JSON, returning the resource id of the file
    * @param {object} properties - metadata to store
    * @returns {Promise<string>} returns the resource id of the uploaded metadata

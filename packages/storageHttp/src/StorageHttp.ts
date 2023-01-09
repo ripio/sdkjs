@@ -12,6 +12,10 @@ export default class StorageHttp implements StorageType {
   constructor() {
     this.storage = axios.create({ responseType: 'arraybuffer' })
   }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  storeBase64Image(base64: string): Promise<string> {
+    throw new Error('Method not implemented.')
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   storeFile(filepath: string): Promise<string> {

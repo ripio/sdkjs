@@ -14,6 +14,7 @@ export default class StorageAws implements StorageType {
   readonly bucketName: string
   private _overwriteFiles: boolean
   private _metadataFileName: string
+  private _imageFileName: string
 
   /**
    * It creates a new StorageAws object with a conection to aws s3, which is used to interact with the S3 bucket
@@ -21,12 +22,14 @@ export default class StorageAws implements StorageType {
    * @param {string} region - The region where the bucket is located.
    * @param {boolean} overwriteFiles - If true, it will overwrite files with the same name.
    * @param {string} metadataFileName - The name of the file that will be used to store the metadata.
+   * @param {string} imageFileName - The name of the file that will be used to store the base64 image.
    */
   constructor(
     bucketName: string,
     region: string,
     overwriteFiles = false,
-    metadataFileName = 'metadata'
+    metadataFileName = 'metadata',
+    imageFileName = 'image'
   ) {
     // It uses environment variables for credentials (authentication).
     // Must have set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY
@@ -34,6 +37,7 @@ export default class StorageAws implements StorageType {
     this.bucketName = bucketName
     this._overwriteFiles = overwriteFiles
     this._metadataFileName = metadataFileName
+    this._imageFileName = imageFileName
   }
 
   // getters & setters
@@ -52,6 +56,13 @@ export default class StorageAws implements StorageType {
   set metadataFileName(metadataFileName: string) {
     this._metadataFileName = metadataFileName
   }
+
+  get imageFileName(): string {
+    return this._imageFileName
+  }
+  set imageFileName(imageFileName: string) {
+    this._imageFileName = imageFileName
+  }
   // end getters & setters
 
   async storeFile(filepath: string): Promise<string> {
@@ -61,6 +72,15 @@ export default class StorageAws implements StorageType {
     )
     const content = await fs.readFile(filepath)
     await this.addFileToAws(resourceId, content)
+    return resourceId
+  }
+
+  async storeBase64Image(base64: string): Promise<string> {
+    const imageBuffer = Buffer.from(base64, 'base64')
+    const resourceId = this.generateResourceId(this._imageFileName)
+    await this.addFileToAws(resourceId, imageBuffer, {
+      ContentEncoding: 'base64'
+    })
     return resourceId
   }
 
@@ -90,12 +110,14 @@ export default class StorageAws implements StorageType {
    */
   protected async addFileToAws(
     resourceId: string,
-    body: Buffer | string
+    body: Buffer | string,
+    params = {}
   ): Promise<PutObjectCommandOutput> {
     const uploadParams = {
       Bucket: this.bucketName,
       Key: resourceId,
-      Body: body
+      Body: body,
+      ...params
     }
     const data = await this.storage.send(new PutObjectCommand(uploadParams))
     return data
@@ -108,9 +130,10 @@ export default class StorageAws implements StorageType {
    * @param {string} extension - The file extension of the file you're uploading.
    * @returns A string that is the name of the file with the extension.
    */
-  protected generateResourceId(name: string, extension: string): string {
+  protected generateResourceId(name: string, extension?: string): string {
+    const ext = extension ? `.${extension}` : ''
     return this._overwriteFiles
-      ? `${name}.${extension}`
-      : `${name}-${Date.now()}.${extension}`
+      ? `${name}${ext}`
+      : `${name}-${Date.now()}${ext}`
   }
 }

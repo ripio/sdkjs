@@ -50,6 +50,21 @@ describe('StorageAws storeFile method', () => {
   })
 })
 
+describe('StorageAws storeBase64Image method', () => {
+  it('Should add a file with its properties and return the resource id', async () => {
+    const expectedResourceId = 'resId'
+    const base64 = 'aBase64Image'
+    const storage = new StorageAws('bucketName', 'region')
+    storage['addFileToAws'] = jest.fn()
+    storage['generateResourceId'] = jest.fn(() => expectedResourceId)
+    const result = await storage.storeBase64Image(base64)
+
+    expect(result).toBe(expectedResourceId)
+    expect(storage['addFileToAws']).toBeCalled()
+    expect(storage['generateResourceId']).toBeCalled()
+  })
+})
+
 describe('StorageAws storeMetadata method', () => {
   it('Should add a json file with its properties and return the resource id', async () => {
     const spyStringify = jest.spyOn(JSON, 'stringify')
@@ -99,14 +114,24 @@ describe('StorageAws generateResourceId method', () => {
   })
 
   test.each([
-    { overwriteFiles: true, expected: 'test.png' },
-    { overwriteFiles: false, expected: 'test-1667846471039.png' }
+    { overwriteFiles: true, extension: 'png', expected: 'test.png' },
+    { overwriteFiles: true, extension: undefined, expected: 'test' },
+    {
+      overwriteFiles: false,
+      extension: 'png',
+      expected: 'test-1667846471039.png'
+    },
+    {
+      overwriteFiles: false,
+      extension: undefined,
+      expected: 'test-1667846471039'
+    }
   ])(
     'Should return the generated resource id when overwriteFiles is $overwriteFiles',
-    ({ overwriteFiles, expected }) => {
+    ({ overwriteFiles, extension, expected }) => {
       jest.spyOn(Date, 'now').mockReturnValue(1667846471039)
       const storage = new StorageAws('bucketName', 'region', overwriteFiles)
-      const result = storage['generateResourceId']('test', 'png')
+      const result = storage['generateResourceId']('test', extension)
       expect(result).toBe(expected)
       overwriteFiles
         ? expect(Date.now).not.toBeCalled()
@@ -145,5 +170,22 @@ describe('StorageAws getters and setters', () => {
     expect(storage.metadataFileName).toBe('metadata')
     storage.metadataFileName = 'newName'
     expect(storage.metadataFileName).toBe('newName')
+  })
+
+  it('Should return the _imageFileName property value', () => {
+    const storage = new StorageAws(
+      'bucketName',
+      'region',
+      false,
+      undefined,
+      'newName'
+    )
+    expect(storage.imageFileName).toBe('newName')
+  })
+
+  it('Should set the _metadataFileName property', () => {
+    const storage = new StorageAws('bucketName', 'region')
+    storage.imageFileName = 'newName'
+    expect(storage.imageFileName).toBe('newName')
   })
 })

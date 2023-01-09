@@ -42,3 +42,12 @@ describe('StorageHttp storeMetadata method', () => {
     }).toThrow('Method not implemented.')
   })
 })
+
+describe('StorageHttp storeBase64Image method', () => {
+  it('Should throw an error due not implemented method', () => {
+    const storage = new StorageHttp()
+    expect(() => {
+      storage.storeBase64Image('base64')
+    }).toThrow('Method not implemented.')
+  })
+})
