@@ -90,7 +90,12 @@ const errors = {
   TOKEN_OF_OWNER_BY_INDEX_NOT_IMPLEMENTED: (contractAddr: string) =>
     new Error(
       `The ${contractAddr} contract does not implement the tokenOfOwnerByIndex(address,uint256) function`
-    )
+    ),
+  BALANCE_OF_FAILED: (param: string, error?: Error) =>
+    new Error(
+      `Error while retrieving the balance of the owner with address ${param}`,
+      { cause: error }
+    ),
 }
 
 export default errors

@@ -11,7 +11,8 @@ const {
   TOKEN_URI_NOT_IMPLEMENTED,
   GET_TOKEN_URI,
   TOKEN_OF_OWNER_BY_INDEX_NOT_IMPLEMENTED,
-  TRANSACTION_FAILED
+  TRANSACTION_FAILED,
+  BALANCE_OF_FAILED
 } = errors
 
 export class NFTHandler {
@@ -83,11 +84,21 @@ export class NFTHandler {
       throw TOKEN_OF_OWNER_BY_INDEX_NOT_IMPLEMENTED(nftManager.contractAddr!)
     }
 
-    let i = 0
+    let ownerBalance
+    try {
+      const { value } = await nftManager.execute({
+        method: 'balanceOf(address)',
+        params: [owner]
+      })
+      ownerBalance = value
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      throw BALANCE_OF_FAILED(owner, error)
+    }
+
     const tokenIds: string[] = []
 
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
+    for (let i = 0; i < ownerBalance; i++) {
       let tokenId
       try {
         const { value } = await nftManager.execute({
@@ -97,12 +108,9 @@ export class NFTHandler {
         tokenId = value
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
-        if (error?.cause?.error?.body.includes('owner index out of bounds'))
-          break
         throw TRANSACTION_FAILED(error)
       }
       tokenIds.push(tokenId)
-      i++
     }
 
     return await Promise.all(

@@ -125,7 +125,7 @@ describe('NFTHandler getNFTListByOwner function', () => {
     )
   })
 
-  it('Should throw error if nftManager.execute function fails with a non-out of bounds error', async () => {
+  it('Should throw error if nftManager.execute balanceOf(address) function fails ', async () => {
     const owner = 'fake-address'
     const fakeError = new Error('fake-error')
     const nftManager = {
@@ -143,27 +143,42 @@ describe('NFTHandler getNFTListByOwner function', () => {
           owner,
           NFT_METADATA_FORMAT.IMAGE
         )
+    ).rejects.toThrow(errors.BALANCE_OF_FAILED(owner, fakeError))
+  })
+
+  it('Should throw error if nftManager.execute tokenOfOwnerByIndex(address,uint256) function fails', async () => {
+    const owner = 'fake-address'
+    const fakeError = new Error('fake-error')
+    const fakeBalance = 3
+    const nftManager = {
+      isActive: true,
+      implements: jest.fn().mockReturnValueOnce(true),
+      execute: jest
+        .fn()
+        .mockReturnValueOnce({ value: fakeBalance })
+        .mockRejectedValueOnce(fakeError)
+    } as unknown as NFT721Manager
+    const storage = {} as StorageType
+
+    expect(
+      async () =>
+        await NFTHandler.getNFTListByOwner(
+          nftManager,
+          storage,
+          owner,
+          NFT_METADATA_FORMAT.IMAGE
+        )
     ).rejects.toThrow(errors.TRANSACTION_FAILED(fakeError))
   })
 
-  it.each([
-    NFT_METADATA_FORMAT.IMAGE,
-    NFT_METADATA_FORMAT.JSON,
-    NFT_METADATA_FORMAT.JSON_WITH_IMAGE
-  ])('Should return no nft when owner has none', async format => {
+  it('Should return no nft when owner has none', async () => {
     const owner = 'fake-address'
-    const fakeError = {
-      cause: {
-        error: {
-          body: 'VM Exception while processing transaction: revert ERC721Enumerable: owner index out of bounds'
-        }
-      }
-    }
+    const fakeBalance = 0
     const nft = {} as unknown as NFT
     const nftManager = {
       isActive: true,
       implements: jest.fn().mockReturnValueOnce(true),
-      execute: jest.fn().mockRejectedValueOnce(fakeError)
+      execute: jest.fn().mockReturnValueOnce({ value: fakeBalance })
     } as unknown as NFT721Manager
     const storage = {} as unknown as StorageType
     const spyGet = jest.spyOn(NFTHandler, 'get').mockResolvedValue(nft)
@@ -172,36 +187,26 @@ describe('NFTHandler getNFTListByOwner function', () => {
       nftManager,
       storage,
       owner,
-      format
+      NFT_METADATA_FORMAT.IMAGE
     )
 
     expect(nfts.length).toBe(0)
     expect(spyGet).not.toBeCalled()
   })
 
-  it.each([
-    NFT_METADATA_FORMAT.IMAGE,
-    NFT_METADATA_FORMAT.JSON,
-    NFT_METADATA_FORMAT.JSON_WITH_IMAGE
-  ])('Should return nfts when owner has nfts', async format => {
+  it('Should return nfts when owner has nfts', async () => {
     const owner = 'fake-address'
     const tokenIds = ['fake-tokenId', 'fake-tokenId-2']
-    const fakeError = {
-      cause: {
-        error: {
-          body: 'VM Exception while processing transaction: revert ERC721Enumerable: owner index out of bounds'
-        }
-      }
-    }
+    const fakeBalance = 2
     const nft = {} as unknown as NFT
     const nftManager = {
       isActive: true,
       implements: jest.fn().mockReturnValueOnce(true),
       execute: jest
         .fn()
+        .mockReturnValueOnce({ value: fakeBalance })
         .mockReturnValueOnce({ value: tokenIds[0] })
         .mockReturnValueOnce({ value: tokenIds[1] })
-        .mockRejectedValueOnce(fakeError)
     } as unknown as NFT721Manager
     const storage = {} as unknown as StorageType
     const spyGet = jest.spyOn(NFTHandler, 'get').mockResolvedValue(nft)
@@ -210,7 +215,7 @@ describe('NFTHandler getNFTListByOwner function', () => {
       nftManager,
       storage,
       owner,
-      format
+      NFT_METADATA_FORMAT.IMAGE
     )
 
     expect(nfts.length).toBe(2)
