@@ -86,6 +86,10 @@ const errors = {
   TOKEN_URI_NOT_IMPLEMENTED: (contractAddr: string) =>
     new Error(
       `The ${contractAddr} contract does not implement the tokenURI(uint256) function`
+    ),
+  TOKEN_OF_OWNER_BY_INDEX_NOT_IMPLEMENTED: (contractAddr: string) =>
+    new Error(
+      `The ${contractAddr} contract does not implement the tokenOfOwnerByIndex(address,uint256) function`
     )
 }
 

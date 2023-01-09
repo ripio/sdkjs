@@ -6,11 +6,17 @@ import { NFTJsonFactory } from './NFTJsonFactory'
 import { NFTImageFactory } from './NFTImageFactory'
 import { NFTJsonImageFactory } from './NFTJsonImageFactory'
 
-const { MUST_ACTIVATE, TOKEN_URI_NOT_IMPLEMENTED, GET_TOKEN_URI } = errors
+const {
+  MUST_ACTIVATE,
+  TOKEN_URI_NOT_IMPLEMENTED,
+  GET_TOKEN_URI,
+  TOKEN_OF_OWNER_BY_INDEX_NOT_IMPLEMENTED,
+  TRANSACTION_FAILED
+} = errors
 
 export class NFTHandler {
   /**
-   * It takes a tokenId, and returns an NFT object
+   * It takes a tokenId, and returns a NFT object
    * @param {NFT721Manager} nftManager - NFT721Manager - The NFT721Manager instance that will be used
    * to fetch the NFT tokenURI.
    * @param {StorageType} storage - StorageType - The storage to fetch the NFT metadata.
@@ -51,5 +57,56 @@ export class NFTHandler {
         return await NFTJsonImageFactory.createNFT(resource, tokenId, storage)
       }
     }
+  }
+
+  /**
+   * It takes a owner, and returns a list of NFT objects
+   * @param {NFT721Manager} nftManager - NFT721Manager - The NFT721Manager instance that will be used
+   * to fetch the NFTs tokenURIs.
+   * @param {StorageType} storage - StorageType - The storage to fetch the NFTs metadata.
+   * @param {string} owner - The owner of the NFTs.
+   * @param {NFT_METADATA_FORMAT} nftFormat - The format of the NFTs metadata.
+   * @returns The NFT object
+   */
+
+  static async getNFTListByOwner(
+    nftManager: NFT721Manager,
+    storage: StorageType,
+    owner: string,
+    nftFormat: NFT_METADATA_FORMAT
+  ): Promise<NFT[]> {
+    if (!nftManager.isActive) {
+      throw MUST_ACTIVATE
+    }
+    if (!nftManager.implements('tokenOfOwnerByIndex', ['address', 'uint256'])) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      throw TOKEN_OF_OWNER_BY_INDEX_NOT_IMPLEMENTED(nftManager.contractAddr!)
+    }
+
+    let i = 0
+    const tokenIds: string[] = []
+
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      let tokenId
+      try {
+        const { value } = await nftManager.execute({
+          method: 'tokenOfOwnerByIndex(address,uint256)',
+          params: [owner, i]
+        })
+        tokenId = value
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (error: any) {
+        if (error?.cause?.error?.body.includes('owner index out of bounds'))
+          break
+        throw TRANSACTION_FAILED(error)
+      }
+      tokenIds.push(tokenId)
+      i++
+    }
+
+    return await Promise.all(
+      tokenIds.map(tokenId => this.get(nftManager, storage, tokenId, nftFormat))
+    )
   }
 }

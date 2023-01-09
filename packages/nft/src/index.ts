@@ -1,4 +1,5 @@
 export { NFT } from './NFT'
 export { NFTFactory } from './NFTFactory'
+export { NFTHandler } from './NFTHandler'
 export * from './types'
 export * from './storage'
