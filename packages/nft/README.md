@@ -18,11 +18,13 @@ npm install @ripio/sdk-nft
 
 ### Documentation
 
-Read the [docs](https://github.com/ripio/sdkjs/wiki) in our project's wiki.
+Read the [docs](https://ripio.github.io/sdkjs) on github pages.
 
-- [Intro](https://github.com/ripio/sdkjs/wiki/1.-Intro)
-- [Getting started](https://github.com/ripio/sdkjs/wiki/2.-Getting-started)
-- [Overview](https://github.com/ripio/sdkjs/wiki/3.-Overview)
+- [sdk](https://ripio.github.io/sdkjs/sdk)
+- [sdk nft](https://ripio.github.io/sdkjs/sdk-nft)
+- [sdk storage aws](https://ripio.github.io/sdkjs/sdk-storage-aws)
+- [sdk storage http](https://ripio.github.io/sdkjs/sdk-storage-http)
+- [sdk storage ipfs](https://ripio.github.io/sdkjs/sdk-storage-ipfs)
 
 # License
 
