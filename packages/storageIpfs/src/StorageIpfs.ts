@@ -17,7 +17,7 @@ export default class StorageIpfs implements StorageType {
   }
 
   storeBase64Image(base64: string): Promise<string> {
-    return this.addFileToIpfs(base64)
+    return this.addFileToIpfs(Buffer.from(base64, 'base64'))
   }
 
   async getData(resourceId: string): Promise<ResourceIpfs> {
