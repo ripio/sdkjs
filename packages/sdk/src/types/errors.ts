@@ -95,6 +95,10 @@ const errors = {
     new Error(
       `Error while retrieving the balance of the owner with address ${param}`,
       { cause: error }
+    ),
+  SET_TOKEN_URI_NOT_IMPLEMENTED: (contractAddr: string) =>
+    new Error(
+      `The ${contractAddr} contract does not implement the setTokenURI(uint256,string) function`
     )
 }
 
