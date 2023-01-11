@@ -305,78 +305,36 @@ describe('NFTHandler change function', () => {
     ).rejects.toThrow(errors.TRANSACTION_FAILED(fakeError))
   })
 
-  it('Should return the transaction of the setTokenURI execution (IMAGE)', async () => {
-    const tokenId = 'fake-tokenId'
-    const image = 'fake-image'
-    const fakeUri = 'fake-uri'
-    const fakeTransaction = { transactionResponse: { fake: 'value' } }
-    const nftManager = {
-      isActive: true,
-      implements: jest.fn().mockReturnValueOnce(true),
-      execute: jest.fn().mockReturnValueOnce(fakeTransaction)
-    } as unknown as NFT721Manager
-    const storage = {
-      storeBase64Image: jest.fn().mockReturnValueOnce(fakeUri)
-    } as unknown as StorageType
+  it.each([
+    NFT_METADATA_FORMAT.IMAGE,
+    NFT_METADATA_FORMAT.JSON,
+    NFT_METADATA_FORMAT.JSON_WITH_IMAGE
+  ])(
+    'Should return the transaction of the setTokenURI execution ($format)',
+    async format => {
+      const tokenId = 'fake-tokenId'
+      const image = 'fake-image'
+      const nftMetadata = {} as NFTMetadata
+      const fakeImgUri = 'fake-uri'
+      const fakeUri = 'fake-uri'
+      const fakeTransaction = { transactionResponse: { fake: 'value' } }
+      const nftManager = {
+        isActive: true,
+        implements: jest.fn().mockReturnValueOnce(true),
+        execute: jest.fn().mockReturnValueOnce(fakeTransaction)
+      } as unknown as NFT721Manager
+      const storage = {
+        storeBase64Image: jest.fn().mockReturnValueOnce(fakeImgUri),
+        storeMetadata: jest.fn().mockReturnValueOnce(fakeUri)
+      } as unknown as StorageType
 
-    const response = await NFTHandler.change(
-      nftManager,
-      storage,
-      NFT_METADATA_FORMAT.IMAGE,
-      { tokenId, image }
-    )
+      const response = await NFTHandler.change(nftManager, storage, format, {
+        tokenId,
+        image,
+        nftMetadata
+      })
 
-    expect(response).toBe(fakeTransaction.transactionResponse)
-  })
-
-  it('Should return the transaction of the setTokenURI execution (JSON)', async () => {
-    const tokenId = 'fake-tokenId'
-    const nftMetadata = {} as NFTMetadata
-    const fakeUri = 'fake-uri'
-    const fakeTransaction = { transactionResponse: { fake: 'value' } }
-    const nftManager = {
-      isActive: true,
-      implements: jest.fn().mockReturnValueOnce(true),
-      execute: jest.fn().mockReturnValueOnce(fakeTransaction)
-    } as unknown as NFT721Manager
-    const storage = {
-      storeMetadata: jest.fn().mockReturnValueOnce(fakeUri)
-    } as unknown as StorageType
-
-    const response = await NFTHandler.change(
-      nftManager,
-      storage,
-      NFT_METADATA_FORMAT.JSON,
-      { tokenId, nftMetadata }
-    )
-
-    expect(response).toBe(fakeTransaction.transactionResponse)
-  })
-
-  it('Should return the transaction of the setTokenURI execution (JSON_WITH_IMAGE)', async () => {
-    const tokenId = 'fake-tokenId'
-    const image = 'fake-image'
-    const nftMetadata = {} as NFTMetadata
-    const fakeImgUri = 'fake-uri'
-    const fakeUri = 'fake-uri'
-    const fakeTransaction = { transactionResponse: { fake: 'value' } }
-    const nftManager = {
-      isActive: true,
-      implements: jest.fn().mockReturnValueOnce(true),
-      execute: jest.fn().mockReturnValueOnce(fakeTransaction)
-    } as unknown as NFT721Manager
-    const storage = {
-      storeBase64Image: jest.fn().mockReturnValueOnce(fakeImgUri),
-      storeMetadata: jest.fn().mockReturnValueOnce(fakeUri)
-    } as unknown as StorageType
-
-    const response = await NFTHandler.change(
-      nftManager,
-      storage,
-      NFT_METADATA_FORMAT.JSON_WITH_IMAGE,
-      { tokenId, image, nftMetadata }
-    )
-
-    expect(response).toBe(fakeTransaction.transactionResponse)
-  })
+      expect(response).toBe(fakeTransaction.transactionResponse)
+    }
+  )
 })
