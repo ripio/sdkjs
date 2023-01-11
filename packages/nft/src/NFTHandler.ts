@@ -1,11 +1,10 @@
-import { NFT_METADATA_FORMAT } from './types'
+import { NFT_METADATA_FORMAT, NFTHandlerChangeParams } from './types'
 import { NFT721Manager, errors, interfaces } from '@ripio/sdk'
 import { StorageType } from './storage'
 import { NFT } from './NFT'
 import { NFTJsonFactory } from './NFTJsonFactory'
 import { NFTImageFactory } from './NFTImageFactory'
 import { NFTJsonImageFactory } from './NFTJsonImageFactory'
-import { NFTData } from './types/interfaces'
 
 const {
   MUST_ACTIVATE,
@@ -130,14 +129,14 @@ export class NFTHandler {
    * @param {NFTData} nftData - The data of the NFT you want to set.
    * @returns The transaction object
    */
-  static async change(
-    nftManager: NFT721Manager,
-    storage: StorageType,
-    nftFormat: NFT_METADATA_FORMAT,
-    nftData: NFTData
-  ): Promise<interfaces.TransactionResponseExtended | undefined> {
-    const { tokenId, image, nftMetadata } = nftData
-
+  static async change({
+    nftManager,
+    storage,
+    nftFormat,
+    tokenId,
+    nftMetadata,
+    image
+  }: NFTHandlerChangeParams): Promise<interfaces.ExecuteResponse> {
     if (!nftManager.isActive) {
       throw MUST_ACTIVATE
     }
@@ -172,16 +171,9 @@ export class NFTHandler {
       }
     }
 
-    try {
-      const { transactionResponse } = await nftManager.execute({
-        method: 'setTokenURI(uint256,string)',
-        params: [tokenId, tokenUri]
-      })
-
-      return transactionResponse
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      throw TRANSACTION_FAILED(error)
-    }
+    return await nftManager.execute({
+      method: 'setTokenURI(uint256,string)',
+      params: [tokenId, tokenUri]
+    })
   }
 }
