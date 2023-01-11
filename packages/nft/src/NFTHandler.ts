@@ -5,7 +5,7 @@ import { NFT } from './NFT'
 import { NFTJsonFactory } from './NFTJsonFactory'
 import { NFTImageFactory } from './NFTImageFactory'
 import { NFTJsonImageFactory } from './NFTJsonImageFactory'
-import { NFTMetadata } from './types/interfaces'
+import { NFTData } from './types/interfaces'
 
 const {
   MUST_ACTIVATE,
@@ -127,16 +127,14 @@ export class NFTHandler {
    * to set the NFT tokenURI.
    * @param {StorageType} storage - StorageType - The storage to save the NFT metadata.
    * @param {NFT_METADATA_FORMAT} nftFormat - The format of the NFT metadata.
-   * @param {string} tokenId - The tokenId of the NFT you want to set.
-   * @param {NFTMetadata} nftMetadata - The metadata you want to set.
-   * @param {string} image - Base64 of the image you want to set.
+   * @param {NFTData} nftData - The data of the NFT you want to set.
    * @returns The transaction object
    */
   static async change(
     nftManager: NFT721Manager,
     storage: StorageType,
     nftFormat: NFT_METADATA_FORMAT,
-    nftData: { tokenId: string; image?: string; nftMetadata?: NFTMetadata }
+    nftData: NFTData
   ): Promise<interfaces.TransactionResponseExtended | undefined> {
     const { tokenId, image, nftMetadata } = nftData
 

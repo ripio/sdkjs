@@ -7,3 +7,9 @@ export interface NFTMetadata {
   properties?: Array<object>
   [key: string]: unknown // Custom extra data
 }
+
+export interface NFTData {
+  tokenId: string
+  nftMetadata?: NFTMetadata
+  image?: string
+}
