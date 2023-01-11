@@ -1,5 +1,5 @@
-import { NFT_METADATA_FORMAT } from './types'
-import { NFT721Manager, errors } from '@ripio/sdk'
+import { NFT_METADATA_FORMAT, NFTHandlerChangeParams } from './types'
+import { NFT721Manager, errors, interfaces } from '@ripio/sdk'
 import { StorageType } from './storage'
 import { NFT } from './NFT'
 import { NFTJsonFactory } from './NFTJsonFactory'
@@ -12,7 +12,9 @@ const {
   GET_TOKEN_URI,
   TOKEN_OF_OWNER_BY_INDEX_NOT_IMPLEMENTED,
   TRANSACTION_FAILED,
-  BALANCE_OF_FAILED
+  BALANCE_OF_FAILED,
+  SET_TOKEN_URI_NOT_IMPLEMENTED,
+  MISSING_PARAM
 } = errors
 
 export class NFTHandler {
@@ -116,5 +118,62 @@ export class NFTHandler {
     return await Promise.all(
       tokenIds.map(tokenId => this.get(nftManager, storage, tokenId, nftFormat))
     )
+  }
+
+  /**
+   * It takes a tokenId, and returns a transaction object
+   * @param {NFT721Manager} nftManager - NFT721Manager - The NFT721Manager instance that will be used
+   * to set the NFT tokenURI.
+   * @param {StorageType} storage - StorageType - The storage to save the NFT metadata.
+   * @param {NFT_METADATA_FORMAT} nftFormat - The format of the NFT metadata.
+   * @param {NFTData} nftData - The data of the NFT you want to set.
+   * @returns The transaction object
+   */
+  static async change({
+    nftManager,
+    storage,
+    nftFormat,
+    tokenId,
+    nftMetadata,
+    image
+  }: NFTHandlerChangeParams): Promise<interfaces.ExecuteResponse> {
+    if (!nftManager.isActive) {
+      throw MUST_ACTIVATE
+    }
+
+    if (!nftManager.implements('setTokenURI', ['uint256', 'string'])) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      throw SET_TOKEN_URI_NOT_IMPLEMENTED(nftManager.contractAddr!)
+    }
+
+    let tokenUri = ''
+    switch (nftFormat) {
+      case NFT_METADATA_FORMAT.IMAGE:
+        if (!image) throw MISSING_PARAM('image (encoded as base64)')
+
+        tokenUri = await storage.storeBase64Image(image)
+        break
+
+      case NFT_METADATA_FORMAT.JSON:
+        if (!nftMetadata) throw MISSING_PARAM('nftMetadata')
+
+        tokenUri = await storage.storeMetadata(nftMetadata)
+        break
+
+      case NFT_METADATA_FORMAT.JSON_WITH_IMAGE: {
+        if (!image || !nftMetadata)
+          throw MISSING_PARAM('image (encoded as base64) or nftMetadata')
+
+        const imageUri = await storage.storeBase64Image(image)
+        nftMetadata['image'] = imageUri
+        tokenUri = await storage.storeMetadata(nftMetadata)
+        break
+      }
+    }
+
+    return await nftManager.execute({
+      method: 'setTokenURI(uint256,string)',
+      params: [tokenId, tokenUri]
+    })
   }
 }

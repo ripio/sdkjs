@@ -7,6 +7,7 @@ import { errors, NFT721Manager } from '@ripio/sdk'
 import StorageType from '../storage/StorageType'
 import { NFT_METADATA_FORMAT } from '../types'
 import { NFT } from '../NFT'
+import { NFTMetadata } from '../types/interfaces'
 
 describe('NFTHandler get function', () => {
   it('Should throw error if the nftManager is not activate', async () => {
@@ -223,4 +224,104 @@ describe('NFTHandler getNFTListByOwner function', () => {
     expect(nfts[1]).toBe(nft)
     expect(spyGet).toBeCalledTimes(2)
   })
+})
+
+describe('NFTHandler change function', () => {
+  it('Should throw error if the nftManager is not activate', async () => {
+    const tokenId = 'fake-tokenId'
+    const nftManager = {
+      isActive: false
+    } as unknown as NFT721Manager
+    const storage = {} as StorageType
+    await expect(
+      NFTHandler.change({
+        nftManager,
+        storage,
+        nftFormat: NFT_METADATA_FORMAT.IMAGE,
+        tokenId
+      })
+    ).rejects.toThrow(errors.MUST_ACTIVATE)
+  })
+
+  it('Should throw error if the contract does not implement the function setTokenURI(uint256,string)', async () => {
+    const tokenId = 'fake-tokenId'
+    const contractAddr = 'fake-address'
+    const nftManager = {
+      isActive: true,
+      contractAddr,
+      implements: jest.fn().mockReturnValueOnce(false)
+    } as unknown as NFT721Manager
+    const storage = {} as StorageType
+
+    await expect(
+      NFTHandler.change({
+        nftManager,
+        storage,
+        nftFormat: NFT_METADATA_FORMAT.IMAGE,
+        tokenId
+      })
+    ).rejects.toThrow(errors.SET_TOKEN_URI_NOT_IMPLEMENTED(contractAddr))
+  })
+
+  it.each([
+    {
+      nftFormat: NFT_METADATA_FORMAT.IMAGE,
+      errorMsg: 'image (encoded as base64)'
+    },
+    { nftFormat: NFT_METADATA_FORMAT.JSON, errorMsg: 'nftMetadata' },
+    {
+      nftFormat: NFT_METADATA_FORMAT.JSON_WITH_IMAGE,
+      errorMsg: 'image (encoded as base64) or nftMetadata'
+    }
+  ])(
+    'Should throw an error if the corresponding parameter is missing',
+    async ({ nftFormat, errorMsg }) => {
+      const tokenId = 'fake-tokenId'
+      const nftManager = {
+        isActive: true,
+        implements: jest.fn().mockReturnValueOnce(true)
+      } as unknown as NFT721Manager
+      const storage = {} as unknown as StorageType
+
+      await expect(
+        NFTHandler.change({ nftManager, storage, nftFormat, tokenId })
+      ).rejects.toThrow(errors.MISSING_PARAM(errorMsg))
+    }
+  )
+
+  it.each([
+    NFT_METADATA_FORMAT.IMAGE,
+    NFT_METADATA_FORMAT.JSON,
+    NFT_METADATA_FORMAT.JSON_WITH_IMAGE
+  ])(
+    'Should return the transaction of the setTokenURI execution ($format)',
+    async nftFormat => {
+      const tokenId = 'fake-tokenId'
+      const image = 'fake-image'
+      const nftMetadata = {} as NFTMetadata
+      const fakeImgUri = 'fake-uri'
+      const fakeUri = 'fake-uri'
+      const fakeTransaction = { transactionResponse: { fake: 'value' } }
+      const nftManager = {
+        isActive: true,
+        implements: jest.fn().mockReturnValueOnce(true),
+        execute: jest.fn().mockReturnValueOnce(fakeTransaction)
+      } as unknown as NFT721Manager
+      const storage = {
+        storeBase64Image: jest.fn().mockReturnValueOnce(fakeImgUri),
+        storeMetadata: jest.fn().mockReturnValueOnce(fakeUri)
+      } as unknown as StorageType
+
+      const response = await NFTHandler.change({
+        nftManager,
+        storage,
+        nftFormat,
+        tokenId,
+        image,
+        nftMetadata
+      })
+
+      expect(response).toBe(fakeTransaction)
+    }
+  )
 })

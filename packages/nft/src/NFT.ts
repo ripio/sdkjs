@@ -1,4 +1,4 @@
-import { NFTMetadata } from './types/interfaces'
+import { NFTData, NFTMetadata } from './types/interfaces'
 
 export class NFT {
   protected _tokenId: string
@@ -15,15 +15,7 @@ export class NFT {
    * @param {string} image - Base64 of the image associated to the token.
    * @returns NFT object.
    */
-  constructor({
-    tokenId,
-    nftMetadata,
-    image
-  }: {
-    tokenId: string
-    nftMetadata?: NFTMetadata
-    image?: string
-  }) {
+  constructor({ tokenId, nftMetadata, image }: NFTData) {
     this._tokenId = tokenId
     this._name = nftMetadata?.name
     this._description = nftMetadata?.description
