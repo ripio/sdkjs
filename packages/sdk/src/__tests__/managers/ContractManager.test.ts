@@ -1899,6 +1899,15 @@ describe('Utils of ContractManager', () => {
     jest.restoreAllMocks()
   })
 
+  it('Should throw an error if is not active', async () => {
+    const functionName = 'allowance'
+    const params = ['address', 'address']
+    const sdk = new ContractManager()
+    expect(() => sdk.implements(functionName, params)).toThrowError(
+      errors.MUST_ACTIVATE
+    )
+  })
+
   it('Should return true if ContractManager abi implements the function', () => {
     const functionName = 'allowance'
     const params = ['address', 'address']
@@ -1922,6 +1931,7 @@ describe('Utils of ContractManager', () => {
       }
     ])
     sdk['_abi'] = abi
+    sdk['_isActive'] = true
     const spyImplementsFunction = jest
       .spyOn(validations, 'implementsFunction')
       .mockReturnValueOnce(true)
@@ -1939,6 +1949,7 @@ describe('Utils of ContractManager', () => {
     const sdk = new ContractManager()
     const abi = {} as ethers.utils.Interface
     sdk['_abi'] = abi
+    sdk['_isActive'] = true
     jest.spyOn(validations, 'implementsFunction').mockReturnValueOnce(false)
     expect(sdk.implements(functionName, params)).toBe(false)
   })

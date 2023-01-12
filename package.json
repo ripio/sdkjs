@@ -6,7 +6,7 @@
     "lint:check": "npm run lint:check -workspaces",
     "format:check": "npm run format:check -workspaces",
     "build": "npm run build -workspaces",
-    "release":"npm run release -workspaces",
+    "release": "npm run release -workspaces",
     "test": "jest",
     "test-cov": "jest --ci --coverage --reporters=default --reporters=jest-junit"
   },
@@ -29,7 +29,8 @@
         "@semantic-release/git",
         {
           "assets": [
-            "CHANGELOG.md", "package.json"
+            "CHANGELOG.md",
+            "package.json"
           ],
           "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
         }
@@ -48,6 +49,7 @@
     "@babel/cli": "^7.17.6",
     "@babel/core": "^7.17.7",
     "@babel/plugin-proposal-class-properties": "^7.16.7",
+    "@babel/plugin-proposal-decorators": "^7.20.7",
     "@babel/plugin-transform-runtime": "^7.17.0",
     "@babel/preset-env": "^7.16.11",
     "@babel/preset-typescript": "^7.16.7",

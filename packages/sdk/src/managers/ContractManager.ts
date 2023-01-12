@@ -183,6 +183,7 @@ export class ContractManager {
    * @return {boolean} returns true if the function is implemented, false otherwise
    */
   implements(functionName: string, paramsTypes?: string[]): boolean {
+    if (!this._isActive) throw errorTypes.MUST_ACTIVATE
     return implementsFunction(this._abi!, functionName, paramsTypes)
   }
 
