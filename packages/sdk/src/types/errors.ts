@@ -83,22 +83,14 @@ const errors = {
     new Error(
       `Invalid parameter ${param} in non legacy chain (after EIP-1559)`
     ),
-  TOKEN_URI_NOT_IMPLEMENTED: (contractAddr: string) =>
-    new Error(
-      `The ${contractAddr} contract does not implement the tokenURI(uint256) function`
-    ),
-  TOKEN_OF_OWNER_BY_INDEX_NOT_IMPLEMENTED: (contractAddr: string) =>
-    new Error(
-      `The ${contractAddr} contract does not implement the tokenOfOwnerByIndex(address,uint256) function`
-    ),
   BALANCE_OF_FAILED: (param: string, error?: Error) =>
     new Error(
       `Error while retrieving the balance of the owner with address ${param}`,
       { cause: error }
     ),
-  SET_TOKEN_URI_NOT_IMPLEMENTED: (contractAddr: string) =>
+  FUNCTION_NOT_IMPLEMENTED: (contractAddr: string, fn: string) =>
     new Error(
-      `The ${contractAddr} contract does not implement the setTokenURI(uint256,string) function`
+      `The ${contractAddr} contract does not implement the ${fn} function`
     )
 }
 
