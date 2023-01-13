@@ -120,6 +120,94 @@ Where:
 - RESOURCE is a ResourceIpfs, ResourceAws or ResourceHttp instance that contains a JSON.
 - STORAGE is a StorageIpfs, StorageAws or StorageHttp instance
 
+### NFTHandler
+
+Class to get, list, create and change NFTs.
+```javascript
+// commonJS
+const { NFTHandler } = require('@rgc/sdk');
+// TS
+import { NFTHandler } from '@rgc/sdk';
+```
+NFTHandler methods:
+- get:
+
+Get an NFT for a token id.
+```javascript
+NFTHandler.get(NFT_MANAGER, STORAGE, "aTokenId", FORMAT);
+NFT {...} // NFT instance
+```
+Where:
+
+- NFT_MANAGER is a NFT721Manager instance activated
+- STORAGE is a StorageIpfs, StorageAws or StorageHttp instance
+- FORMAT is a NFT_METADATA_FORMAT enum (IMAGE, JSON, JSON_WITH_IMAGE)
+___
+- getNFTListByOwner:
+
+Get all the NFTs for an address.
+```javascript
+NFTHandler.getNFTListByOwner(NFT_MANAGER, STORAGE, "ownerAddress", FORMAT);
+NFT[] // NFT array
+```
+Where:
+
+- NFT_MANAGER is a NFT721Manager instance activated
+- STORAGE is a StorageIpfs, StorageAws or StorageHttp instance
+- FORMAT is a NFT_METADATA_FORMAT enum (IMAGE, JSON, JSON_WITH_IMAGE)
+---
+- create:
+
+Uploads the metadata and/or image to the Storage and creates the NFT on the contract.
+```javascript
+const params = {
+    NFTMANAGER,
+    STORAGE,
+    NFTFORMAT,
+    ADDRESS,
+    TOKENID,
+    NFTMETADATA,
+    IMAGE,
+    VALUE
+};
+NFTHandler.create(params); // returns a ExecuteResponse
+```
+Where:
+
+- NFT_MANAGER is a NFT721Manager instance activated
+- STORAGE is a StorageIpfs or StorageAws instance
+- NFTFORMAT is a NFT_METADATA_FORMAT enum (IMAGE, JSON, JSON_WITH_IMAGE)
+- ADDRESS is the address of the NFT owner
+- TOKENID (optional) is the token id of the NFT. This is not required if the contract has an autoincremental tokenId
+- NFTMETADATA (optional) is a dict with the NFT metadata
+- IMAGE (optional) is a base64 encoded string representing an image
+- VALUE (optional) Amount to be provided when the contract function to mint an NFT is payable
+---
+- change:
+
+Uploads the metadata and/or image to the Storage and sets a new token uri to the NFT on the contract.
+```javascript
+const params = {
+    NFTMANAGER,
+    STORAGE,
+    NFTFORMAT,
+    TOKENID,
+    NFTMETADATA,
+    IMAGE,
+    VALUE
+};
+NFTHandler.change(params); // returns a ExecuteResponse
+```
+Where:
+
+- NFT_MANAGER is a NFT721Manager instance activated
+- STORAGE is a StorageIpfs or StorageAws instance
+- NFTFORMAT is a NFT_METADATA_FORMAT enum (IMAGE, JSON, JSON_WITH_IMAGE)
+- TOKENID is the token id of the NFT
+- NFTMETADATA (optional) is a dict with the NFT metadata
+- IMAGE (optional) is a base64 encoded string representing an image
+- VALUE (optional) Amount to be provided when the contract function to set a token uri is payable
+
 ### Other resources
 
 - [sdk](https://ripio.github.io/sdkjs/sdk)
