@@ -1,4 +1,9 @@
-import { NFT_METADATA_FORMAT, NFTHandlerChangeParams } from './types'
+import {
+  NFT_METADATA_FORMAT,
+  NFTHandlerChangeParams,
+  NFTHandlerCreateParams,
+  NFTMetadata
+} from './types'
 import { NFT721Manager, errors, interfaces } from '@ripio/sdk'
 import { StorageType } from './storage'
 import { NFT } from './NFT'
@@ -7,13 +12,10 @@ import { NFTImageFactory } from './NFTImageFactory'
 import { NFTJsonImageFactory } from './NFTJsonImageFactory'
 
 const {
-  MUST_ACTIVATE,
-  TOKEN_URI_NOT_IMPLEMENTED,
   GET_TOKEN_URI,
-  TOKEN_OF_OWNER_BY_INDEX_NOT_IMPLEMENTED,
   TRANSACTION_FAILED,
   BALANCE_OF_FAILED,
-  SET_TOKEN_URI_NOT_IMPLEMENTED,
+  FUNCTION_NOT_IMPLEMENTED,
   MISSING_PARAM
 } = errors
 
@@ -33,12 +35,12 @@ export class NFTHandler {
     tokenId: string,
     nftFormat: NFT_METADATA_FORMAT
   ): Promise<NFT> {
-    if (!nftManager.isActive) {
-      throw MUST_ACTIVATE
-    }
     if (!nftManager.implements('tokenURI', ['uint256'])) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      throw TOKEN_URI_NOT_IMPLEMENTED(nftManager.contractAddr!)
+      throw FUNCTION_NOT_IMPLEMENTED(
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        nftManager.contractAddr!,
+        'tokenURI(uint256)'
+      )
     }
     let tokenUri = ''
     try {
@@ -78,12 +80,12 @@ export class NFTHandler {
     owner: string,
     nftFormat: NFT_METADATA_FORMAT
   ): Promise<NFT[]> {
-    if (!nftManager.isActive) {
-      throw MUST_ACTIVATE
-    }
     if (!nftManager.implements('tokenOfOwnerByIndex', ['address', 'uint256'])) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      throw TOKEN_OF_OWNER_BY_INDEX_NOT_IMPLEMENTED(nftManager.contractAddr!)
+      throw FUNCTION_NOT_IMPLEMENTED(
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        nftManager.contractAddr!,
+        'tokenOfOwnerByIndex(address,uint256)'
+      )
     }
 
     let ownerBalance
@@ -121,13 +123,10 @@ export class NFTHandler {
   }
 
   /**
-   * It takes a tokenId, and returns a transaction object
-   * @param {NFT721Manager} nftManager - NFT721Manager - The NFT721Manager instance that will be used
-   * to set the NFT tokenURI.
-   * @param {StorageType} storage - StorageType - The storage to save the NFT metadata.
-   * @param {NFT_METADATA_FORMAT} nftFormat - The format of the NFT metadata.
-   * @param {NFTData} nftData - The data of the NFT you want to set.
-   * @returns The transaction object
+   * It uploads the image and/or metadata to the storage, and then calls the `setTokenURI` function on the
+   * NFT manager
+   * @param {NFTHandlerChangeParams}  - NFTHandlerChangeParams dict
+   * @return {Promise<interfaces.ExecuteResponse>} returns a promise with an ExecuteResponse.
    */
   static async change({
     nftManager,
@@ -135,17 +134,86 @@ export class NFTHandler {
     nftFormat,
     tokenId,
     nftMetadata,
-    image
+    image,
+    value
   }: NFTHandlerChangeParams): Promise<interfaces.ExecuteResponse> {
-    if (!nftManager.isActive) {
-      throw MUST_ACTIVATE
-    }
-
     if (!nftManager.implements('setTokenURI', ['uint256', 'string'])) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      throw SET_TOKEN_URI_NOT_IMPLEMENTED(nftManager.contractAddr!)
+      throw FUNCTION_NOT_IMPLEMENTED(
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        nftManager.contractAddr!,
+        'setTokenURI(uint256,string)'
+      )
     }
 
+    const tokenUri = await NFTHandler.uploadData(
+      nftFormat,
+      storage,
+      image,
+      nftMetadata
+    )
+
+    return await nftManager.execute({
+      method: 'setTokenURI(uint256,string)',
+      value,
+      params: [tokenId, tokenUri]
+    })
+  }
+
+  /**
+   * It uploads the image and/or metadata to the storage, and then calls the `safeMint`
+   * function on the NFT manager
+   * @param {NFTHandlerCreateParams}  - NFTHandlerCreateParams dict
+   * @return {Promise<interfaces.ExecuteResponse>} returns a promise with an ExecuteResponse.
+   */
+  static async create({
+    nftManager,
+    storage,
+    nftFormat,
+    address,
+    tokenId,
+    nftMetadata,
+    image,
+    value
+  }: NFTHandlerCreateParams): Promise<interfaces.ExecuteResponse> {
+    const typeParams = tokenId
+      ? ['address', 'uint256', 'string']
+      : ['address', 'string']
+    if (!nftManager.implements('safeMint', typeParams)) {
+      throw FUNCTION_NOT_IMPLEMENTED(
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        nftManager.contractAddr!,
+        `safeMint(${typeParams.join(',')})`
+      )
+    }
+    const uri = await NFTHandler.uploadData(
+      nftFormat,
+      storage,
+      image,
+      nftMetadata
+    )
+    const params = tokenId ? [address, tokenId, uri] : [address, uri]
+    return await nftManager.execute({
+      method: 'safeMint',
+      value,
+      params
+    })
+  }
+
+  /**
+   * It uploads the image and/or metadata to the storage provider and returns the URI of the uploaded
+   * data
+   * @param {NFT_METADATA_FORMAT} nftFormat - The format of the NFT metadata.
+   * @param {StorageType} storage - StorageType - This is the storage type that you want to use.
+   * @param {string | undefined} image - The image to be uploaded. This is a base64 encoded string.
+   * @param {NFTMetadata | undefined} nftMetadata - The metadata associated to the token.
+   * @returns The tokenUri is being returned.
+   */
+  private static async uploadData(
+    nftFormat: NFT_METADATA_FORMAT,
+    storage: StorageType,
+    image?: string,
+    nftMetadata?: NFTMetadata
+  ): Promise<string> {
     let tokenUri = ''
     switch (nftFormat) {
       case NFT_METADATA_FORMAT.IMAGE:
@@ -170,10 +238,6 @@ export class NFTHandler {
         break
       }
     }
-
-    return await nftManager.execute({
-      method: 'setTokenURI(uint256,string)',
-      params: [tokenId, tokenUri]
-    })
+    return tokenUri
   }
 }

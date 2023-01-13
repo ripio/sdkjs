@@ -24,4 +24,16 @@ export interface NFTHandlerChangeParams {
   tokenId: string
   nftMetadata?: NFTMetadata
   image?: string
+  value?: string
+}
+
+export interface NFTHandlerCreateParams {
+  nftManager: NFT721Manager
+  storage: StorageType
+  nftFormat: NFT_METADATA_FORMAT
+  address: string
+  tokenId?: string
+  nftMetadata?: NFTMetadata
+  image?: string
+  value?: string
 }
