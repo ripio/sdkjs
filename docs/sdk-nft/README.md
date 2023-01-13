@@ -62,33 +62,63 @@ nft.jsonData;
 // }
 ```
 
-#### NFTFactory
-
-Given a NFT721Manager, a StorageType (StorageIpfs, StorageAws, StorageHttp) and a NFT_METADATA_FORMAT, it creates a NFTFactory instance to interact with NFTs
-
-```javascript
-// commonJS
-const { NFTFactory } = require('@rgc/sdk');
-// TS
-import { NFTFactory } from '@rgc/sdk';
-// Create NFTFactory instance
-const nftFactory = new NFTFactory(NFT_MANAGER, STORAGE, FORMAT);
-```
-
-Where:
-
-- NFT_MANAGER is a NFT721Manager instance activated
-- STORAGE is a StorageIpfs, StorageAws or StorageHttp instance
-- FORMAT is a NFT_METADATA_FORMAT enum (IMAGE, JSON, JSON_WITH_IMAGE)
-
-NFTFactory methods:
+### NFTImageFactory
 
 - createNFT:
 
+Static method that, given a Resource (which returns an image) and a tokenId, it returns an NFT instance.
+
 ```javascript
-nftFactory.createNFT("aTokenId");
+// commonJS
+const { NFTImageFactory } = require('@rgc/sdk');
+// TS
+import { NFTImageFactory } from '@rgc/sdk';
+
+NFTImageFactory.createNFT(RESOURCE, "aTokenId");
 NFT {...} // NFT instance
 ```
+Where:
+
+- RESOURCE is a ResourceIpfs, ResourceAws or ResourceHttp instance that contains an image.
+
+### NFTJsonFactory
+
+- createNFT:
+
+Static method that, given a Resource (which returns a JSON) and a tokenId, it returns an NFT instance.
+
+```javascript
+// commonJS
+const { NFTJsonFactory } = require('@rgc/sdk');
+// TS
+import { NFTJsonFactory } from '@rgc/sdk';
+
+NFTJsonFactory.createNFT(RESOURCE, "aTokenId");
+NFT {...} // NFT instance
+```
+Where:
+
+- RESOURCE is a ResourceIpfs, ResourceAws or ResourceHttp instance that contains a JSON.
+
+### NFTJsonImageFactory
+
+- createNFT:
+
+Static method that, given a Resource (which returns a JSON), a tokenId and a a StorageType, it returns an NFT instance.
+
+```javascript
+// commonJS
+const { NFTJsonImageFactory } = require('@rgc/sdk');
+// TS
+import { NFTJsonImageFactory } from '@rgc/sdk';
+
+NFTJsonImageFactory.createNFT(RESOURCE, "aTokenId", STORAGE);
+NFT {...} // NFT instance
+```
+Where:
+
+- RESOURCE is a ResourceIpfs, ResourceAws or ResourceHttp instance that contains a JSON.
+- STORAGE is a StorageIpfs, StorageAws or StorageHttp instance
 
 ### Other resources
 
