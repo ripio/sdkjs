@@ -1,3 +1,10 @@
+# [@ripio/sdk-v2.0.1-dev.1](https://github.com/ripio/sdkjs/compare/@ripio/sdk-v2.0.0...@ripio/sdk-v2.0.1-dev.1) (2023-01-12)
+
+
+### Bug Fixes
+
+* check contract manager activation on implements function ([7211bc0](https://github.com/ripio/sdkjs/commit/7211bc0f33ee7785658b2b32feb03fd25af25346))
+
 # [@ripio/sdk-v2.0.0](https://github.com/ripio/sdkjs/compare/@ripio/sdk-v1.1.0...@ripio/sdk-v2.0.0) (2022-12-02)
 
 
