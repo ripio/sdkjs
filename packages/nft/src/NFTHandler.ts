@@ -12,7 +12,6 @@ import { NFTImageFactory } from './NFTImageFactory'
 import { NFTJsonImageFactory } from './NFTJsonImageFactory'
 
 const {
-  MUST_ACTIVATE,
   GET_TOKEN_URI,
   TRANSACTION_FAILED,
   BALANCE_OF_FAILED,
@@ -36,9 +35,6 @@ export class NFTHandler {
     tokenId: string,
     nftFormat: NFT_METADATA_FORMAT
   ): Promise<NFT> {
-    if (!nftManager.isActive) {
-      throw MUST_ACTIVATE
-    }
     if (!nftManager.implements('tokenURI', ['uint256'])) {
       throw FUNCTION_NOT_IMPLEMENTED(
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -84,9 +80,6 @@ export class NFTHandler {
     owner: string,
     nftFormat: NFT_METADATA_FORMAT
   ): Promise<NFT[]> {
-    if (!nftManager.isActive) {
-      throw MUST_ACTIVATE
-    }
     if (!nftManager.implements('tokenOfOwnerByIndex', ['address', 'uint256'])) {
       throw FUNCTION_NOT_IMPLEMENTED(
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -144,10 +137,6 @@ export class NFTHandler {
     image,
     value
   }: NFTHandlerChangeParams): Promise<interfaces.ExecuteResponse> {
-    if (!nftManager.isActive) {
-      throw MUST_ACTIVATE
-    }
-
     if (!nftManager.implements('setTokenURI', ['uint256', 'string'])) {
       throw FUNCTION_NOT_IMPLEMENTED(
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -186,9 +175,6 @@ export class NFTHandler {
     image,
     value
   }: NFTHandlerCreateParams): Promise<interfaces.ExecuteResponse> {
-    if (!nftManager.isActive) {
-      throw MUST_ACTIVATE
-    }
     const params = tokenId
       ? ['address', 'uint256', 'string']
       : ['address', 'string']

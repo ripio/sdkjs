@@ -10,17 +10,6 @@ import { NFT } from '../NFT'
 import { NFTMetadata } from '../types/interfaces'
 
 describe('NFTHandler get function', () => {
-  it('Should throw error if the nftManager is not activate', async () => {
-    const tokenId = 'fake-tokenId'
-    const nftManager = {
-      isActive: false
-    } as unknown as NFT721Manager
-    const storage = {} as StorageType
-    await expect(
-      NFTHandler.get(nftManager, storage, tokenId, NFT_METADATA_FORMAT.IMAGE)
-    ).rejects.toThrow(errors.MUST_ACTIVATE)
-  })
-
   it('Should throw error if the contract does not implement the function tokenURI(uint256)', async () => {
     const tokenId = 'fake-tokenId'
     const contractAddr = 'fake-address'
@@ -90,22 +79,6 @@ describe('NFTHandler get function', () => {
 })
 
 describe('NFTHandler getNFTListByOwner function', () => {
-  it('Should throw error if the nftManager is not activate', async () => {
-    const owner = 'fake-address'
-    const nftManager = {
-      isActive: false
-    } as unknown as NFT721Manager
-    const storage = {} as StorageType
-    await expect(
-      NFTHandler.getNFTListByOwner(
-        nftManager,
-        storage,
-        owner,
-        NFT_METADATA_FORMAT.IMAGE
-      )
-    ).rejects.toThrow(errors.MUST_ACTIVATE)
-  })
-
   it('Should throw error if the contract does not implement the function tokenOfOwnerByIndex(address,uint256)', async () => {
     const owner = 'fake-address'
     const contractAddr = 'fake-address'
@@ -232,22 +205,6 @@ describe('NFTHandler getNFTListByOwner function', () => {
 })
 
 describe('NFTHandler change function', () => {
-  it('Should throw error if the nftManager is not activate', async () => {
-    const tokenId = 'fake-tokenId'
-    const nftManager = {
-      isActive: false
-    } as unknown as NFT721Manager
-    const storage = {} as StorageType
-    await expect(
-      NFTHandler.change({
-        nftManager,
-        storage,
-        nftFormat: NFT_METADATA_FORMAT.IMAGE,
-        tokenId
-      })
-    ).rejects.toThrow(errors.MUST_ACTIVATE)
-  })
-
   it('Should throw error if the contract does not implement the function setTokenURI(uint256,string)', async () => {
     const tokenId = 'fake-tokenId'
     const contractAddr = 'fake-address'
@@ -305,23 +262,6 @@ describe('NFTHandler change function', () => {
 })
 
 describe('NFTHandler create function', () => {
-  it('Should throw error if the nftManager is not activate', async () => {
-    const tokenId = 'fake-tokenId'
-    const nftManager = {
-      isActive: false
-    } as unknown as NFT721Manager
-    const storage = {} as StorageType
-    await expect(
-      NFTHandler.create({
-        nftManager,
-        storage,
-        nftFormat: NFT_METADATA_FORMAT.IMAGE,
-        address: '0x00',
-        tokenId
-      })
-    ).rejects.toThrow(errors.MUST_ACTIVATE)
-  })
-
   it.each([
     { tokenId: undefined, fn: 'safeMint(address,string)' },
     { tokenId: '1', fn: 'safeMint(address,uint256,string)' }
