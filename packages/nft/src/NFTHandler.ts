@@ -175,14 +175,14 @@ export class NFTHandler {
     image,
     value
   }: NFTHandlerCreateParams): Promise<interfaces.ExecuteResponse> {
-    const params = tokenId
+    const typeParams = tokenId
       ? ['address', 'uint256', 'string']
       : ['address', 'string']
-    if (!nftManager.implements('safeMint', params)) {
+    if (!nftManager.implements('safeMint', typeParams)) {
       throw FUNCTION_NOT_IMPLEMENTED(
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         nftManager.contractAddr!,
-        `safeMint(${params.join(',')})`
+        `safeMint(${typeParams.join(',')})`
       )
     }
     const uri = await NFTHandler.uploadData(
@@ -191,10 +191,11 @@ export class NFTHandler {
       image,
       nftMetadata
     )
+    const params = tokenId ? [address, tokenId, uri] : [address, uri]
     return await nftManager.execute({
       method: 'safeMint',
       value,
-      params: [address, uri]
+      params
     })
   }
 
