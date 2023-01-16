@@ -14,9 +14,9 @@ Class to represent a NFT
 
 ```javascript
 // commonJS
-const { NFT } = require('@rgc/sdk');
+const { NFT } = require('@rgc/sdk-nft');
 // TS
-import { NFT } from '@rgc/sdk';
+import { NFT } from '@rgc/sdk-nft';
 // Create NFT instance
 const nft = new NFT({
     tokenId: '42',
@@ -62,33 +62,151 @@ nft.jsonData;
 // }
 ```
 
-#### NFTFactory
-
-Given a NFT721Manager, a StorageType (StorageIpfs, StorageAws, StorageHttp) and a NFT_METADATA_FORMAT, it creates a NFTFactory instance to interact with NFTs
-
-```javascript
-// commonJS
-const { NFTFactory } = require('@rgc/sdk');
-// TS
-import { NFTFactory } from '@rgc/sdk';
-// Create NFTFactory instance
-const nftFactory = new NFTFactory(NFT_MANAGER, STORAGE, FORMAT);
-```
-
-Where:
-
-- NFT_MANAGER is a NFT721Manager instance activated
-- STORAGE is a StorageIpfs, StorageAws or StorageHttp instance
-- FORMAT is a NFT_METADATA_FORMAT enum (IMAGE, JSON, JSON_WITH_IMAGE)
-
-NFTFactory methods:
+### NFTImageFactory
 
 - createNFT:
 
+Static method that, given a Resource (which returns an image) and a tokenId, it returns an NFT instance.
+
 ```javascript
-nftFactory.createNFT("aTokenId");
+// commonJS
+const { NFTImageFactory } = require('@rgc/sdk-nft');
+// TS
+import { NFTImageFactory } from '@rgc/sdk-nft';
+
+await NFTImageFactory.createNFT(RESOURCE, "aTokenId");
 NFT {...} // NFT instance
 ```
+Where:
+
+- RESOURCE is a ResourceIpfs, ResourceAws or ResourceHttp instance that contains an image.
+
+### NFTJsonFactory
+
+- createNFT:
+
+Static method that, given a Resource (which returns a JSON) and a tokenId, it returns an NFT instance.
+
+```javascript
+// commonJS
+const { NFTJsonFactory } = require('@rgc/sdk-nft');
+// TS
+import { NFTJsonFactory } from '@rgc/sdk-nft';
+
+await NFTJsonFactory.createNFT(RESOURCE, "aTokenId");
+NFT {...} // NFT instance
+```
+Where:
+
+- RESOURCE is a ResourceIpfs, ResourceAws or ResourceHttp instance that contains a JSON.
+
+### NFTJsonImageFactory
+
+- createNFT:
+
+Static method that, given a Resource (which returns a JSON), a tokenId and a StorageType, it returns an NFT instance that also used the StorageType to fetch the image data from the retrieved JSON.
+
+```javascript
+// commonJS
+const { NFTJsonImageFactory } = require('@rgc/sdk-nft');
+// TS
+import { NFTJsonImageFactory } from '@rgc/sdk-nft';
+
+await NFTJsonImageFactory.createNFT(RESOURCE, "aTokenId", STORAGE);
+NFT {...} // NFT instance
+```
+Where:
+
+- RESOURCE is a ResourceIpfs, ResourceAws or ResourceHttp instance that contains a JSON.
+- STORAGE is a StorageIpfs, StorageAws or StorageHttp instance
+
+### NFTHandler
+
+Class to get, list, create and change NFTs.
+```javascript
+// commonJS
+const { NFTHandler } = require('@rgc/sdk-nft');
+// TS
+import { NFTHandler } from '@rgc/sdk-nft';
+```
+NFTHandler methods:
+- get:
+
+Get an NFT for a token id.
+```javascript
+await NFTHandler.get(NFT_MANAGER, STORAGE, "aTokenId", FORMAT);
+NFT {...} // NFT instance
+```
+Where:
+
+- NFT_MANAGER is an activated NFT721Manager instance
+- STORAGE is a StorageIpfs, StorageAws or StorageHttp instance
+- FORMAT is a NFT_METADATA_FORMAT enum (IMAGE, JSON, JSON_WITH_IMAGE)
+___
+- getNFTListByOwner:
+
+Get all the NFTs for an address.
+```javascript
+await NFTHandler.getNFTListByOwner(NFT_MANAGER, STORAGE, "ownerAddress", FORMAT);
+NFT[] // NFT array
+```
+Where:
+
+- NFT_MANAGER is an activated NFT721Manager instance
+- STORAGE is a StorageIpfs, StorageAws or StorageHttp instance
+- FORMAT is a NFT_METADATA_FORMAT enum (IMAGE, JSON, JSON_WITH_IMAGE)
+---
+- create:
+
+Uploads the metadata and/or image to the Storage and creates the NFT on the contract.
+```javascript
+const params = {
+    NFTMANAGER,
+    STORAGE,
+    NFTFORMAT,
+    ADDRESS,
+    TOKENID,
+    NFTMETADATA,
+    IMAGE,
+    VALUE
+};
+await NFTHandler.create(params); // returns a ExecuteResponse
+```
+Where:
+
+- NFT_MANAGER is an activated NFT721Manager instance
+- STORAGE is a StorageIpfs or StorageAws instance
+- NFTFORMAT is a NFT_METADATA_FORMAT enum (IMAGE, JSON, JSON_WITH_IMAGE)
+- ADDRESS is the address of the NFT owner
+- TOKENID (optional) is the token id of the NFT. This is not required if the contract has an autoincremental tokenId
+- NFTMETADATA (optional) is a dict with the NFT metadata
+- IMAGE (optional) is a base64 encoded string representing an image
+- VALUE (optional) Amount to be provided when the contract function to mint an NFT is payable
+---
+- change:
+
+Uploads the metadata and/or image to the Storage and sets a new token uri to the NFT on the contract.
+```javascript
+const params = {
+    NFTMANAGER,
+    STORAGE,
+    NFTFORMAT,
+    TOKENID,
+    NFTMETADATA,
+    IMAGE,
+    VALUE
+};
+await NFTHandler.change(params); // returns a ExecuteResponse
+```
+Where:
+
+- NFT_MANAGER is an activated NFT721Manager instance
+- STORAGE is a StorageIpfs or StorageAws instance
+- NFTFORMAT is a NFT_METADATA_FORMAT enum (IMAGE, JSON, JSON_WITH_IMAGE)
+- TOKENID is the token id of the NFT
+- NFTMETADATA (optional) is a dict with the NFT metadata
+- IMAGE (optional) is a base64 encoded string representing an image
+- VALUE (optional) Amount to be provided when the contract function to set a token uri is payable
 
 ### Other resources
 
