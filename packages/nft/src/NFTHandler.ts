@@ -14,12 +14,7 @@ import { NFTJsonImageFactory } from './NFTJsonImageFactory'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { ManagerMustBeActive } from './utils'
 
-const {
-  GET_TOKEN_URI,
-  FUNCTION_NOT_IMPLEMENTED,
-  MISSING_PARAM,
-  BALANCE_OF_FAILED
-} = errors
+const { GET_TOKEN_URI, FUNCTION_NOT_IMPLEMENTED, MISSING_PARAM } = errors
 
 export class NFTHandler {
   /**
@@ -255,16 +250,11 @@ export class NFTHandler {
       )
     }
 
-    try {
-      const { value } = await nftManager.execute({
-        method: 'balanceOf(address)',
-        params: [address]
-      })
-      return value
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      throw BALANCE_OF_FAILED(address, error)
-    }
+    const { value } = await nftManager.execute({
+      method: 'balanceOf(address)',
+      params: [address]
+    })
+    return value
   }
 
   /**

@@ -404,21 +404,6 @@ describe('NFTHandler getAddressBalance function', () => {
     )
   })
 
-  it('Should throw error if nftManager.execute function fails', async () => {
-    const address = 'fake-address'
-    const fakeError = new Error('fake-error')
-    const nftManager = {
-      isActive: true,
-      implements: jest.fn().mockReturnValueOnce(true),
-      execute: jest.fn().mockRejectedValueOnce(fakeError)
-    } as unknown as NFT721Manager
-    Object.setPrototypeOf(nftManager, ContractManager.prototype)
-
-    await expect(
-      NFTHandler['getAddressBalance'](nftManager, address)
-    ).rejects.toThrow(errors.BALANCE_OF_FAILED(address, fakeError))
-  })
-
   it('Should return the address balance', async () => {
     const address = 'fake-address'
     const fakeBalance = 3

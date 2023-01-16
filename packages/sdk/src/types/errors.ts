@@ -83,11 +83,6 @@ const errors = {
     new Error(
       `Invalid parameter ${param} in non legacy chain (after EIP-1559)`
     ),
-  BALANCE_OF_FAILED: (param: string, error?: Error) =>
-    new Error(
-      `Error while retrieving the balance of the owner with address ${param}`,
-      { cause: error }
-    ),
   FUNCTION_NOT_IMPLEMENTED: (contractAddr: string, fn: string) =>
     new Error(
       `The ${contractAddr} contract does not implement the ${fn} function`
