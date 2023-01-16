@@ -83,9 +83,9 @@ export class NFTHandler {
     nftFormat: NFT_METADATA_FORMAT
   ): Promise<NFT[]> {
     const ownerBalance = await NFTHandler.getAddressBalance(nftManager, owner)
-    const tokenIdexs = [...Array(ownerBalance).keys()]
+    const tokenIndexes = [...Array(ownerBalance).keys()]
     const tokenIds = await Promise.all(
-      tokenIdexs.map(index =>
+      tokenIndexes.map(index =>
         NFTHandler.tokenOfOwnerByIndex(nftManager, owner, index)
       )
     )
@@ -236,7 +236,7 @@ export class NFTHandler {
   }
 
   /**
-   * It takes an address and returns his balance
+   * It takes an address and returns its balance
    * @param {NFT721Manager} nftManager - NFT721Manager - The NFT721Manager instance that will be used
    * to fetch the balance.
    * @param {string} address - The address of which we want the balance.
