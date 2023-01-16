@@ -68,7 +68,7 @@ export class NFTHandler {
   }
 
   /**
-   * It takes a owner, and returns a list of NFT objects
+   * It takes an owner, and returns a list of NFT objects
    * @param {NFT721Manager} nftManager - NFT721Manager - The NFT721Manager instance that will be used
    * to fetch the NFTs tokenURIs.
    * @param {StorageType} storage - StorageType - The storage to fetch the NFTs metadata.
@@ -96,7 +96,7 @@ export class NFTHandler {
   }
 
   /**
-   * It takes a owner, and returns the last tokenId.
+   * It takes an owner, and returns the last tokenId.
    * @param {NFT721Manager} nftManager - NFT721Manager - The NFT721Manager instance that will be used
    * to fetch the NFT tokenId.
    * @param {string} owner - The owner of the NFTs.
