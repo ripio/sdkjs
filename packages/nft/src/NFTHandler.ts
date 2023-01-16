@@ -11,12 +11,15 @@ import { NFTJsonFactory } from './NFTJsonFactory'
 import { NFTImageFactory } from './NFTImageFactory'
 import { NFTJsonImageFactory } from './NFTJsonImageFactory'
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { ManagerMustActive } from './utils'
+
 const {
   GET_TOKEN_URI,
-  TRANSACTION_FAILED,
-  BALANCE_OF_FAILED,
   FUNCTION_NOT_IMPLEMENTED,
-  MISSING_PARAM
+  MISSING_PARAM,
+  BALANCE_OF_FAILED,
+  TRANSACTION_FAILED
 } = errors
 
 export class NFTHandler {
@@ -29,6 +32,7 @@ export class NFTHandler {
    * @param {NFT_METADATA_FORMAT} nftFormat - The format of the NFT metadata.
    * @returns The NFT object
    */
+  @ManagerMustActive
   static async get(
     nftManager: NFT721Manager,
     storage: StorageType,
@@ -73,53 +77,42 @@ export class NFTHandler {
    * @param {NFT_METADATA_FORMAT} nftFormat - The format of the NFTs metadata.
    * @returns The NFT object
    */
-
   static async getNFTListByOwner(
     nftManager: NFT721Manager,
     storage: StorageType,
     owner: string,
     nftFormat: NFT_METADATA_FORMAT
   ): Promise<NFT[]> {
-    if (!nftManager.implements('tokenOfOwnerByIndex', ['address', 'uint256'])) {
-      throw FUNCTION_NOT_IMPLEMENTED(
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        nftManager.contractAddr!,
-        'tokenOfOwnerByIndex(address,uint256)'
+    const ownerBalance = await NFTHandler.getAddressBalance(nftManager, owner)
+    const tokenIdexs = [...Array(ownerBalance).keys()]
+    const tokenIds = await Promise.all(
+      tokenIdexs.map(index =>
+        NFTHandler.tokenOfOwnerByIndex(nftManager, owner, index)
       )
-    }
-
-    let ownerBalance
-    try {
-      const { value } = await nftManager.execute({
-        method: 'balanceOf(address)',
-        params: [owner]
-      })
-      ownerBalance = value
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      throw BALANCE_OF_FAILED(owner, error)
-    }
-
-    const tokenIds: string[] = []
-
-    for (let i = 0; i < ownerBalance; i++) {
-      let tokenId
-      try {
-        const { value } = await nftManager.execute({
-          method: 'tokenOfOwnerByIndex(address,uint256)',
-          params: [owner, i]
-        })
-        tokenId = value
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (error: any) {
-        throw TRANSACTION_FAILED(error)
-      }
-      tokenIds.push(tokenId)
-    }
+    )
 
     return await Promise.all(
       tokenIds.map(tokenId => this.get(nftManager, storage, tokenId, nftFormat))
     )
+  }
+
+  /**
+   * It takes a owner, and returns a list of NFT objects
+   * @param {NFT721Manager} nftManager - NFT721Manager - The NFT721Manager instance that will be used
+   * to fetch the NFT tokenURI.
+   * @param {string} owner - The owner of the NFTs.
+   * @returns The NFT object
+   */
+  static async getLastNFTId(
+    nftManager: NFT721Manager,
+    owner: string
+  ): Promise<string | null> {
+    const ownerBalance = await NFTHandler.getAddressBalance(nftManager, owner)
+    const lastTokenIndex = ownerBalance - 1
+
+    return lastTokenIndex < 0
+      ? null
+      : await NFTHandler.tokenOfOwnerByIndex(nftManager, owner, lastTokenIndex)
   }
 
   /**
@@ -128,6 +121,7 @@ export class NFTHandler {
    * @param {NFTHandlerChangeParams}  - NFTHandlerChangeParams dict
    * @return {Promise<interfaces.ExecuteResponse>} returns a promise with an ExecuteResponse.
    */
+  @ManagerMustActive
   static async change({
     nftManager,
     storage,
@@ -165,6 +159,7 @@ export class NFTHandler {
    * @param {NFTHandlerCreateParams}  - NFTHandlerCreateParams dict
    * @return {Promise<interfaces.ExecuteResponse>} returns a promise with an ExecuteResponse.
    */
+  @ManagerMustActive
   static async create({
     nftManager,
     storage,
@@ -239,5 +234,71 @@ export class NFTHandler {
       }
     }
     return tokenUri
+  }
+
+  /**
+   * It takes an address and returns his balance
+   * @param {NFT721Manager} nftManager - NFT721Manager - The NFT721Manager instance that will be used
+   * to fetch the balance.
+   * @param {string} address - The address of which we want the balance.
+   * @returns The balance
+   */
+  @ManagerMustActive
+  private static async getAddressBalance(
+    nftManager: NFT721Manager,
+    address: string
+  ): Promise<number> {
+    if (!nftManager.implements('balanceOf', ['address'])) {
+      throw FUNCTION_NOT_IMPLEMENTED(
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        nftManager.contractAddr!,
+        'balanceOf(address)'
+      )
+    }
+
+    try {
+      const { value } = await nftManager.execute({
+        method: 'balanceOf(address)',
+        params: [address]
+      })
+      return value
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      throw BALANCE_OF_FAILED(address, error)
+    }
+  }
+
+  /**
+   * Takes an address and an index and returns the corresponding tokenUri.
+   * @param {NFT721Manager} nftManager - NFT721Manager - The NFT721Manager instance that will be used
+   * to fetch the tokenUri.
+   * @param {string} owner - The owner of the nft.
+   * @param {number} index - The index of the tokenUri.
+   * @returns The balance
+   */
+  @ManagerMustActive
+  private static async tokenOfOwnerByIndex(
+    nftManager: NFT721Manager,
+    owner: string,
+    index: number
+  ): Promise<string> {
+    if (!nftManager.implements('tokenOfOwnerByIndex', ['address', 'uint256'])) {
+      throw FUNCTION_NOT_IMPLEMENTED(
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        nftManager.contractAddr!,
+        'tokenOfOwnerByIndex(address,uint256)'
+      )
+    }
+
+    try {
+      const { value } = await nftManager.execute({
+        method: 'tokenOfOwnerByIndex(address,uint256)',
+        params: [owner, index]
+      })
+      return value
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      throw TRANSACTION_FAILED(error)
+    }
   }
 }
