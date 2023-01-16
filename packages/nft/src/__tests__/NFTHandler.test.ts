@@ -461,22 +461,6 @@ describe('NFTHandler tokenOfOwnerByIndex function', () => {
     )
   })
 
-  it('Should throw error if nftManager.execute function fails', async () => {
-    const owner = 'fake-address'
-    const index = 2
-    const fakeError = new Error('fake-error')
-    const nftManager = {
-      isActive: true,
-      implements: jest.fn().mockReturnValueOnce(true),
-      execute: jest.fn().mockRejectedValueOnce(fakeError)
-    } as unknown as NFT721Manager
-    Object.setPrototypeOf(nftManager, ContractManager.prototype)
-
-    await expect(
-      NFTHandler['tokenOfOwnerByIndex'](nftManager, owner, index)
-    ).rejects.toThrow(errors.TRANSACTION_FAILED(fakeError))
-  })
-
   it('Should return the tokenId', async () => {
     const owner = 'fake-address'
     const index = 2

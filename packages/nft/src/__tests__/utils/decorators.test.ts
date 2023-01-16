@@ -1,22 +1,22 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { ManagerMustActive } from './../../utils'
+import { ManagerMustBeActive } from './../../utils'
 import { errors, NFT721Manager, ContractManager } from '@ripio/sdk'
 
 class Test {
-  @ManagerMustActive
+  @ManagerMustBeActive('nftManager')
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   static method({ nftManager }: { nftManager: NFT721Manager }) {
     return 'Worked'
   }
 
-  @ManagerMustActive
+  @ManagerMustBeActive()
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   static anotherMethod(fakeParam: string, nftManager: NFT721Manager) {
     return 'Worked'
   }
 }
 
-describe('ManagerMustActive decorator', () => {
+describe('ManagerMustBeActive decorator', () => {
   it('Should throw error if the Manager is not activate (params as object)', async () => {
     const nftManager = {
       isActive: false
