@@ -74,7 +74,7 @@ const { NFTImageFactory } = require('@rgc/sdk');
 // TS
 import { NFTImageFactory } from '@rgc/sdk';
 
-NFTImageFactory.createNFT(RESOURCE, "aTokenId");
+await NFTImageFactory.createNFT(RESOURCE, "aTokenId");
 NFT {...} // NFT instance
 ```
 Where:
@@ -93,7 +93,7 @@ const { NFTJsonFactory } = require('@rgc/sdk');
 // TS
 import { NFTJsonFactory } from '@rgc/sdk';
 
-NFTJsonFactory.createNFT(RESOURCE, "aTokenId");
+await NFTJsonFactory.createNFT(RESOURCE, "aTokenId");
 NFT {...} // NFT instance
 ```
 Where:
@@ -112,7 +112,7 @@ const { NFTJsonImageFactory } = require('@rgc/sdk');
 // TS
 import { NFTJsonImageFactory } from '@rgc/sdk';
 
-NFTJsonImageFactory.createNFT(RESOURCE, "aTokenId", STORAGE);
+await NFTJsonImageFactory.createNFT(RESOURCE, "aTokenId", STORAGE);
 NFT {...} // NFT instance
 ```
 Where:
@@ -134,7 +134,7 @@ NFTHandler methods:
 
 Get an NFT for a token id.
 ```javascript
-NFTHandler.get(NFT_MANAGER, STORAGE, "aTokenId", FORMAT);
+await NFTHandler.get(NFT_MANAGER, STORAGE, "aTokenId", FORMAT);
 NFT {...} // NFT instance
 ```
 Where:
@@ -147,7 +147,7 @@ ___
 
 Get all the NFTs for an address.
 ```javascript
-NFTHandler.getNFTListByOwner(NFT_MANAGER, STORAGE, "ownerAddress", FORMAT);
+await NFTHandler.getNFTListByOwner(NFT_MANAGER, STORAGE, "ownerAddress", FORMAT);
 NFT[] // NFT array
 ```
 Where:
@@ -170,7 +170,7 @@ const params = {
     IMAGE,
     VALUE
 };
-NFTHandler.create(params); // returns a ExecuteResponse
+await NFTHandler.create(params); // returns a ExecuteResponse
 ```
 Where:
 
@@ -196,7 +196,7 @@ const params = {
     IMAGE,
     VALUE
 };
-NFTHandler.change(params); // returns a ExecuteResponse
+await NFTHandler.change(params); // returns a ExecuteResponse
 ```
 Where:
 
