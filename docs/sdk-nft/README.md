@@ -14,9 +14,9 @@ Class to represent a NFT
 
 ```javascript
 // commonJS
-const { NFT } = require('@rgc/sdk');
+const { NFT } = require('@rgc/sdk-nft');
 // TS
-import { NFT } from '@rgc/sdk';
+import { NFT } from '@rgc/sdk-nft';
 // Create NFT instance
 const nft = new NFT({
     tokenId: '42',
@@ -70,9 +70,9 @@ Static method that, given a Resource (which returns an image) and a tokenId, it 
 
 ```javascript
 // commonJS
-const { NFTImageFactory } = require('@rgc/sdk');
+const { NFTImageFactory } = require('@rgc/sdk-nft');
 // TS
-import { NFTImageFactory } from '@rgc/sdk';
+import { NFTImageFactory } from '@rgc/sdk-nft';
 
 await NFTImageFactory.createNFT(RESOURCE, "aTokenId");
 NFT {...} // NFT instance
@@ -89,9 +89,9 @@ Static method that, given a Resource (which returns a JSON) and a tokenId, it re
 
 ```javascript
 // commonJS
-const { NFTJsonFactory } = require('@rgc/sdk');
+const { NFTJsonFactory } = require('@rgc/sdk-nft');
 // TS
-import { NFTJsonFactory } from '@rgc/sdk';
+import { NFTJsonFactory } from '@rgc/sdk-nft';
 
 await NFTJsonFactory.createNFT(RESOURCE, "aTokenId");
 NFT {...} // NFT instance
@@ -108,9 +108,9 @@ Static method that, given a Resource (which returns a JSON), a tokenId and a a S
 
 ```javascript
 // commonJS
-const { NFTJsonImageFactory } = require('@rgc/sdk');
+const { NFTJsonImageFactory } = require('@rgc/sdk-nft');
 // TS
-import { NFTJsonImageFactory } from '@rgc/sdk';
+import { NFTJsonImageFactory } from '@rgc/sdk-nft';
 
 await NFTJsonImageFactory.createNFT(RESOURCE, "aTokenId", STORAGE);
 NFT {...} // NFT instance
@@ -125,9 +125,9 @@ Where:
 Class to get, list, create and change NFTs.
 ```javascript
 // commonJS
-const { NFTHandler } = require('@rgc/sdk');
+const { NFTHandler } = require('@rgc/sdk-nft');
 // TS
-import { NFTHandler } from '@rgc/sdk';
+import { NFTHandler } from '@rgc/sdk-nft';
 ```
 NFTHandler methods:
 - get:
