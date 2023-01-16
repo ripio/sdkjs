@@ -3,7 +3,7 @@ import { NFTJsonFactory } from './../NFTJsonFactory'
 import { NFTImageFactory } from '../NFTImageFactory'
 import { Resource } from '@ripio/sdk-nft'
 import { NFTHandler } from './../NFTHandler'
-import { errors, NFT721Manager } from '@ripio/sdk'
+import { errors, NFT721Manager, ContractManager } from '@ripio/sdk'
 import StorageType from '../storage/StorageType'
 import { NFT_METADATA_FORMAT } from '../types'
 import { NFT } from '../NFT'
@@ -18,6 +18,7 @@ describe('NFTHandler get function', () => {
       contractAddr,
       implements: jest.fn().mockReturnValueOnce(false)
     } as unknown as NFT721Manager
+    Object.setPrototypeOf(nftManager, ContractManager.prototype)
     const storage = {} as StorageType
 
     await expect(
@@ -35,6 +36,7 @@ describe('NFTHandler get function', () => {
       implements: jest.fn().mockReturnValueOnce(true),
       execute: jest.fn().mockRejectedValueOnce(fakeError)
     } as unknown as NFT721Manager
+    Object.setPrototypeOf(nftManager, ContractManager.prototype)
     const storage = {} as StorageType
 
     expect(
@@ -63,6 +65,7 @@ describe('NFTHandler get function', () => {
       implements: jest.fn().mockReturnValueOnce(true),
       execute: jest.fn().mockReturnValueOnce({ value: tokenUri })
     } as unknown as NFT721Manager
+    Object.setPrototypeOf(nftManager, ContractManager.prototype)
     const storage = {
       getData: jest.fn().mockResolvedValue({} as unknown as Resource)
     } as unknown as StorageType
@@ -79,87 +82,24 @@ describe('NFTHandler get function', () => {
 })
 
 describe('NFTHandler getNFTListByOwner function', () => {
-  it('Should throw error if the contract does not implement the function tokenOfOwnerByIndex(address,uint256)', async () => {
-    const owner = 'fake-address'
-    const contractAddr = 'fake-address'
-    const nftManager = {
-      isActive: true,
-      contractAddr,
-      implements: jest.fn().mockReturnValueOnce(false)
-    } as unknown as NFT721Manager
-    const storage = {} as StorageType
-
-    await expect(
-      NFTHandler.getNFTListByOwner(
-        nftManager,
-        storage,
-        owner,
-        NFT_METADATA_FORMAT.IMAGE
-      )
-    ).rejects.toThrow(
-      errors.FUNCTION_NOT_IMPLEMENTED(
-        contractAddr,
-        'tokenOfOwnerByIndex(address,uint256)'
-      )
-    )
-  })
-
-  it('Should throw error if nftManager.execute balanceOf(address) function fails ', async () => {
-    const owner = 'fake-address'
-    const fakeError = new Error('fake-error')
-    const nftManager = {
-      isActive: true,
-      implements: jest.fn().mockReturnValueOnce(true),
-      execute: jest.fn().mockRejectedValueOnce(fakeError)
-    } as unknown as NFT721Manager
-    const storage = {} as StorageType
-
-    expect(
-      async () =>
-        await NFTHandler.getNFTListByOwner(
-          nftManager,
-          storage,
-          owner,
-          NFT_METADATA_FORMAT.IMAGE
-        )
-    ).rejects.toThrow(errors.BALANCE_OF_FAILED(owner, fakeError))
-  })
-
-  it('Should throw error if nftManager.execute tokenOfOwnerByIndex(address,uint256) function fails', async () => {
-    const owner = 'fake-address'
-    const fakeError = new Error('fake-error')
-    const fakeBalance = 3
-    const nftManager = {
-      isActive: true,
-      implements: jest.fn().mockReturnValueOnce(true),
-      execute: jest
-        .fn()
-        .mockReturnValueOnce({ value: fakeBalance })
-        .mockRejectedValueOnce(fakeError)
-    } as unknown as NFT721Manager
-    const storage = {} as StorageType
-
-    expect(
-      async () =>
-        await NFTHandler.getNFTListByOwner(
-          nftManager,
-          storage,
-          owner,
-          NFT_METADATA_FORMAT.IMAGE
-        )
-    ).rejects.toThrow(errors.TRANSACTION_FAILED(fakeError))
-  })
-
   it('Should return no nft when owner has none', async () => {
     const owner = 'fake-address'
     const fakeBalance = 0
     const nft = {} as unknown as NFT
     const nftManager = {
-      isActive: true,
-      implements: jest.fn().mockReturnValueOnce(true),
-      execute: jest.fn().mockReturnValueOnce({ value: fakeBalance })
+      isActive: true
     } as unknown as NFT721Manager
+    Object.setPrototypeOf(nftManager, ContractManager.prototype)
     const storage = {} as unknown as StorageType
+    const spyGetAddressBalance = jest
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .spyOn(NFTHandler as any, 'getAddressBalance')
+      .mockResolvedValue(fakeBalance)
+    const spyTokenOfOwnerByIndex = jest.spyOn(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      NFTHandler as any,
+      'tokenOfOwnerByIndex'
+    )
     const spyGet = jest.spyOn(NFTHandler, 'get').mockResolvedValue(nft)
 
     const nfts = await NFTHandler.getNFTListByOwner(
@@ -170,6 +110,8 @@ describe('NFTHandler getNFTListByOwner function', () => {
     )
 
     expect(nfts.length).toBe(0)
+    expect(spyGetAddressBalance).toBeCalled()
+    expect(spyTokenOfOwnerByIndex).not.toBeCalled()
     expect(spyGet).not.toBeCalled()
   })
 
@@ -179,15 +121,19 @@ describe('NFTHandler getNFTListByOwner function', () => {
     const fakeBalance = 2
     const nft = {} as unknown as NFT
     const nftManager = {
-      isActive: true,
-      implements: jest.fn().mockReturnValueOnce(true),
-      execute: jest
-        .fn()
-        .mockReturnValueOnce({ value: fakeBalance })
-        .mockReturnValueOnce({ value: tokenIds[0] })
-        .mockReturnValueOnce({ value: tokenIds[1] })
+      isActive: true
     } as unknown as NFT721Manager
+    Object.setPrototypeOf(nftManager, ContractManager.prototype)
     const storage = {} as unknown as StorageType
+    const spyGetAddressBalance = jest
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .spyOn(NFTHandler as any, 'getAddressBalance')
+      .mockResolvedValue(fakeBalance)
+    const spyTokenOfOwnerByIndex = jest
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .spyOn(NFTHandler as any, 'tokenOfOwnerByIndex')
+      .mockResolvedValueOnce(tokenIds[0])
+      .mockResolvedValueOnce(tokenIds[1])
     const spyGet = jest.spyOn(NFTHandler, 'get').mockResolvedValue(nft)
 
     const nfts = await NFTHandler.getNFTListByOwner(
@@ -200,7 +146,55 @@ describe('NFTHandler getNFTListByOwner function', () => {
     expect(nfts.length).toBe(2)
     expect(nfts[0]).toBe(nft)
     expect(nfts[1]).toBe(nft)
+    expect(spyGetAddressBalance).toBeCalled()
+    expect(spyTokenOfOwnerByIndex).toBeCalledTimes(2)
     expect(spyGet).toBeCalledTimes(2)
+  })
+})
+
+describe('NFTHandler getLastNFTId function', () => {
+  it('Should return no nft when owner has none', async () => {
+    const owner = 'fake-address'
+    const fakeBalance = 0
+    const nftManager = {} as unknown as NFT721Manager
+    Object.setPrototypeOf(nftManager, ContractManager.prototype)
+    const spyGetAddressBalance = jest
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .spyOn(NFTHandler as any, 'getAddressBalance')
+      .mockResolvedValue(fakeBalance)
+    const spyTokenOfOwnerByIndex = jest.spyOn(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      NFTHandler as any,
+      'tokenOfOwnerByIndex'
+    )
+
+    const tokenId = await NFTHandler.getLastNFTId(nftManager, owner)
+
+    expect(tokenId).toBe(null)
+    expect(spyGetAddressBalance).toBeCalled()
+    expect(spyTokenOfOwnerByIndex).not.toBeCalled()
+  })
+
+  it('Should return nft', async () => {
+    const owner = 'fake-address'
+    const fakeBalance = 1
+    const fakeTokenId = 'fake-token-id'
+    const nftManager = {} as unknown as NFT721Manager
+    Object.setPrototypeOf(nftManager, ContractManager.prototype)
+    const spyGetAddressBalance = jest
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .spyOn(NFTHandler as any, 'getAddressBalance')
+      .mockResolvedValue(fakeBalance)
+    const spyTokenOfOwnerByIndex = jest
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .spyOn(NFTHandler as any, 'tokenOfOwnerByIndex')
+      .mockResolvedValue(fakeTokenId)
+
+    const tokenId = await NFTHandler.getLastNFTId(nftManager, owner)
+
+    expect(tokenId).toBe(fakeTokenId)
+    expect(spyGetAddressBalance).toBeCalled()
+    expect(spyTokenOfOwnerByIndex).toBeCalled()
   })
 })
 
@@ -213,6 +207,7 @@ describe('NFTHandler change function', () => {
       contractAddr,
       implements: jest.fn().mockReturnValueOnce(false)
     } as unknown as NFT721Manager
+    Object.setPrototypeOf(nftManager, ContractManager.prototype)
     const storage = {} as StorageType
 
     await expect(
@@ -241,6 +236,7 @@ describe('NFTHandler change function', () => {
       implements: jest.fn().mockReturnValueOnce(true),
       execute: jest.fn().mockReturnValueOnce(fakeTransaction)
     } as unknown as NFT721Manager
+    Object.setPrototypeOf(nftManager, ContractManager.prototype)
     const storage = {} as unknown as StorageType
     const spyUploadData = jest
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -274,6 +270,7 @@ describe('NFTHandler create function', () => {
         contractAddr,
         implements: jest.fn().mockReturnValueOnce(false)
       } as unknown as NFT721Manager
+      Object.setPrototypeOf(nftManager, ContractManager.prototype)
       const storage = {} as StorageType
 
       await expect(
@@ -300,6 +297,7 @@ describe('NFTHandler create function', () => {
       implements: jest.fn().mockReturnValueOnce(true),
       execute: jest.fn().mockReturnValueOnce(fakeTransaction)
     } as unknown as NFT721Manager
+    Object.setPrototypeOf(nftManager, ContractManager.prototype)
     const storage = {} as unknown as StorageType
     const spyUploadData = jest
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -381,4 +379,89 @@ describe('NFTHandler uploadData function', () => {
       expect(response).toBe(fakeUri)
     }
   )
+})
+
+describe('NFTHandler getAddressBalance function', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+    jest.restoreAllMocks()
+  })
+
+  it('Should throw error if the contract does not implement the function balanceOf(address)', async () => {
+    const address = 'fake-address'
+    const contractAddr = 'fake-address'
+    const nftManager = {
+      isActive: true,
+      contractAddr,
+      implements: jest.fn().mockReturnValueOnce(false)
+    } as unknown as NFT721Manager
+    Object.setPrototypeOf(nftManager, ContractManager.prototype)
+
+    await expect(
+      NFTHandler['getAddressBalance'](nftManager, address)
+    ).rejects.toThrow(
+      errors.FUNCTION_NOT_IMPLEMENTED(contractAddr, 'balanceOf(address)')
+    )
+  })
+
+  it('Should return the address balance', async () => {
+    const address = 'fake-address'
+    const fakeBalance = 3
+    const nftManager = {
+      isActive: true,
+      implements: jest.fn().mockReturnValueOnce(true),
+      execute: jest.fn().mockReturnValueOnce({ value: fakeBalance })
+    } as unknown as NFT721Manager
+    Object.setPrototypeOf(nftManager, ContractManager.prototype)
+
+    const balance = await NFTHandler['getAddressBalance'](nftManager, address)
+    expect(balance).toBe(fakeBalance)
+  })
+})
+
+describe('NFTHandler tokenOfOwnerByIndex function', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+    jest.restoreAllMocks()
+  })
+
+  it('Should throw error if the contract does not implement the function tokenOfOwnerByIndex(address,uint256)', async () => {
+    const owner = 'fake-address'
+    const index = 2
+    const contractAddr = 'fake-address'
+    const nftManager = {
+      isActive: true,
+      contractAddr,
+      implements: jest.fn().mockReturnValueOnce(false)
+    } as unknown as NFT721Manager
+    Object.setPrototypeOf(nftManager, ContractManager.prototype)
+
+    await expect(
+      NFTHandler['tokenOfOwnerByIndex'](nftManager, owner, index)
+    ).rejects.toThrow(
+      errors.FUNCTION_NOT_IMPLEMENTED(
+        contractAddr,
+        'tokenOfOwnerByIndex(address,uint256)'
+      )
+    )
+  })
+
+  it('Should return the tokenId', async () => {
+    const owner = 'fake-address'
+    const index = 2
+    const fakeUri = 'fake-uri'
+    const nftManager = {
+      isActive: true,
+      implements: jest.fn().mockReturnValueOnce(true),
+      execute: jest.fn().mockReturnValueOnce({ value: fakeUri })
+    } as unknown as NFT721Manager
+    Object.setPrototypeOf(nftManager, ContractManager.prototype)
+
+    const tokenId = await NFTHandler['tokenOfOwnerByIndex'](
+      nftManager,
+      owner,
+      index
+    )
+    expect(tokenId).toBe(fakeUri)
+  })
 })
