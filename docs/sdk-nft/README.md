@@ -104,7 +104,7 @@ Where:
 
 - createNFT:
 
-Static method that, given a Resource (which returns a JSON), a tokenId and a a StorageType, it returns an NFT instance.
+Static method that, given a Resource (which returns a JSON), a tokenId and a StorageType, it returns an NFT instance that also used the StorageType to fetch the image data from the retrieved JSON.
 
 ```javascript
 // commonJS
@@ -139,7 +139,7 @@ NFT {...} // NFT instance
 ```
 Where:
 
-- NFT_MANAGER is a NFT721Manager instance activated
+- NFT_MANAGER is an activated NFT721Manager instance
 - STORAGE is a StorageIpfs, StorageAws or StorageHttp instance
 - FORMAT is a NFT_METADATA_FORMAT enum (IMAGE, JSON, JSON_WITH_IMAGE)
 ___
@@ -152,7 +152,7 @@ NFT[] // NFT array
 ```
 Where:
 
-- NFT_MANAGER is a NFT721Manager instance activated
+- NFT_MANAGER is an activated NFT721Manager instance
 - STORAGE is a StorageIpfs, StorageAws or StorageHttp instance
 - FORMAT is a NFT_METADATA_FORMAT enum (IMAGE, JSON, JSON_WITH_IMAGE)
 ---
@@ -174,7 +174,7 @@ await NFTHandler.create(params); // returns a ExecuteResponse
 ```
 Where:
 
-- NFT_MANAGER is a NFT721Manager instance activated
+- NFT_MANAGER is an activated NFT721Manager instance
 - STORAGE is a StorageIpfs or StorageAws instance
 - NFTFORMAT is a NFT_METADATA_FORMAT enum (IMAGE, JSON, JSON_WITH_IMAGE)
 - ADDRESS is the address of the NFT owner
@@ -200,7 +200,7 @@ await NFTHandler.change(params); // returns a ExecuteResponse
 ```
 Where:
 
-- NFT_MANAGER is a NFT721Manager instance activated
+- NFT_MANAGER is an activated NFT721Manager instance
 - STORAGE is a StorageIpfs or StorageAws instance
 - NFTFORMAT is a NFT_METADATA_FORMAT enum (IMAGE, JSON, JSON_WITH_IMAGE)
 - TOKENID is the token id of the NFT
