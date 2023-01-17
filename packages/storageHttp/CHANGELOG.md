@@ -1,3 +1,10 @@
+# [@ripio/sdk-storage-http-v1.1.0-dev.1](https://github.com/ripio/sdkjs/compare/@ripio/sdk-storage-http-v1.0.0...@ripio/sdk-storage-http-v1.1.0-dev.1) (2023-01-17)
+
+
+### Features
+
+* add storeBase64Image method ([7e7fb01](https://github.com/ripio/sdkjs/commit/7e7fb015e9c8f498c83f9346c63d093356e94ff3))
+
 # @ripio/sdk-storage-http-v1.0.0 (2022-12-02)
 
 
