@@ -212,7 +212,8 @@ Where:
 
 It returns the last token id of an address.
 ```javascript
-await NFTHandler.getLastNFTId(NFT_MANAGER, "ownerAddress"); // returns a string
+await NFTHandler.getLastNFTId(NFT_MANAGER, "ownerAddress");
+"12" // tokenId
 ```
 Where:
 
