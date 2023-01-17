@@ -1,3 +1,10 @@
+# [@ripio/sdk-storage-ipfs-v1.1.0-dev.1](https://github.com/ripio/sdkjs/compare/@ripio/sdk-storage-ipfs-v1.0.0...@ripio/sdk-storage-ipfs-v1.1.0-dev.1) (2023-01-17)
+
+
+### Features
+
+* add storeBase64Image to StorageIpfs ([c29fc5c](https://github.com/ripio/sdkjs/commit/c29fc5cb24cfa85d1589069d1f0a548a1118eb03))
+
 # @ripio/sdk-storage-ipfs-v1.0.0 (2022-12-02)
 
 
