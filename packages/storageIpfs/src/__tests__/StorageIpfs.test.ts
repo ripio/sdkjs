@@ -85,3 +85,13 @@ describe('StorageIpfs addFileToIpfs method', () => {
     )
   })
 })
+
+describe('StorageIpfs storeBase64Image method', () => {
+  it('Should store the file and return the uri', async () => {
+    const expectedUri = 'ipfs://fake-cid'
+    const ipfs = new StorageIpfs('http://fake-ipfs-url:5001')
+    ipfs['addFileToIpfs'] = jest.fn(() => Promise.resolve(expectedUri))
+    const cid = await ipfs['storeBase64Image']('fake-image')
+    expect(cid).toBe(expectedUri)
+  })
+})

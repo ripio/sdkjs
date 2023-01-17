@@ -16,6 +16,10 @@ export default class StorageIpfs implements StorageType {
     this.storage = create({ url })
   }
 
+  storeBase64Image(base64: string): Promise<string> {
+    return this.addFileToIpfs(Buffer.from(base64, 'base64'))
+  }
+
   async getData(resourceId: string): Promise<ResourceIpfs> {
     const cid = stripIpfsUriPrefix(resourceId)
     const data = this.storage.cat(cid)

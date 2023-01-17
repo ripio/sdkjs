@@ -83,9 +83,9 @@ const errors = {
     new Error(
       `Invalid parameter ${param} in non legacy chain (after EIP-1559)`
     ),
-  TOKEN_URI_NOT_IMPLEMENTED: (contractAddr: string) =>
+  FUNCTION_NOT_IMPLEMENTED: (contractAddr: string, fn: string) =>
     new Error(
-      `The ${contractAddr} contract does not implement the tokenURI(uint256) function`
+      `The ${contractAddr} contract does not implement the ${fn} function`
     )
 }
 
