@@ -1,3 +1,12 @@
+# [@ripio/sdk-v2.1.0-dev.1](https://github.com/ripio/sdkjs/compare/@ripio/sdk-v2.0.1-dev.1...@ripio/sdk-v2.1.0-dev.1) (2023-01-17)
+
+
+### Features
+
+* add change nft function to NFTHandler ([5712c2a](https://github.com/ripio/sdkjs/commit/5712c2ac73e2361b0677379bfac983d3820a75d4))
+* add getNFTListByOwner function ([e694b9a](https://github.com/ripio/sdkjs/commit/e694b9afa7c38ff14f25da220f5740a3b72d476b))
+* update sdk errors ([22ba7db](https://github.com/ripio/sdkjs/commit/22ba7db40c8c9656db4349757bccb240da431a4b))
+
 # [@ripio/sdk-v2.0.1-dev.1](https://github.com/ripio/sdkjs/compare/@ripio/sdk-v2.0.0...@ripio/sdk-v2.0.1-dev.1) (2023-01-12)
 
 
