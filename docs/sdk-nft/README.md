@@ -207,7 +207,16 @@ Where:
 - NFTMETADATA (optional) is a dict with the NFT metadata
 - IMAGE (optional) is a base64 encoded string representing an image
 - VALUE (optional) Amount to be provided when the contract function to set a token uri is payable
+---
+- getLastNFTId:
 
+It returns the last token id of an address.
+```javascript
+await NFTHandler.getLastNFTId(NFT_MANAGER, "ownerAddress"); // returns a string
+```
+Where:
+
+- NFT_MANAGER is an activated NFT721Manager instance
 ### Other resources
 
 - [sdk](https://ripio.github.io/sdkjs/sdk)
