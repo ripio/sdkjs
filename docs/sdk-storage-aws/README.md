@@ -14,9 +14,9 @@ You can also store your NFTs data on Aws S3 Buckets. For this reason a StorageAw
 
 ```javascript
 // commonJS
-const { StorageAws } = require('@ripio/sdk');
+const { StorageAws } = require('@ripio/sdk-storage-aws');
 // TS
-import { StorageAws } from '@ripio/sdk';
+import { StorageAws } from '@ripio/sdk-storage-aws';
 // Create StorageAws instance
 const aws = new StorageAws('sa-east-1');
 ```
