@@ -14,9 +14,9 @@ Class to represent a NFT
 
 ```javascript
 // commonJS
-const { NFT } = require('@rgc/sdk-nft');
+const { NFT } = require('@ripio/sdk-nft');
 // TS
-import { NFT } from '@rgc/sdk-nft';
+import { NFT } from '@ripio/sdk-nft';
 // Create NFT instance
 const nft = new NFT({
     tokenId: '42',
@@ -70,9 +70,9 @@ Static method that, given a Resource (which returns an image) and a tokenId, it 
 
 ```javascript
 // commonJS
-const { NFTImageFactory } = require('@rgc/sdk-nft');
+const { NFTImageFactory } = require('@ripio/sdk-nft');
 // TS
-import { NFTImageFactory } from '@rgc/sdk-nft';
+import { NFTImageFactory } from '@ripio/sdk-nft';
 
 await NFTImageFactory.createNFT(RESOURCE, "aTokenId");
 NFT {...} // NFT instance
@@ -89,9 +89,9 @@ Static method that, given a Resource (which returns a JSON) and a tokenId, it re
 
 ```javascript
 // commonJS
-const { NFTJsonFactory } = require('@rgc/sdk-nft');
+const { NFTJsonFactory } = require('@ripio/sdk-nft');
 // TS
-import { NFTJsonFactory } from '@rgc/sdk-nft';
+import { NFTJsonFactory } from '@ripio/sdk-nft';
 
 await NFTJsonFactory.createNFT(RESOURCE, "aTokenId");
 NFT {...} // NFT instance
@@ -108,9 +108,9 @@ Static method that, given a Resource (which returns a JSON), a tokenId and a Sto
 
 ```javascript
 // commonJS
-const { NFTJsonImageFactory } = require('@rgc/sdk-nft');
+const { NFTJsonImageFactory } = require('@ripio/sdk-nft');
 // TS
-import { NFTJsonImageFactory } from '@rgc/sdk-nft';
+import { NFTJsonImageFactory } from '@ripio/sdk-nft';
 
 await NFTJsonImageFactory.createNFT(RESOURCE, "aTokenId", STORAGE);
 NFT {...} // NFT instance
@@ -125,9 +125,9 @@ Where:
 Class to get, list, create and change NFTs.
 ```javascript
 // commonJS
-const { NFTHandler } = require('@rgc/sdk-nft');
+const { NFTHandler } = require('@ripio/sdk-nft');
 // TS
-import { NFTHandler } from '@rgc/sdk-nft';
+import { NFTHandler } from '@ripio/sdk-nft';
 ```
 NFTHandler methods:
 - get:

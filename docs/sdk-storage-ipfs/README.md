@@ -14,9 +14,9 @@ When working with NFTs a good practice is to store your NFTs data on Ipfs, which
 
 ```javascript
 // commonJS
-const { StorageIpfs } = require('@rgc/sdk');
+const { StorageIpfs } = require('@ripio/sdk');
 // TS
-import { StorageIpfs } from '@rgc/sdk';
+import { StorageIpfs } from '@ripio/sdk';
 // Create StorageIpfs instance
 const ipfs = new StorageIpfs(IPFS_URL);
 ```
