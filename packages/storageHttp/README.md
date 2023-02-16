@@ -2,7 +2,7 @@
 
 Get NFTs data stored on an AWS S3 bucket
 
-#### Disclaimer
+### Disclaimer
 
 This repository is still a "work in progress", we appreciate any feedback you can provide us.
 
