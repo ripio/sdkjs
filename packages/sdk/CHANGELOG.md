@@ -1,3 +1,10 @@
+# [@ripio/sdk-v2.0.1](https://github.com/ripio/sdkjs/compare/@ripio/sdk-v2.0.0...@ripio/sdk-v2.0.1) (2023-02-16)
+
+
+### Bug Fixes
+
+* Update readme ([dfe46b7](https://github.com/ripio/sdkjs/commit/dfe46b7eb9a9412f5fb0043732cad7f193110d71))
+
 # [@ripio/sdk-v2.0.0](https://github.com/ripio/sdkjs/compare/@ripio/sdk-v1.1.0...@ripio/sdk-v2.0.0) (2022-12-02)
 
 
