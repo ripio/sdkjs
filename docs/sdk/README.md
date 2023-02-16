@@ -632,7 +632,7 @@ conversions.hexToNumber(‘0x7b’);
 ```
 #### Ethers Utils
 
-- Ethers Utils are exposed so they can be used. [Here](https://docs.ethers.org/v5/api/utils/) you can see the documentation of all of them.
+- You can access the whole set of [Ethers utils](https://docs.ethers.org/v5/api/utils/) to use them as you need by doing the following:
 
 ```javascript
 // commonJS
