@@ -630,6 +630,16 @@ import { conversions } from '@ripio/sdk';
 conversions.hexToNumber(‘0x7b’);
 123
 ```
+#### Ethers Utils
+
+- Ethers Utils are exposed so they can be used. [Here](https://docs.ethers.org/v5/api/utils/) you can see the documentation of all of them.
+
+```javascript
+// commonJS
+const { ethersUtils } = require('@ripio/sdk/utils');
+// TS
+import { ethersUtils } from "@ripio/sdk";
+```
 
 ### Other resources
 
