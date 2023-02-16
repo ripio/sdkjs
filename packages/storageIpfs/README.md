@@ -2,7 +2,7 @@
 
 Upload and get NFTs data stored on IPFS
 
-#### Disclaimer
+### Disclaimer
 
 This repository is still a "work in progress", we appreciate any feedback you can provide us.
 

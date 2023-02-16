@@ -317,9 +317,9 @@ In most cases you will want to instantiate a contract designed under an ERC stan
 
 ```javascript
 // commonJS
-const { Token20Manager } = require('@rgc/sdk/managers');
+const { Token20Manager } = require('@ripio/sdk/managers');
 // TS
-import { Token20Manager } from '@rgc/sdk';
+import { Token20Manager } from '@ripio/sdk';
 const contract = new Token20Manager();
 ```
 
@@ -343,9 +343,9 @@ When working with NFTs it is recommended to use the NFT721Manager that follows t
 
 ```javascript
 // commonJS
-const { NFT721Manager } = require('@rgc/sdk/managers');
+const { NFT721Manager } = require('@ripio/sdk/managers');
 // TS
-import { NFT721Manager } from '@rgc/sdk';
+import { NFT721Manager } from '@ripio/sdk';
 
 const contract = new NFT721Manager();
 
@@ -544,9 +544,9 @@ The utils submodule exports certain functionalities related to:
 
 ```javascript
 // commonJS
-const { connectorsUtils } = require('@rgc/sdk/utils');
+const { connectorsUtils } = require('@ripio/sdk/utils');
 // TS
-import { connectorsUtils } from '@rgc/sdk';
+import { connectorsUtils } from '@ripio/sdk';
 
 const message = ‘Log in with nonce: 999’;
 const expected = ‘0x12...789’
@@ -560,9 +560,9 @@ true
 
 ```javascript
 // commonJS
-const { connectorsUtils } = require('@rgc/sdk/utils');
+const { connectorsUtils } = require('@ripio/sdk/utils');
 // TS
-import { connectorsUtils } from '@rgc/sdk';
+import { connectorsUtils } from '@ripio/sdk';
 
 connectorsUtils.getMinConfirmations(100);
 1
@@ -575,11 +575,11 @@ connectorsUtils.getMinConfirmations(100);
 
 ```javascript
 // commonJS
-const { conversions } = require('@rgc/sdk/utils');
-const { enums } = require('@rgc/sdk/types');
+const { conversions } = require('@ripio/sdk/utils');
+const { enums } = require('@ripio/sdk/types');
 // TS
-import { conversions } from '@rgc/sdk';
-import { enums } from '@rgc/sdk';
+import { conversions } from '@ripio/sdk';
+import { enums } from '@ripio/sdk';
 
 conversions.fromWei('1', enums.UnitTypes.ETHER);
 '0.000000000000000001'
@@ -592,11 +592,11 @@ conversions.fromWei('1', enums.UnitTypes.WEI);
 
 ```javascript
 // commonJS
-const { conversions } = require('@rgc/sdk/utils');
-const { enums } = require('@rgc/sdk/types');
+const { conversions } = require('@ripio/sdk/utils');
+const { enums } = require('@ripio/sdk/types');
 // TS
-import { conversions } from '@rgc/sdk';
-import { enums } from '@rgc/sdk';
+import { conversions } from '@ripio/sdk';
+import { enums } from '@ripio/sdk';
 
 conversions.toWei('1', enums.UnitTypes.ETHER)BigNumber { _hex: '0x0de0b6b3a7640000', _isBigNumber: true }
 conversions.toWei('1', enums.UnitTypes.WEI)BigNumber { _hex: '0x01', _isBigNumber: true }
@@ -610,9 +610,9 @@ conversions.toWei('1', enums.UnitTypes.WEI).toString();
 
 ```javascript
 // commonJS
-const { conversions } = require('@rgc/sdk/utils');
+const { conversions } = require('@ripio/sdk/utils');
 // TS
-import { conversions } from '@rgc/sdk';
+import { conversions } from '@ripio/sdk';
 
 conversions.numberToHex(123);
 ‘0x7b’
@@ -623,9 +623,9 @@ conversions.numberToHex(123);
 
 ```javascript
 // commonJS
-const { conversions } = require('@rgc/sdk/utils');
+const { conversions } = require('@ripio/sdk/utils');
 // TS
-import { conversions } from '@rgc/sdk';
+import { conversions } from '@ripio/sdk';
 
 conversions.hexToNumber(‘0x7b’);
 123

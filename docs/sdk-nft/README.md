@@ -14,9 +14,9 @@ Class to represent a NFT
 
 ```javascript
 // commonJS
-const { NFT } = require('@rgc/sdk');
+const { NFT } = require('@ripio/sdk-nft');
 // TS
-import { NFT } from '@rgc/sdk';
+import { NFT } from '@ripio/sdk-nft';
 // Create NFT instance
 const nft = new NFT({
     tokenId: '42',
@@ -68,9 +68,9 @@ Given a NFT721Manager, a StorageType (StorageIpfs, StorageAws, StorageHttp) and 
 
 ```javascript
 // commonJS
-const { NFTFactory } = require('@rgc/sdk');
+const { NFTFactory } = require('@ripio/sdk-nft');
 // TS
-import { NFTFactory } from '@rgc/sdk';
+import { NFTFactory } from '@ripio/sdk-nft';
 // Create NFTFactory instance
 const nftFactory = new NFTFactory(NFT_MANAGER, STORAGE, FORMAT);
 ```
