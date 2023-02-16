@@ -14,9 +14,9 @@ Get NFTs data on Aws S3 Buckets with http. For that, a StorageHttp class is give
 
 ```javascript
 // commonJS
-const { StorageHttp } = require('@rgc/sdk');
+const { StorageHttp } = require('@ripio/sdk-storage-http');
 // TS
-import { StorageHttp } from '@rgc/sdk';
+import { StorageHttp } from '@ripio/sdk-storage-http';
 // Create StorageHttp instance
 const client = new StorageHttp();
 ```
