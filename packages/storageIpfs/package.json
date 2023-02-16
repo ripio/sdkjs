@@ -1,6 +1,6 @@
 {
     "name": "@ripio/sdk-storage-ipfs",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Get and upload data related to a NFT hosted on Ipfs",
     "files": [
         "dist"
