@@ -1,3 +1,10 @@
+# [@ripio/sdk-v2.1.0-dev.2](https://github.com/ripio/sdkjs/compare/@ripio/sdk-v2.1.0-dev.1...@ripio/sdk-v2.1.0-dev.2) (2023-02-17)
+
+
+### Features
+
+* expose AbstractWeb3Connector ([d91fb18](https://github.com/ripio/sdkjs/commit/d91fb185f9dcd010aa425ce50814674db6981c72))
+
 # [@ripio/sdk-v2.1.0-dev.1](https://github.com/ripio/sdkjs/compare/@ripio/sdk-v2.0.1-dev.1...@ripio/sdk-v2.1.0-dev.1) (2023-01-17)
 
 
