@@ -78,6 +78,7 @@
     "packages/nft",
     "packages/storageAws",
     "packages/storageHttp",
-    "packages/storageIpfs"
+    "packages/storageIpfs",
+    "packages/modalConnector"
   ]
 }

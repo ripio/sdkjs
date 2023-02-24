@@ -12,6 +12,7 @@ module.exports = {
     '<rootDir>/packages/nft',
     '<rootDir>/packages/storageAws',
     '<rootDir>/packages/storageHttp',
-    '<rootDir>/packages/storageIpfs'
+    '<rootDir>/packages/storageIpfs',
+    '<rootDir>/packages/modalConnector'
   ]
 }
