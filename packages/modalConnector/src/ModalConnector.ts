@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ethers } from 'ethers'
 import {
   configureChains,
@@ -144,13 +145,18 @@ export default class ModalConnector extends AbstractWeb3Connector {
    * If the user is already connected to a wallet, fetch the signer, otherwise open the web3 modal
    */
   async requestAccount() {
+    if (
+      !this._provider ||
+      !(this._provider instanceof ethers.providers.StaticJsonRpcProvider)
+    )
+      throw errors.NO_PROVIDER
     try {
       const { isConnected } = getAccount()
       if (isConnected)
         this._account = <ethers.providers.JsonRpcSigner>await fetchSigner()
       else await this.web3Modal.openModal()
-    } catch (err) {
-      console.error(err)
+    } catch (error: any) {
+      throw errors.NO_ACCOUNT(error)
     }
   }
 }
