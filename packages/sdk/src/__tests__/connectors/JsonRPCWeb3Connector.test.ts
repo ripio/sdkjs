@@ -102,6 +102,7 @@ describe('JsonRPCWeb3Connector activate method', () => {
     jest
       .spyOn(ethers.providers.JsonRpcProvider.prototype, 'getFeeData')
       .mockResolvedValueOnce({
+        lastBaseFeePerGas: null,
         maxFeePerGas: null,
         maxPriorityFeePerGas: null,
         gasPrice: BigNumber.from('1')
@@ -999,6 +1000,7 @@ describe('AbstractWeb3Connector detectLegacyChain method', () => {
     const mockGetFeeData = jest
       .spyOn(ethers.providers.JsonRpcProvider.prototype, 'getFeeData')
       .mockResolvedValueOnce({
+        lastBaseFeePerGas: null,
         maxFeePerGas: null,
         maxPriorityFeePerGas: null,
         gasPrice: BigNumber.from('1')
@@ -1016,6 +1018,7 @@ describe('AbstractWeb3Connector detectLegacyChain method', () => {
     const mockGetFeeData = jest
       .spyOn(ethers.providers.JsonRpcProvider.prototype, 'getFeeData')
       .mockResolvedValueOnce({
+        lastBaseFeePerGas: null,
         maxFeePerGas: BigNumber.from('1'),
         maxPriorityFeePerGas: BigNumber.from('1'),
         gasPrice: null
