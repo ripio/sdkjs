@@ -1,7 +1,7 @@
 {
     "name": "@ripio/sdk-modal-connector",
     "version": "0.0.0",
-    "description": "-",
+    "description": "ModalConnector is a class that allows you to interact with the blockchain using the Web3Modal library.",
     "files": [
         "dist"
     ],

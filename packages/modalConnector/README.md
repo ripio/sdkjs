@@ -1,5 +1,7 @@
 # Intro
 
+ModalConnector is a class that allows you to interact with the blockchain using the Web3Modal library.
+
 #### Disclaimer
 
 This repository is still a "work in progress", we appreciate any feedback you can provide us.
