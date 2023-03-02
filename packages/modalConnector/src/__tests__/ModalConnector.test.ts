@@ -32,8 +32,6 @@ import {
 } from '../__mocks__/@wagmi/core'
 import { errors } from '@ripio/sdk/types'
 
-// jest.mock('@ripio/sdk/connectors')
-
 describe('ModalConnector contructor', () => {
   it('should set requestAccount to true by default', () => {
     const modalConnector = new ModalConnector('projectId', mainnet)
