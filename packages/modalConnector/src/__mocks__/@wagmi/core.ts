@@ -2,14 +2,24 @@
 import { Client } from '@wagmi/core'
 import { ethers } from 'ethers'
 
+let mockProvider = jest.fn()
 const configureChains = jest.fn().mockImplementation(() => {
   return {
-    provider: jest.fn()
+    provider: mockProvider
   }
 })
+function __setProvider(mock: any) {
+  mockProvider = mock
+}
+
+let mockClient = {} as unknown as Client
 const createClient = jest.fn().mockImplementation(() => {
-  return {} as unknown as Client
+  return mockClient
 })
+function __setClient(mock: any) {
+  mockClient = mock
+}
+
 const getProvider = jest.fn().mockImplementation(() => {
   return {} as unknown as ethers.providers.StaticJsonRpcProvider
 })
@@ -52,6 +62,8 @@ function __setFetchSigner(mock: any) {
 function __resetCoreMocks() {
   mockConnected = false
   mockFetchSigner = {} as ethers.providers.JsonRpcSigner
+  mockProvider = jest.fn()
+  mockClient = {} as unknown as Client
 }
 
 export {
@@ -68,5 +80,7 @@ export {
   watchProvider,
   __setAccountConnected,
   __setFetchSigner,
+  __setProvider,
+  __setClient,
   __resetCoreMocks
 }
