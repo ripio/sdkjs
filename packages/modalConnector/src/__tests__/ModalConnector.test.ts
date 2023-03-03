@@ -39,8 +39,12 @@ import {
   __setModalConnectors,
   __setWalletConnectProvider
 } from '../__mocks__/@web3modal/ethereum'
+import { __resetHtmlMocks, __setWeb3Modal } from '../__mocks__/@web3modal/html'
 
-describe('ModalConnector contructor', () => {
+describe('ModalConnector constructor', () => {
+  beforeEach(() => {
+    __resetHtmlMocks()
+  })
   it('should set requestAccount to true by default', () => {
     const modalConnector = new ModalConnector('projectId', mainnet)
     expect(modalConnector['_requestAccount']).toBe(true)
@@ -75,6 +79,8 @@ describe('ModalConnector contructor', () => {
   })
 
   it('should create a Web3Modal instance with the correct arguments', () => {
+    const web3ModalMock = {}
+    __setWeb3Modal(web3ModalMock)
     const clientMock = {} as unknown as Client
     __setClient(clientMock)
     const providerMock = jest.fn()
@@ -83,7 +89,7 @@ describe('ModalConnector contructor', () => {
     __setEthereumClient(ethereumClientMock)
     const modalConnectorsMock = jest.fn()
     __setModalConnectors(modalConnectorsMock)
-    new ModalConnector('projectId')
+    const modalConnector = new ModalConnector('projectId')
     expect(Web3Modal).toHaveBeenCalledWith(
       { projectId: 'projectId' },
       ethereumClientMock
@@ -103,6 +109,7 @@ describe('ModalConnector contructor', () => {
     expect(walletConnectProvider).toHaveBeenCalledWith({
       projectId: 'projectId'
     })
+    expect(modalConnector.web3Modal).toBe(web3ModalMock)
   })
 
   it('should extend AbstractWeb3Connector', () => {
