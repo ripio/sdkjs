@@ -26,7 +26,7 @@ import {
 } from '../types/interfaces'
 import { getExecuteResponse, toWei } from '../utils/conversions'
 import { getConnector } from '../utils/connectors'
-import { BrowserWeb3Connector, JsonRPCWeb3Connector } from '../connectors'
+import { AbstractWeb3Connector } from '../connectors'
 import { Event } from '@ethersproject/contracts'
 
 export class ContractManager {
@@ -35,7 +35,7 @@ export class ContractManager {
   protected _abi: ethers.utils.Interface | undefined
   protected _contract: Contract | undefined
   protected _contractAddr: string | undefined
-  protected _connector: BrowserWeb3Connector | JsonRPCWeb3Connector | undefined
+  protected _connector: AbstractWeb3Connector | undefined
   protected _contractEvents: Array<ContractEvents> | undefined
 
   protected _isActivating = false
@@ -149,12 +149,12 @@ export class ContractManager {
    * It takes in a providerUrl, privateKey, and connector, and saves the selected connector.
    * @param {string | undefined} providerUrl - The websocket URL of the provider you want to use.
    * @param {string | undefined} privateKey - The private key of the account you want to use.
-   * @param {BrowserWeb3Connector | JsonRPCWeb3Connector | undefined} connector - BrowserWeb3Connector | JsonRPCWeb3Connector | undefined
+   * @param {AbstractWeb3Connector | undefined} connector - AbstractWeb3Connector | undefined
    */
   protected selectConnector(
     providerUrl: string | undefined,
     privateKey: string | undefined,
-    connector: BrowserWeb3Connector | JsonRPCWeb3Connector | undefined
+    connector: AbstractWeb3Connector | undefined
   ): void {
     if (!connector) {
       const connectorOptions = {
@@ -207,7 +207,7 @@ export class ContractManager {
     contractAbi: Array<any>
     providerUrl?: string
     privateKey?: string
-    connector?: BrowserWeb3Connector | JsonRPCWeb3Connector
+    connector?: AbstractWeb3Connector
   }) {
     if (this._isActivating) throw errorTypes.SDK_ACTIVATION_IN_PROGRESS
     this._isActivating = true
@@ -476,7 +476,7 @@ export class ContractManager {
   }
 
   // getters
-  get connector(): BrowserWeb3Connector | JsonRPCWeb3Connector | undefined {
+  get connector(): AbstractWeb3Connector | undefined {
     return this._connector
   }
 
