@@ -49,6 +49,10 @@ export default class ModalConnector extends AbstractWeb3Connector {
       autoConnect: true,
       connectors: modalConnectors({
         projectId,
+        /**
+         * check walletConnect docs to see when it is recomended to start using version: '2'.
+         * https://docs.walletconnect.com/2.0/web3modal/about#versioning
+         */
         version: '1', // or "2"
         appName: 'web3Modal',
         chains: _chains
