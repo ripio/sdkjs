@@ -1,3 +1,10 @@
+# [@ripio/sdk-v2.1.0-dev.3](https://github.com/ripio/sdkjs/compare/@ripio/sdk-v2.1.0-dev.2...@ripio/sdk-v2.1.0-dev.3) (2023-03-06)
+
+
+### Features
+
+* use AbstractWeb3Connector in ContractManager ([a778d01](https://github.com/ripio/sdkjs/commit/a778d019f52c0094f6c9dad7dd8f4e4ecff5203d))
+
 # [@ripio/sdk-v2.1.0-dev.2](https://github.com/ripio/sdkjs/compare/@ripio/sdk-v2.1.0-dev.1...@ripio/sdk-v2.1.0-dev.2) (2023-02-17)
 
 
