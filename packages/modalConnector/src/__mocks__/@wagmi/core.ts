@@ -20,14 +20,22 @@ function __setClient(mock: any) {
   mockClient = mock
 }
 
+let mockGetProvider = {} as unknown as ethers.providers.StaticJsonRpcProvider
 const getProvider = jest.fn().mockImplementation(() => {
-  return {} as unknown as ethers.providers.StaticJsonRpcProvider
+  return mockGetProvider
 })
+function __setGetProvider(mock: any) {
+  mockGetProvider = mock
+}
+
+let mockGetNetwork = { chain: { id: '1' } }
 const getNetwork = jest.fn().mockImplementation(() => {
-  return {
-    chain: { id: '1' }
-  }
+  return mockGetNetwork
 })
+function __setGetNetwork(mock: any) {
+  mockGetNetwork = mock
+}
+
 const switchNetwork = jest.fn()
 const disconnect = jest.fn()
 const watchAccount = jest.fn()
@@ -64,6 +72,8 @@ function __resetCoreMocks() {
   mockFetchSigner = {} as ethers.providers.JsonRpcSigner
   mockProvider = jest.fn()
   mockClient = {} as unknown as Client
+  mockGetProvider = {} as unknown as ethers.providers.StaticJsonRpcProvider
+  mockGetNetwork = { chain: { id: '1' } }
 }
 
 export {
@@ -82,5 +92,7 @@ export {
   __setFetchSigner,
   __setProvider,
   __setClient,
+  __setGetProvider,
+  __setGetNetwork,
   __resetCoreMocks
 }

@@ -31,6 +31,8 @@ import {
   __setAccountConnected,
   __setClient,
   __setFetchSigner,
+  __setGetNetwork,
+  __setGetProvider,
   __setProvider
 } from '../__mocks__/@wagmi/core'
 import { errors } from '@ripio/sdk/types'
@@ -129,37 +131,62 @@ describe('ModalConnector methods', () => {
   })
 
   describe('activate()', () => {
-    it('should activate the connector and return provider, chainId and account', async () => {
-      const spySubscribeToEvents = jest
-        .spyOn(ModalConnector.prototype, 'subscribeToEvents')
-        .mockImplementationOnce(() => jest.fn())
-      const spyDetectLegacyChain = jest
-        .spyOn(modalConnector, 'detectLegacyChain')
-        .mockImplementationOnce(async () => {})
-      const spyRequestAccount = jest
-        .spyOn(ModalConnector.prototype, 'requestAccount')
-        .mockImplementationOnce(async () => {
-          modalConnector['_account'] =
-            {} as unknown as ethers.providers.JsonRpcSigner
-        })
-      const result = await modalConnector.activate()
-      expect(result.provider).toBeDefined()
-      expect(result.chainId).toBeDefined()
-      expect(result.account).toBeDefined()
-      expect(spySubscribeToEvents).toHaveBeenCalled()
-      expect(spyDetectLegacyChain).toHaveBeenCalled()
-      expect(spyRequestAccount).toHaveBeenCalled()
-      expect(getNetwork).toHaveBeenCalled()
-      expect(getProvider).toHaveBeenCalled()
-    })
+    afterEach(() => jest.restoreAllMocks())
+    it.each([
+      { requestAccount: true, requestaAccountCalls: 1 },
+      { requestAccount: false, requestaAccountCalls: 0 }
+    ])(
+      'should activate the connector and return provider, chainId and account',
+      async ({ requestAccount, requestaAccountCalls }) => {
+        const modalConnector2 = new ModalConnector(
+          projectId,
+          mainnet,
+          requestAccount
+        )
+        const spySubscribeToEvents = jest
+          .spyOn(ModalConnector.prototype, 'subscribeToEvents')
+          .mockImplementationOnce(() => jest.fn())
+        const spyDetectLegacyChain = jest
+          .spyOn(modalConnector2, 'detectLegacyChain')
+          .mockImplementationOnce(async () => {})
+        const spyRequestAccount = jest
+          .spyOn(ModalConnector.prototype, 'requestAccount')
+          .mockImplementationOnce(async () => {
+            modalConnector2['_account'] =
+              {} as unknown as ethers.providers.JsonRpcSigner
+          })
+        const mockGetProvider =
+          {} as unknown as ethers.providers.StaticJsonRpcProvider
+        __setGetProvider(mockGetProvider)
+        const mockGetNetwork = { chain: { id: '1' } }
+        __setGetNetwork(mockGetNetwork)
+
+        const result = await modalConnector2.activate()
+        expect(result.provider).toBe(mockGetProvider)
+        expect(result.chainId).toBe(mockGetNetwork.chain.id)
+        if (requestAccount) expect(result.account).toBeDefined()
+        else expect(result.account).toBeUndefined()
+        expect(modalConnector2.isActive).toBe(true)
+        expect(spySubscribeToEvents).toHaveBeenCalled()
+        expect(spyDetectLegacyChain).toHaveBeenCalled()
+        expect(spyRequestAccount).toHaveBeenCalledTimes(requestaAccountCalls)
+        expect(getNetwork).toHaveBeenCalled()
+        expect(getProvider).toHaveBeenCalled()
+      }
+    )
   })
 
   describe('deactivate()', () => {
     it('should deactivate the connector and disconnect from provider', async () => {
-      const spy = jest.spyOn(modalConnector, 'unsubscribeFromEvents')
+      const spyUnsubscribe = jest.spyOn(modalConnector, 'unsubscribeFromEvents')
+      const spyDeactivateParent = jest.spyOn(
+        AbstractWeb3Connector.prototype,
+        'deactivate'
+      )
       await modalConnector.deactivate()
       expect(modalConnector.isActive).toBe(false)
-      expect(spy).toHaveBeenCalled()
+      expect(spyUnsubscribe).toHaveBeenCalled()
+      expect(spyDeactivateParent).toHaveBeenCalled()
       expect(disconnect).toHaveBeenCalled()
     })
   })
@@ -168,10 +195,10 @@ describe('ModalConnector methods', () => {
     it('should throw an error if switchChain is called and no provider found', () => {
       expect(modalConnector.switchChain(1)).rejects.toThrow(errors.NO_PROVIDER)
     })
-    it('should throw an error when requestAccount with provider not instance of StaticJsonRpcProvider', async () => {
+    it('should throw an error when switchChain with provider not instance of StaticJsonRpcProvider', async () => {
       // added type for TS but the object is not instance of StaticJsonRpcProvider
       modalConnector['_provider'] = {} as ethers.providers.StaticJsonRpcProvider
-      expect(modalConnector.requestAccount()).rejects.toThrow(
+      await expect(modalConnector.switchChain(2)).rejects.toThrow(
         errors.NO_PROVIDER
       )
     })
@@ -193,7 +220,7 @@ describe('ModalConnector methods', () => {
 
   describe('requestAccount()', () => {
     it('should throw an error when requestAccount without provider', async () => {
-      expect(modalConnector.requestAccount()).rejects.toThrow(
+      await expect(modalConnector.requestAccount()).rejects.toThrow(
         errors.NO_PROVIDER
       )
     })
