@@ -67,3 +67,4 @@ await resource.getBase64Data();
 - [sdk nft](https://ripio.github.io/sdkjs/sdk-nft)
 - [sdk storage http](https://ripio.github.io/sdkjs/sdk-storage-http)
 - [sdk storage ipfs](https://ripio.github.io/sdkjs/sdk-storage-ipfs)
+- [sdk modal connector](https://ripio.github.io/sdkjs/sdk-modal-connector)

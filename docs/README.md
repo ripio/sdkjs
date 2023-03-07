@@ -21,3 +21,4 @@ Gaming Layer (work in progress): set of classes that represent specific function
 - [sdk storage aws](https://ripio.github.io/sdkjs/sdk-storage-aws)
 - [sdk storage http](https://ripio.github.io/sdkjs/sdk-storage-http)
 - [sdk storage ipfs](https://ripio.github.io/sdkjs/sdk-storage-ipfs)
+- [sdk modal connector](https://ripio.github.io/sdkjs/sdk-modal-connector)
