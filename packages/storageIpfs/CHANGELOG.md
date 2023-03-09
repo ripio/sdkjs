@@ -1,3 +1,10 @@
+# [@ripio/sdk-storage-ipfs-v1.1.0-dev.2](https://github.com/ripio/sdkjs/compare/@ripio/sdk-storage-ipfs-v1.1.0-dev.1...@ripio/sdk-storage-ipfs-v1.1.0-dev.2) (2023-03-09)
+
+
+### Bug Fixes
+
+* use named exports ([485cc54](https://github.com/ripio/sdkjs/commit/485cc5474b5f6c66cd3597463a1114b955078af3))
+
 # [@ripio/sdk-storage-ipfs-v1.1.0-dev.1](https://github.com/ripio/sdkjs/compare/@ripio/sdk-storage-ipfs-v1.0.0...@ripio/sdk-storage-ipfs-v1.1.0-dev.1) (2023-01-17)
 
 
