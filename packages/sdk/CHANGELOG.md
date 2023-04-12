@@ -1,3 +1,10 @@
+# [@ripio/sdk-v2.1.0-dev.4](https://github.com/ripio/sdkjs/compare/@ripio/sdk-v2.1.0-dev.3...@ripio/sdk-v2.1.0-dev.4) (2023-04-12)
+
+
+### Bug Fixes
+
+* reload page on chainChanged event ([89ba742](https://github.com/ripio/sdkjs/commit/89ba7421e838229f0215d325da0670a8f2e46001))
+
 # [@ripio/sdk-v2.1.0-dev.3](https://github.com/ripio/sdkjs/compare/@ripio/sdk-v2.1.0-dev.2...@ripio/sdk-v2.1.0-dev.3) (2023-03-06)
 
 
