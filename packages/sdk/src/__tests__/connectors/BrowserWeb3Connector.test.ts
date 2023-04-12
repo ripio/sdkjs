@@ -9,6 +9,22 @@ import AbstractWeb3Connector from '../../connectors/AbstractWeb3Connector'
 import { AddEthereumChainParameter } from '../../types/interfaces'
 
 describe('BrowserWeb3Connector', () => {
+  const originalLoc = window.location
+
+  beforeAll(() => {
+    Object.defineProperty(window, 'location', {
+      configurable: true,
+      value: { reload: jest.fn() }
+    })
+  })
+
+  afterAll(() => {
+    Object.defineProperty(window, 'location', {
+      configurable: true,
+      value: originalLoc
+    })
+  })
+
   beforeEach(() => {
     jest.clearAllMocks()
     window.ethereum = {
@@ -218,25 +234,22 @@ describe('BrowserWeb3Connector', () => {
     expect(mockEmitEvent).not.toHaveBeenCalled()
   })
 
-  it('should update chainId, isLegacy and emit an event when calling handleChainChanged', async () => {
-    const chainId = '1'
-    const browserProvider = new BrowserWeb3Connector()
-    browserProvider['_isActive'] = true
-    browserProvider['_chainId'] = 123
-    browserProvider['_provider'] = Object.create(
-      ethers.providers.Web3Provider.prototype
-    ) as ethers.providers.Web3Provider
-    const mockEmitEvent = jest.fn()
-    browserProvider['_provider']['emit'] = mockEmitEvent
-    browserProvider['_isLegacy'] = false
-    const spyDetectLegacyChain = jest
-      .spyOn(browserProvider, 'detectLegacyChain')
-      .mockImplementationOnce(async () => {})
-    await browserProvider['handleChainChanged'](chainId)
-    expect(mockEmitEvent).toHaveBeenCalledWith(ProviderEvents.CHAIN_CHANGED, 1)
-    expect(browserProvider.chainId).toEqual(1)
-    expect(spyDetectLegacyChain).toHaveBeenCalled()
-  })
+  it.each([
+    { chainId: '0x1', reloadCalls: 1 },
+    { chainId: '0x5', reloadCalls: 0 }
+  ])(
+    'should reload the page if chainId changes when calling handleChainChanged',
+    async ({ chainId, reloadCalls }) => {
+      const browserProvider = new BrowserWeb3Connector()
+      browserProvider['_isActive'] = true
+      browserProvider['_chainId'] = 5
+      browserProvider['_provider'] = Object.create(
+        ethers.providers.Web3Provider.prototype
+      ) as ethers.providers.Web3Provider
+      await browserProvider['handleChainChanged'](chainId)
+      expect(window.location.reload).toHaveBeenCalledTimes(reloadCalls)
+    }
+  )
 
   it('should emit an event when calling handleConnect', async () => {
     const connectInfo = {

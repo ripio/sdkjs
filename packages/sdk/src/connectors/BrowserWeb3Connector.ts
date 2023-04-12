@@ -93,9 +93,7 @@ export default class BrowserWeb3Connector extends AbstractWeb3Connector {
 
   protected handleChainChanged = async (chainId: string) => {
     const chainNumber = hexToNumber(chainId)
-    this._chainId = chainNumber
-    await this.detectLegacyChain()
-    this._provider?.emit(ProviderEvents.CHAIN_CHANGED, chainNumber)
+    if (this._chainId !== chainNumber) window.location.reload()
   }
 
   protected handleConnect = (connectInfo: ConnectInfo) => {
