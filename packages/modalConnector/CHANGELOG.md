@@ -1,3 +1,10 @@
+# [@ripio/sdk-modal-connector-v1.0.0-dev.3](https://github.com/ripio/sdkjs/compare/@ripio/sdk-modal-connector-v1.0.0-dev.2...@ripio/sdk-modal-connector-v1.0.0-dev.3) (2023-05-29)
+
+
+### Features
+
+* update wagmi and web3modal ([4c16e98](https://github.com/ripio/sdkjs/commit/4c16e98b45666a9bfb44a13c84836d72985f75ba))
+
 # [@ripio/sdk-modal-connector-v1.0.0-dev.2](https://github.com/ripio/sdkjs/compare/@ripio/sdk-modal-connector-v1.0.0-dev.1...@ripio/sdk-modal-connector-v1.0.0-dev.2) (2023-04-12)
 
 
