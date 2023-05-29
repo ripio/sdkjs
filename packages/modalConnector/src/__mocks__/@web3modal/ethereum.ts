@@ -1,20 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { EthereumClient } from '@web3modal/ethereum'
 
-let walletConnectProviderMock = jest.fn()
-const walletConnectProvider = jest.fn().mockImplementation(() => {
-  return walletConnectProviderMock
+let w3mProviderMock = jest.fn()
+const w3mProvider = jest.fn().mockImplementation(() => {
+  return w3mProviderMock
 })
-function __setWalletConnectProvider(mock: any) {
-  walletConnectProviderMock = mock
+function __setW3mProvider(mock: any) {
+  w3mProviderMock = mock
 }
 
-let modalConnectorsMock = jest.fn()
-const modalConnectors = jest.fn().mockImplementation(() => {
-  return modalConnectorsMock
+let w3mConnectorsMock = jest.fn()
+const w3mConnectors = jest.fn().mockImplementation(() => {
+  return w3mConnectorsMock
 })
-function __setModalConnectors(mock: any) {
-  modalConnectorsMock = mock
+function __setW3mConnectors(mock: any) {
+  w3mConnectorsMock = mock
 }
 
 let ethereumClientMock = jest.fn() as unknown as typeof EthereumClient
@@ -26,10 +26,10 @@ function __setEthereumClient(mock: any) {
 }
 
 export {
-  walletConnectProvider,
-  modalConnectors,
-  __setWalletConnectProvider,
+  w3mProvider,
+  w3mConnectors,
+  __setW3mProvider,
   __setEthereumClient,
-  __setModalConnectors,
+  __setW3mConnectors,
   mockEthereumClient as EthereumClient
 }
