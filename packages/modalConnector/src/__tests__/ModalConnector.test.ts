@@ -20,11 +20,7 @@ import {
 } from '@wagmi/core'
 import { AbstractWeb3Connector } from '@ripio/sdk/connectors'
 import { Web3Modal } from '@web3modal/html'
-import {
-  EthereumClient,
-  modalConnectors,
-  walletConnectProvider
-} from '@web3modal/ethereum'
+import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum'
 import { ethers } from 'ethers'
 import {
   __resetCoreMocks,
@@ -38,8 +34,8 @@ import {
 import { errors } from '@ripio/sdk/types'
 import {
   __setEthereumClient,
-  __setModalConnectors,
-  __setWalletConnectProvider
+  __setW3mConnectors,
+  __setW3mProvider
 } from '../__mocks__/@web3modal/ethereum'
 import { __resetHtmlMocks, __setWeb3Modal } from '../__mocks__/@web3modal/html'
 
@@ -61,23 +57,18 @@ describe('ModalConnector constructor', () => {
   )
 
   it('should configure chains with mainnet by default', () => {
-    const walletConnectProviderMock = jest.fn()
-    __setWalletConnectProvider(walletConnectProviderMock)
+    const w3mProviderMock = jest.fn()
+    __setW3mProvider(w3mProviderMock)
     new ModalConnector('projectId')
-    expect(configureChains).toHaveBeenCalledWith(
-      [mainnet],
-      [walletConnectProviderMock]
-    )
+    expect(configureChains).toHaveBeenCalledWith([mainnet], [w3mProviderMock])
   })
 
   it('should configure chains with provided chains', () => {
-    const walletConnectProviderMock = jest.fn()
-    __setWalletConnectProvider(walletConnectProviderMock)
+    const w3mProviderMock = jest.fn()
+    __setW3mProvider(w3mProviderMock)
     const chains = [goerli]
     new ModalConnector('projectId', chains)
-    expect(configureChains).toHaveBeenCalledWith(chains, [
-      walletConnectProviderMock
-    ])
+    expect(configureChains).toHaveBeenCalledWith(chains, [w3mProviderMock])
   })
 
   it('should create a Web3Modal instance with the correct arguments', () => {
@@ -89,26 +80,25 @@ describe('ModalConnector constructor', () => {
     __setProvider(providerMock)
     const ethereumClientMock = jest.fn() as unknown as typeof EthereumClient
     __setEthereumClient(ethereumClientMock)
-    const modalConnectorsMock = jest.fn()
-    __setModalConnectors(modalConnectorsMock)
+    const w3mConnectorsMock = jest.fn()
+    __setW3mConnectors(w3mConnectorsMock)
     const modalConnector = new ModalConnector('projectId')
     expect(Web3Modal).toHaveBeenCalledWith(
       { projectId: 'projectId' },
       ethereumClientMock
     )
     expect(EthereumClient).toHaveBeenCalledWith(clientMock, [mainnet])
-    expect(modalConnectors).toHaveBeenCalledWith({
+    expect(w3mConnectors).toHaveBeenCalledWith({
       projectId: 'projectId',
-      version: '1',
-      appName: 'web3Modal',
+      version: 1,
       chains: [mainnet]
     })
     expect(createClient).toHaveBeenCalledWith({
       autoConnect: true,
-      connectors: modalConnectorsMock,
+      connectors: w3mConnectorsMock,
       provider: providerMock
     })
-    expect(walletConnectProvider).toHaveBeenCalledWith({
+    expect(w3mProvider).toHaveBeenCalledWith({
       projectId: 'projectId'
     })
     expect(modalConnector.web3Modal).toBe(web3ModalMock)

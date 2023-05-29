@@ -20,11 +20,7 @@ import {
 } from '@wagmi/core'
 import { AbstractWeb3Connector } from '@ripio/sdk/connectors'
 import { Web3Modal } from '@web3modal/html'
-import {
-  EthereumClient,
-  modalConnectors,
-  walletConnectProvider
-} from '@web3modal/ethereum'
+import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum'
 import { errors } from '@ripio/sdk/types'
 
 export default class ModalConnector extends AbstractWeb3Connector {
@@ -42,26 +38,20 @@ export default class ModalConnector extends AbstractWeb3Connector {
 
     const _chains: Chain[] = Array.isArray(chains) ? chains : [chains]
     // Wagmi Core Client
-    const { provider } = configureChains(_chains, [
-      walletConnectProvider({ projectId })
-    ])
-    const wagmiClient = createClient({
+    const { provider } = configureChains(_chains, [w3mProvider({ projectId })])
+
+    const wagmiConfig = createClient({
       autoConnect: true,
-      connectors: modalConnectors({
+      connectors: w3mConnectors({
         projectId,
-        /**
-         * check walletConnect docs to see when it is recomended to start using version: '2'.
-         * https://docs.walletconnect.com/2.0/web3modal/about#versioning
-         */
-        version: '1', // or "2"
-        appName: 'web3Modal',
+        version: 1,
         chains: _chains
       }),
       provider
     })
 
     // Web3Modal and Ethereum Client
-    const ethereumClient = new EthereumClient(wagmiClient, _chains)
+    const ethereumClient = new EthereumClient(wagmiConfig, _chains)
     this.web3Modal = new Web3Modal({ projectId }, ethereumClient)
   }
 
