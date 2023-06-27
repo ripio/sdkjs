@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { BrowserWeb3Connector, errors } from '@ripio/sdk'
 import { providers } from 'ethers'
 import ETHProvider, { EthereumProvider } from '@walletconnect/ethereum-provider'
