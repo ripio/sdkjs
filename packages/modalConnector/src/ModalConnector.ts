@@ -26,8 +26,8 @@ export default class ModalConnector extends BrowserWeb3Connector {
     chains,
     requestAccount = true
   }: {
-    projectId: string,
-    chains: number[],
+    projectId: string
+    chains: number[]
     requestAccount?: boolean
   }) {
     super(requestAccount)
@@ -42,13 +42,12 @@ export default class ModalConnector extends BrowserWeb3Connector {
    *    - `provider`: The Web3Provider instance that represents the connected wallet provider.
    *    - `chainId`: The ID of the chain that the provider is connected to.
    *    - `account`: A JsonRpcSigner instance that represents the user's account, or `undefined` if no account was connected.
-  */
-  async activate (): Promise<{
+   */
+  async activate(): Promise<{
     provider: providers.Web3Provider
     chainId: number
     account: providers.JsonRpcSigner | undefined
   }> {
-
     this._walletConnectProvider = await EthereumProvider.init({
       projectId: this._projectId,
       chains: this._chains,
@@ -69,20 +68,16 @@ export default class ModalConnector extends BrowserWeb3Connector {
     return {
       provider: provider,
       chainId: this._chainId,
-      account: this._account as providers.JsonRpcSigner,
+      account: this._account as providers.JsonRpcSigner
     }
   }
 
   /**
    * Requests access to the user's account.
    * @throws {Error} - If no provider is available, or if no account is recovered.
-  */
+   */
   async requestAccount() {
-    if (
-      !this.provider ||
-      !this.walletConnectProvider
-    )
-      throw errors.NO_PROVIDER
+    if (!this.provider || !this.walletConnectProvider) throw errors.NO_PROVIDER
     let accounts: string[]
 
     try {
@@ -99,10 +94,9 @@ export default class ModalConnector extends BrowserWeb3Connector {
   /**
    * Deactivates the connection to the wallet.
    * @throws {Error} - If no Ethereum provider is available.
-  */
+   */
   async deactivate() {
-    if (!this.provider || !this.walletConnectProvider)
-      throw errors.NO_ETHEREUM
+    if (!this.provider || !this.walletConnectProvider) throw errors.NO_ETHEREUM
 
     this.unsubscribeFromEvents(this.provider)
     await this.walletConnectProvider.disconnect()
