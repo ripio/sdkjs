@@ -1,3 +1,10 @@
+# [@ripio/sdk-modal-connector-v1.0.0-dev.4](https://github.com/ripio/sdkjs/compare/@ripio/sdk-modal-connector-v1.0.0-dev.3...@ripio/sdk-modal-connector-v1.0.0-dev.4) (2023-06-28)
+
+
+### Features
+
+* **ModalConnector:** update to use EthereumProvider from wallet connect v2 ([5d6c272](https://github.com/ripio/sdkjs/commit/5d6c2723fcc3a0fa4f5850c26e203da0e8fdf631))
+
 # [@ripio/sdk-modal-connector-v1.0.0-dev.3](https://github.com/ripio/sdkjs/compare/@ripio/sdk-modal-connector-v1.0.0-dev.2...@ripio/sdk-modal-connector-v1.0.0-dev.3) (2023-05-29)
 
 
