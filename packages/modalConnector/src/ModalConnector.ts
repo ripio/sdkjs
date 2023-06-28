@@ -1,156 +1,122 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ethers } from 'ethers'
-import {
-  configureChains,
-  createClient,
-  getProvider,
-  getAccount,
-  getNetwork,
-  fetchSigner,
-  disconnect,
-  switchNetwork,
-  mainnet,
-  watchAccount,
-  watchNetwork,
-  GetAccountResult,
-  GetNetworkResult,
-  Chain,
-  watchProvider,
-  GetProviderResult
-} from '@wagmi/core'
-import { AbstractWeb3Connector } from '@ripio/sdk/connectors'
-import { Web3Modal } from '@web3modal/html'
-import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum'
-import { errors } from '@ripio/sdk/types'
+import { BrowserWeb3Connector, errors } from '@ripio/sdk'
+import { providers } from 'ethers'
+import ETHProvider, { EthereumProvider } from '@walletconnect/ethereum-provider'
 
-export default class ModalConnector extends AbstractWeb3Connector {
-  web3Modal: Web3Modal
-  private _requestAccount: boolean
-  private _events: Array<CallableFunction> = []
+/**
+ * @class ModalConnector
+ * @description This class extends the BrowserWeb3Connector class from the @ripio/sdk/connectors package.
+ * It's designed to help connect a Web3 provider to a wallet using WalletConnect.
+ * @extends {BrowserWeb3Connector}
+ */
+export default class ModalConnector extends BrowserWeb3Connector {
+  private _chains: number[] = []
+  private _projectId: string
+  private _walletConnectProvider: ETHProvider | undefined
 
-  constructor(
-    projectId: string,
-    chains: Chain[] | Chain = [mainnet],
+  /**
+   * Constructs a new ModalConnector instance.
+   * @param {Object} options - The configuration options.
+   * @param {string} options.projectId - The project ID.
+   * @param {number[]} options.chains - The chains to connect to.
+   * @param {boolean} [options.requestAccount=true] - Whether to request the account upon activation.
+   */
+  constructor({
+    projectId,
+    chains,
     requestAccount = true
-  ) {
-    super()
-    this._requestAccount = requestAccount
-
-    const _chains: Chain[] = Array.isArray(chains) ? chains : [chains]
-    // Wagmi Core Client
-    const { provider } = configureChains(_chains, [w3mProvider({ projectId })])
-
-    const wagmiConfig = createClient({
-      autoConnect: true,
-      connectors: w3mConnectors({
-        projectId,
-        version: 1,
-        chains: _chains
-      }),
-      provider
-    })
-
-    // Web3Modal and Ethereum Client
-    const ethereumClient = new EthereumClient(wagmiConfig, _chains)
-    this.web3Modal = new Web3Modal({ projectId }, ethereumClient)
+  }: {
+    projectId: string
+    chains: number[]
+    requestAccount?: boolean
+  }) {
+    super(requestAccount)
+    this._projectId = projectId
+    this._chains = chains
   }
 
   /**
-   * It activates the provider, sets the chainId, requests an account, subscribes to events, and
-   * detects the legacy chain
-   * @returns {object} provider, chainId and account
+   * Activates the connection to the wallet. If the `requestAccount` property set in the constructor is `true`,
+   * this method will trigger WalletConnect to open a modal for the user to select their wallet and connect to it.
+   * @returns {Promise<Object>} - A promise that resolves to an object containing the following:
+   *    - `provider`: The Web3Provider instance that represents the connected wallet provider.
+   *    - `chainId`: The ID of the chain that the provider is connected to.
+   *    - `account`: A JsonRpcSigner instance that represents the user's account, or `undefined` if no account was connected.
    */
   async activate(): Promise<{
-    provider: ethers.providers.StaticJsonRpcProvider
+    provider: providers.Web3Provider
     chainId: number
-    account: ethers.providers.JsonRpcSigner | ethers.Wallet | undefined
+    account: providers.JsonRpcSigner | undefined
   }> {
-    this._provider = getProvider<ethers.providers.StaticJsonRpcProvider>()
-    const { chain } = getNetwork()
-    this._chainId = chain?.id
-    if (this._requestAccount) {
-      // if _requestAccount was left as true (default value), request account, else, leave account null.
-      await this.requestAccount()
-    }
-    this.subscribeToEvents()
+    this._walletConnectProvider = await EthereumProvider.init({
+      projectId: this._projectId,
+      chains: this._chains,
+      showQrModal: true
+    })
+
+    const provider = new providers.Web3Provider(this._walletConnectProvider)
+    this._provider = provider
+    this.subscribeToEvents(this._walletConnectProvider)
+
+    if (this._requestAccount) await this.requestAccount()
+
+    const chain = await provider.getNetwork()
+
+    this._chainId = chain.chainId
     this._isActive = true
-    await this.detectLegacyChain()
 
     return {
-      provider: <ethers.providers.StaticJsonRpcProvider>this._provider,
-      chainId: <number>this.chainId,
-      account: <ethers.providers.JsonRpcSigner>this._account
+      provider: provider,
+      chainId: this._chainId,
+      account: this._account as providers.JsonRpcSigner
     }
   }
 
-  async deactivate(): Promise<void> {
-    this.unsubscribeFromEvents()
-    await super.deactivate()
-    await disconnect()
-  }
-
-  subscribeToEvents() {
-    this._events.push(
-      watchAccount(this.handleAccountChanged),
-      watchNetwork(this.handleChainChanged),
-      watchProvider({}, this.handleProviderChanged)
-    )
-  }
-
-  protected handleAccountChanged = async (account: GetAccountResult) => {
-    this._account = account.isConnected
-      ? <ethers.providers.JsonRpcSigner>await fetchSigner()
-      : undefined
-  }
-
-  protected handleChainChanged = async (network: GetNetworkResult) => {
-    this._chainId = network.chain ? network.chain.id : undefined
-    await this.detectLegacyChain()
-  }
-
-  protected handleProviderChanged = async (provider: GetProviderResult) => {
-    this._provider = <ethers.providers.StaticJsonRpcProvider>provider
-  }
-
   /**
-   * Unsuscribe from all events
-   */
-  unsubscribeFromEvents() {
-    this._events.forEach(unwatch => unwatch())
-    this._events = []
-  }
-
-  /**
-   * It switches the current chain to the one specified by the user
-   * @param {number} chainId - The chain ID of the chain you want to switch to.
-   * @returns a promise that resolves when the chain has been switched.
-   */
-  async switchChain(chainId: number) {
-    if (chainId === this._chainId) return
-    if (
-      !this._provider ||
-      !(this._provider instanceof ethers.providers.StaticJsonRpcProvider)
-    )
-      throw errors.NO_PROVIDER
-    await switchNetwork({ chainId })
-  }
-
-  /**
-   * If the user is already connected to a wallet, fetch the signer, otherwise open the web3 modal
+   * Requests access to the user's account.
+   * @throws {Error} - If no provider is available, or if no account is recovered.
    */
   async requestAccount() {
-    if (
-      !this._provider ||
-      !(this._provider instanceof ethers.providers.StaticJsonRpcProvider)
-    )
-      throw errors.NO_PROVIDER
+    if (!this.provider || !this.walletConnectProvider) throw errors.NO_PROVIDER
+    let accounts: string[]
+
     try {
-      const { isConnected } = getAccount()
-      if (isConnected)
-        this._account = <ethers.providers.JsonRpcSigner>await fetchSigner()
-      else await this.web3Modal.openModal()
+      accounts = await this.walletConnectProvider.enable()
     } catch (error: any) {
       throw errors.NO_ACCOUNT(error)
     }
+    if (accounts.length === 0)
+      throw errors.NO_ACCOUNT(new Error('No accounts recovered.'))
+    const account = accounts[0].toLowerCase()
+    this._account = this.provider.getSigner(account)
+  }
+
+  /**
+   * Deactivates the connection to the wallet.
+   * @throws {Error} - If no Ethereum provider is available.
+   */
+  async deactivate() {
+    if (!this.provider || !this.walletConnectProvider) throw errors.NO_ETHEREUM
+
+    this.unsubscribeFromEvents(this.provider)
+    await this.walletConnectProvider.disconnect()
+
+    this._account = undefined
+    this._chainId = undefined
+    this._provider = undefined
+    this._isActive = false
+    this._isLegacy = undefined
+    this._walletConnectProvider = undefined
+    this._requestAccount = false
+    this._projectId = ''
+    this._chains = []
+  }
+
+  /**
+   * Getter for the WalletConnect provider.
+   * @returns {ETHProvider | undefined} - The WalletConnect provider.
+   */
+  get walletConnectProvider(): ETHProvider | undefined {
+    return this._walletConnectProvider
   }
 }

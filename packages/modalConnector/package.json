@@ -14,12 +14,6 @@
             "import": "./dist/esm/index.js",
             "default": "./dist/esm/index.js"
         },
-        "./chains": {
-            "types": "./dist/types/chains/index.d.ts",
-            "require": "./dist/cjs/chains/index.js",
-            "import": "./dist/esm/chains/index.js",
-            "default": "./dist/esm/chains/index.js"
-        },
         "./types": {
             "types": "./dist/types/types/index.d.ts",
             "require": "./dist/cjs/types/index.js",
@@ -31,9 +25,6 @@
         "*": {
             ".": [
                 "dist/types/index.d.ts"
-            ],
-            "chains": [
-                "dist/types/chains/index.d.ts"
             ],
             "types": [
                 "dist/types/types/index.d.ts"
@@ -69,8 +60,8 @@
     "dependencies": {
         "@babel/runtime": "^7.17.7",
         "@ripio/sdk": "*",
-        "@wagmi/core": "~0.10.11",
-        "@web3modal/ethereum": "~2.3.7",
-        "@web3modal/html": "~2.3.7"
+        "@walletconnect/ethereum-provider": "^2.8.3",
+        "@walletconnect/modal": "^2.5.4",
+        "ethers": "^5.6.4"
     }
 }

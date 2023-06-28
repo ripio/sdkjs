@@ -11,7 +11,7 @@ import {
 import { hexToNumber } from '../utils/conversions'
 
 export default class BrowserWeb3Connector extends AbstractWeb3Connector {
-  private _requestAccount: boolean
+  protected _requestAccount: boolean
   constructor(requestAccount = true) {
     super()
     this._requestAccount = requestAccount
